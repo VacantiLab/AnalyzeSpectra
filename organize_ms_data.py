@@ -1,4 +1,5 @@
 def organize_ms_data(file_directory):
+    import pdb #python debugger
     import importlib #allows fresh importing of modules
     from netCDF4 import Dataset #allows for opening netCDF files
     import numpy as np #this is numpy, allows for data frame and matrix handling

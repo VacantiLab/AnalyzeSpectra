@@ -24,7 +24,9 @@ files = listdir(file_directory)
 #Remove filenames that are not NetCDF files
 netcdf_pattern = re.compile('.cdf$|.netcdf$',re.IGNORECASE)
     #creates a regex pattern matching '.cdf' or '.netcdf' at the end of a string (specified by $), where the case is not important
-for filename in files:
+
+filename_holder = copy.copy(files)
+for filename in filename_holder:
     is_netcdf = bool(re.search(netcdf_pattern,filename)) #determines if the pattern is in the filename
     if not is_netcdf:
         files.remove(filename)
