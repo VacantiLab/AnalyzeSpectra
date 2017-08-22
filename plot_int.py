@@ -4,7 +4,7 @@ import copy
 
 from bokeh.layouts import column, row, widgetbox
 from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput
-from bokeh.plotting import Figure, output_file, show
+from bokeh.plotting import Figure, output_file, show, reset_output
 
 mz_plot = ['mz174','mz175','mz176','mz177','mz178']
 mz_colors = ['red','blue','green','purple','orange']
@@ -117,3 +117,8 @@ text_boxes = widgetbox(mz_text[0],mz_text[1],mz_text[2],mz_text[3],mz_text[4],wi
 layout = row(text_boxes, plot)
 
 show(layout)
+
+#reset the bokeh plot ColumnDataSource object because it stores things dependent on the python instance
+#    thus if you run this script multiple times in the same instance of python, the produced html file will grow linearly in size
+#    every time you run it, it stores another copy of the data in the html file, unless the output is reset as below
+reset_output()
