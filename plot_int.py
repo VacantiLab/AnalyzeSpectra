@@ -125,7 +125,7 @@ test_time_value = list(source_dict_timekeys.keys())[0]
 source_dict_timekeys['y'] = source_dict_timekeys[test_time_value]
 
 source_timekeys = ColumnDataSource(data=source_dict_timekeys)
-plot2 = Figure(title='ion counts vs. mz', x_axis_label='mz (s)',y_axis_label='ion counts',plot_width=800,plot_height=350)
+plot2 = Figure(title='ion counts vs. mz', x_axis_label='mz',y_axis_label='ion counts',plot_width=800,plot_height=350)
 plot2.vbar(x='x', bottom=0, width=0.5, top='y',color='firebrick',source=source_timekeys)
 
 time_select = Select(title="Scan Acquisition Time:", value=test_time_value, options=list(source_dict_timekeys.keys()))
