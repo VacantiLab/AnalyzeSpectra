@@ -23,8 +23,15 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
     peak_end_t_dict = dict()
     peak_start_i_dict = dict()
     peak_end_i_dict = dict()
-    j=0
 
+    #Initialize the dictionary holding the intensity vs. mz data for each timepoint
+    ic_smooth_dict_timekeys = dict()
+    k = 0
+    for time_value in sat:
+        ic_smooth_dict_timekeys[time_value] =  np.zeros(len(mz_vals))
+    k = k+1
+
+    j=0
     for plotted_mz in mz_vals:
 
         print(plotted_mz)
@@ -89,6 +96,11 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
         y_nsmooth_cor = y_data_numpy - base
         ic_nsmooth_dict[plotted_mz] = y_nsmooth_cor
 
+        #fill in the time_key dictionary
+        k = 0
+        for time_value in sat:
+            ic_smooth_dict_timekeys[time_value][j] =  ic_smooth_dict[plotted_mz][k]
+            k = k+1
 
         #get the x and y peak locations and values resepctively.
         x_peak_locs = x_data_numpy[indexes]
@@ -114,4 +126,4 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
 
         j=j+1 #index of mz
 
-    return(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,p)
+    return(ic_smooth_dict,ic_smooth_dict_timekeys,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,p)

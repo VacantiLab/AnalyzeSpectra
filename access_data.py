@@ -48,7 +48,7 @@ for filename in files:
         #mz_vals: the m/z values scanned
 
     #Process ms data
-    (ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
+    (ic_smooth_dict,ic_smooth_dict_timekeys,peak_start_t_dict,peak_end_t_dict,
     peak_start_i_dict,peak_end_i_dict,x_data_numpy,p) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals)
          #ic_smooth_dict: a dictionary containing the smoothed and baseline corrected ion count data for each m/z value
          #peak_start_t_dict: a dictionary with all of the peak beginning times for each m/z ion count plot
@@ -86,8 +86,10 @@ for filename in files:
     #            ....mz_value (there is one of these for every mz scanned)
     file_data[filename] = {}
     file_data[filename]['fragments'] = fragment_dict
-    file_data[filename]['ics_smooth_bc'] = ic_smooth_dict
+    file_data[filename]['ics_smooth_bc'] = ic_smooth_dict #bc stands for baseline-corrected
+    file_data[filename]['ics_smooth_timekeys'] = ic_smooth_dict_timekeys
     file_data[filename]['sats'] = x_data_numpy
+    file_data[filename]['mz_vals'] = mz_vals
     file_data[filename]['peak_beginnings'] = peak_start_t_dict
     file_data[filename]['peak_endings'] = peak_end_t_dict
 

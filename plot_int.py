@@ -2,11 +2,12 @@ import numpy as np
 import pickle #allows for saving of dictionary files
 import copy
 
-from bokeh.layouts import column, row, widgetbox
-from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput
+from bokeh.layouts import column, row, widgetbox, layout
+from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput, Select
 from bokeh.plotting import Figure, output_file, show, reset_output
 
 mz_plot = ['mz174','mz175','mz176','mz177','mz178']
+time_key_plot = 't738.54700000000003'
 mz_colors = ['red','blue','green','purple','orange']
 file_directory = '/Users/nate/Desktop/netcdf_test/'
 filename = 'tbdms01_t47d_wt.CDF'
@@ -25,10 +26,11 @@ mz_text = {}
 legend = {}
 x_data = file_data[filename]['sats'] #this does not change with mz so it is set outside the loop
 
+#change the key names to strings
 source_dict = file_data[filename]['ics_smooth_bc']
 source_dict_keys = list(source_dict.keys())
 for key in source_dict_keys:
-    source_dict['mz'+str(int(key))] = source_dict.pop(key)
+    source_dict['mz'+str(int(key))] = source_dict.pop(key) #new key on left of equal sign, old key on right
 
 source_dict['x'] = x_data
 source_dict['y0'] = source_dict[mz_plot[0]] #the ics for the current mz
@@ -112,11 +114,47 @@ mz_text[2].js_on_change('value', callback2)
 mz_text[3].js_on_change('value', callback3)
 mz_text[4].js_on_change('value', callback4)
 
+#Make the ion-count vs. mz plot for each scan acquisition time
+source_dict_timekeys = file_data[filename]['ics_smooth_timekeys']
+source_dict_timekeys_keys = list(source_dict_timekeys.keys())
+for key in source_dict_timekeys_keys:
+    source_dict_timekeys['t'+str(key)] = source_dict_timekeys.pop(key)
+
+source_dict_timekeys['x'] = file_data[filename]['mz_vals']
+test_time_value = list(source_dict_timekeys.keys())[1]
+source_dict_timekeys['y'] = source_dict_timekeys[test_time_value]
+
+source_timekeys = ColumnDataSource(data=source_dict_timekeys)
+plot2 = Figure(title='ion counts vs. mz', x_axis_label='mz (s)',y_axis_label='ion counts',plot_width=800,plot_height=400)
+plot2.vbar(x='x', bottom=0, width=0.5, top='y',color='firebrick',source=source_timekeys)
+
+time_select = Select(title="Scan Acquisition Time:", value=test_time_value, options=list(source_dict_timekeys.keys()))
+
+callback5 = CustomJS(args=dict(source=source_timekeys), code="""
+     var data = source.data;
+     var f = cb_obj.value
+     x = data['x']
+     y = data['y']
+     to_change_to = data[f]
+     for (i = 0; i < x.length; i++) {
+         y[i] = to_change_to[i]
+     }
+     source.change.emit();
+ """)
+
+time_select.js_on_change('value', callback5)
+
 # Set up layouts and add to document
 text_boxes = widgetbox(mz_text[0],mz_text[1],mz_text[2],mz_text[3],mz_text[4],width=200,height=400)
-layout = row(text_boxes, plot)
+time_box = widgetbox(time_select,width=200,height=400)
+#layout = row(text_boxes, plot, plot2)
 
-show(layout)
+l = layout([
+  [text_boxes, plot],
+  [time_box,plot2],
+], sizing_mode='fixed')
+
+show(l)
 
 #reset the bokeh plot ColumnDataSource object because it stores things dependent on the python instance
 #    thus if you run this script multiple times in the same instance of python, the produced html file will grow linearly in size
