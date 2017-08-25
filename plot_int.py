@@ -118,7 +118,7 @@ mz_text[4].js_on_change('value', callback4)
 source_dict_timekeys = file_data[filename]['ics_smooth_timekeys']
 source_dict_timekeys_keys = list(source_dict_timekeys.keys())
 for key in source_dict_timekeys_keys:
-    source_dict_timekeys['t'+str(key)] = source_dict_timekeys.pop(key)
+    source_dict_timekeys[str(key)] = source_dict_timekeys.pop(key)
 
 source_dict_timekeys['x'] = file_data[filename]['mz_vals']
 test_time_value = list(source_dict_timekeys.keys())[1]
