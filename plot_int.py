@@ -15,7 +15,7 @@ output_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'
 
 output_file(output_plot_file)
-plot=Figure(title='ion counts vs. time', x_axis_label='time (s)',y_axis_label='ion counts',plot_width=800,plot_height=400)
+plot=Figure(title='ion counts vs. time', x_axis_label='time (s)',y_axis_label='ion counts',plot_width=800,plot_height=350)
 
 file_object = open(output_data_file,'rb')
 file_data = pickle.load(file_object)
@@ -121,11 +121,11 @@ for key in source_dict_timekeys_keys:
     source_dict_timekeys[str(key)] = source_dict_timekeys.pop(key)
 
 source_dict_timekeys['x'] = file_data[filename]['mz_vals']
-test_time_value = list(source_dict_timekeys.keys())[1]
+test_time_value = list(source_dict_timekeys.keys())[0]
 source_dict_timekeys['y'] = source_dict_timekeys[test_time_value]
 
 source_timekeys = ColumnDataSource(data=source_dict_timekeys)
-plot2 = Figure(title='ion counts vs. mz', x_axis_label='mz (s)',y_axis_label='ion counts',plot_width=800,plot_height=400)
+plot2 = Figure(title='ion counts vs. mz', x_axis_label='mz (s)',y_axis_label='ion counts',plot_width=800,plot_height=350)
 plot2.vbar(x='x', bottom=0, width=0.5, top='y',color='firebrick',source=source_timekeys)
 
 time_select = Select(title="Scan Acquisition Time:", value=test_time_value, options=list(source_dict_timekeys.keys()))
@@ -145,8 +145,8 @@ callback5 = CustomJS(args=dict(source=source_timekeys), code="""
 time_select.js_on_change('value', callback5)
 
 # Set up layouts and add to document
-text_boxes = widgetbox(mz_text[0],mz_text[1],mz_text[2],mz_text[3],mz_text[4],width=200,height=400)
-time_box = widgetbox(time_select,width=200,height=400)
+text_boxes = widgetbox(mz_text[0],mz_text[1],mz_text[2],mz_text[3],mz_text[4],width=200,height=350)
+time_box = widgetbox(time_select,width=200,height=350)
 #layout = row(text_boxes, plot, plot2)
 
 l = layout([
