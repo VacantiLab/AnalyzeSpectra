@@ -6,7 +6,7 @@ from bokeh.layouts import column, row, widgetbox, layout
 from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput, Select
 from bokeh.plotting import Figure, output_file, show, reset_output
 
-mz_plot = ['mz174','mz175','mz176','mz177','mz178']
+mz_plot = ['174','175','176','177','178']
 time_key_plot = 't738.54700000000003'
 mz_colors = ['red','blue','green','purple','orange']
 file_directory = '/Users/nate/Desktop/netcdf_test/'
@@ -30,7 +30,7 @@ x_data = file_data[filename]['sats'] #this does not change with mz so it is set 
 source_dict = file_data[filename]['ics_smooth_bc']
 source_dict_keys = list(source_dict.keys())
 for key in source_dict_keys:
-    source_dict['mz'+str(int(key))] = source_dict.pop(key) #new key on left of equal sign, old key on right
+    source_dict[str(int(key))] = source_dict.pop(key) #new key on left of equal sign, old key on right
 
 source_dict['x'] = x_data
 source_dict['y0'] = source_dict[mz_plot[0]] #the ics for the current mz
