@@ -10,17 +10,28 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
     fragment_dict = fragment_library.fragment_library()
     fragments_ls = list(fragment_dict.keys())
 
+    mzs_of_peak_starts = np.array(list(peak_start_t_dict.keys()))
+
     for frag_iter in fragments_ls:
         mz = fragment_dict[frag_iter]['mz']
         rt = fragment_dict[frag_iter]['rt']
 
         for i in mz:
+            print(i)
             #find the index of the peak in the mz curve (the first peak is 0, the second 1, the third 2, ...)
-            prosp_peak_start_nm = max(np.where(peak_start_t_dict[i] < rt)[0])
+            pdb.set_trace()
+            possible_peak_starts = np.where(peak_start_t_dict[i] < rt)[0]
+            if len(possible_peak_starts) > 0:
+                prosp_peak_start_nm = max(possible_peak_starts)
+            if len(possible_peak_starts) == 0:
+                peak_present = False
+
             #find the time at which the peak is finished eluting
-            prosp_peak_end_t = peak_end_t_dict[i][prosp_peak_start_nm]
-            #if the peak ends after the retention time, then there is a peak (the the proposed peak was required to start before the retention time two lines ago)
-            peak_present = rt < prosp_peak_end_t
+            if len(possible_peak_starts) > 0:
+                prosp_peak_end_t = peak_end_t_dict[i][prosp_peak_start_nm]
+                #if the peak ends after the retention time, then there is a peak (the the proposed peak was required to start before the retention time two lines ago)
+                peak_present = rt < prosp_peak_end_t
+
             if not peak_present:
                 fragment_dict[frag_iter]['areas'][i] = 0.0
             if peak_present:
@@ -31,6 +42,9 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
                 y_range_ic = ic_smooth_dict[i][x_range_i]
                 fragment_dict[frag_iter]['areas'][i] = scipy.integrate.simps(y_range_ic,x_range_t)
         fragment_dict[frag_iter]['tot_area'] = sum(fragment_dict[frag_iter]['areas'].values())
-        fragment_dict[frag_iter]['mid'] = {k: v / fragment_dict[frag_iter]['tot_area'] for k, v in fragment_dict[frag_iter]['areas'].items()}
+        if fragment_dict[frag_iter]['tot_area'] > 0:
+            fragment_dict[frag_iter]['mid'] = {k: v / fragment_dict[frag_iter]['tot_area'] for k, v in fragment_dict[frag_iter]['areas'].items()}
+        if fragment_dict[frag_iter]['tot_area'] == 0:
+            fragment_dict[frag_iter]['mid'] = {k: 0 for k, v in fragment_dict[frag_iter]['areas'].items()}
 
     return(fragment_dict)

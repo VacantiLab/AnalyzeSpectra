@@ -41,6 +41,7 @@ file_data = {}
 for filename in files:
     file_path = file_directory+filename
 
+    print('accessing and organizing m/z, scan acquisition time, and ion count data')
     ic_df,sat,n_scns,mz_vals = organize_ms_data.organize_ms_data(file_path)
         #ic_df: ion count data frame
         #sat: scan acquisition times
@@ -48,6 +49,7 @@ for filename in files:
         #mz_vals: the m/z values scanned
 
     #Process ms data
+    print('subtracting baselines and smoothing')
     (ic_smooth_dict,ic_smooth_dict_timekeys,peak_start_t_dict,peak_end_t_dict,
     peak_start_i_dict,peak_end_i_dict,x_data_numpy,p) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals)
          #ic_smooth_dict: a dictionary containing the smoothed and baseline corrected ion count data for each m/z value
@@ -59,8 +61,9 @@ for filename in files:
          #p: the plot (bokeh) object
 
     #integrate fragments in library
+    print('integrating fragment mass isotopomers listed in library')
     fragment_dict = integrate_peaks.integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
-                                                peak_start_i_dict,peak_end_i_dict,x_data_numpy)
+                                                    peak_start_i_dict,peak_end_i_dict,x_data_numpy)
     #fragment_dict: a dictionary containing information (including the mass isotopomer distributions) of each integrated metabolite fragment
 
     #Store the processed data for each filename in a dictionary

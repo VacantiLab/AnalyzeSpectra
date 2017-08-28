@@ -19,14 +19,17 @@ def organize_ms_data(file_directory):
     sat = list(ncdf.variables['scan_acquisition_time']) #the scan acquisition times corresponding to each scan (over mz values)
     n_scns = len(sat) #the number of scans
     n_mz = len(mz) #the total number of recorded values
+    mz_np = np.array(mz)
+    mz_u = np.unique(mz_np) #unique scan values
+    mz_u = np.sort(mz_u)
+    mz_u = np.around(mz_u,decimals=2)
 
     #some measurements at mz's that round to the same whole mz appear in a single scan.
     #In these cases, the value closest to the whole mz value is retained, the other discarded
-    print('removing duplicate mz scans and updating scan indices for each SAT')
-    mz,ic,si = remove_repeats.remove_repeats(mz,ic,si)
+    #print('removing duplicate mz scans and updating scan indices for each SAT')
+    #mz,ic,si = remove_repeats.remove_repeats(mz,ic,si)
 
     #create a data frame containing the mz values down the rows and the scan acquisition time values across the columns
-    print('creating mz-time-intensity data frame')
     ic_dct = dict()
     scan_indices = range(0,n_scns) #the scan indices range from 0 to 1 less thabn the # of scans because indexing starts at 0, so the 5th item has an index of 4
     for i in scan_indices:
@@ -42,14 +45,14 @@ def organize_ms_data(file_directory):
     ic_df = pandas.DataFrame(ic_dct)
 
     #get an array of all mz values scanned (Agilent does not record all mz values for each scan because some mz values do not pass threshhold ioun counts in every scan)
-    mz_vals = ic_df.index.values
+    #mz_vals = ic_df.index.values
 
     #the number of mz values scanned is not necessarily the number of mz values within the scan range because some mz values may not have had any ion count values recorded.
     #I believe these values are not saved as 0 by the Agilent software, they are just discarded
-    n_mz = len(ic_df.iloc[:,0])
+    #n_mz = len(ic_df.iloc[:,0])
 
     #fill the NaN values with 0
     #NaN values exist because not all scans have measurements recorded for the same set of mz values (as explained above)
     ic_df = ic_df.fillna(value=0)
 
-    return(ic_df,sat,n_scns,mz_vals)
+    return(ic_df,sat,n_scns,mz_u)

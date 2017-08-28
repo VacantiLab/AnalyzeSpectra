@@ -16,7 +16,7 @@ def fragment_library():
     fragment_dict = dict()
     fragment_dict['pyr174'] = {'formula':{'c':6,'h':12,'n':1,'o':3,'si':1},
                                'rt':450,
-                               'mz':np.array([174,175,176,177,178]),
+                               'mz':np.array([174.05,175.05,176.05,177.05,178.05]),
                                'areas':dict(),
                                'mid':dict(),
                                'tot_area':0

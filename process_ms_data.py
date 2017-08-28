@@ -33,9 +33,6 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
 
     j=0
     for plotted_mz in mz_vals:
-
-        print(plotted_mz)
-
         #arrange data to be plotted
         x_data = sat
         y_data = ic_df.loc[plotted_mz,:]
