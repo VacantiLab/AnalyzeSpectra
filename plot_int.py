@@ -1,12 +1,13 @@
 import numpy as np
 import pickle #allows for saving of dictionary files
 import copy
+import pdb
 
 from bokeh.layouts import column, row, widgetbox, layout
 from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput, Select
 from bokeh.plotting import Figure, output_file, show, reset_output
 
-mz_plot = ['174','175','176','177','178']
+mz_plot = ['174.05','175.05','176.05','177.05','178.05']
 time_key_plot = 't738.54700000000003'
 mz_colors = ['red','blue','green','purple','orange']
 file_directory = '/Users/nate/Desktop/netcdf_test/'
@@ -24,15 +25,30 @@ file_object.close()
 source = {}
 mz_text = {}
 legend = {}
+
 x_data = file_data[filename]['sats'] #this does not change with mz so it is set outside the loop
+blank_data = np.zeros(len(x_data))
+for i in range(0,len(blank_data)):
+    blank_data[i] = np.nan
+
 
 #change the key names to strings
 source_dict = file_data[filename]['ics_smooth_bc']
 source_dict_keys = list(source_dict.keys())
 for key in source_dict_keys:
-    source_dict[str(int(key))] = source_dict.pop(key) #new key on left of equal sign, old key on right
+    source_dict[str(key)] = source_dict.pop(key) #new key on left of equal sign, old key on right
+
+#make smaller for testing
+new_source_dict = {}
+new_source_dict['174.05'] = source_dict['174.05']
+new_source_dict['175.05'] = source_dict['175.05']
+new_source_dict['176.05'] = source_dict['176.05']
+new_source_dict['177.05'] = source_dict['177.05']
+new_source_dict['178.05'] = source_dict['178.05']
+source_dict = copy.copy(new_source_dict)
 
 source_dict['x'] = x_data
+source_dict['blank'] = blank_data
 source_dict['y0'] = source_dict[mz_plot[0]] #the ics for the current mz
 source_dict['y1'] = source_dict[mz_plot[1]]
 source_dict['y2'] = source_dict[mz_plot[2]]
@@ -44,8 +60,8 @@ y = ['y0','y1','y2','y3','y4']
 
 for j in [0,1,2,3,4]:
     plot.line('x',y[j],source=source,color=mz_colors[j]) #update the plot object for the current mz
-    mz_text[j] = TextInput(title=mz_colors[j], value=str(mz_plot[j])) #the textbox widget, the value must be a string
-
+    #mz_text[j] = TextInput(title=mz_colors[j], value=str(mz_plot[j])) #the textbox widget, the value must be a string
+    mz_text[j] = Select(title=mz_colors[j], value=str(mz_plot[j]), options=list(source_dict.keys()))
 
 callback0 = CustomJS(args=dict(source=source), code="""
     var data = source.data;
@@ -119,6 +135,13 @@ source_dict_timekeys = file_data[filename]['ics_smooth_timekeys']
 source_dict_timekeys_keys = list(source_dict_timekeys.keys())
 for key in source_dict_timekeys_keys:
     source_dict_timekeys[str(key)] = source_dict_timekeys.pop(key)
+
+#make smaller for testing
+source_dict_timekeys_new = {}
+source_dict_timekeys_new[list(source_dict_timekeys.keys())[0]] = source_dict_timekeys[list(source_dict_timekeys.keys())[0]]
+source_dict_timekeys_new[list(source_dict_timekeys.keys())[1]] = source_dict_timekeys[list(source_dict_timekeys.keys())[1]]
+source_dict_timekeys_new[list(source_dict_timekeys.keys())[2]] = source_dict_timekeys[list(source_dict_timekeys.keys())[2]]
+source_dict_timekeys = copy.copy(source_dict_timekeys_new)
 
 source_dict_timekeys['x'] = file_data[filename]['mz_vals']
 test_time_value = list(source_dict_timekeys.keys())[0]

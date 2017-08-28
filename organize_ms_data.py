@@ -36,6 +36,7 @@ def organize_ms_data(file_directory):
     #In these cases, the value closest to the whole mz value is retained, the other discarded
     #print('removing duplicate mz scans and updating scan indices for each SAT')
     #mz,ic,si = remove_repeats.remove_repeats(mz,ic,si)
+    #The above is wrong - make a function here for binning based on the ms resolution
 
     #create a data frame containing the mz values down the rows and the scan acquisition time values across the columns
     ic_dct = dict()
