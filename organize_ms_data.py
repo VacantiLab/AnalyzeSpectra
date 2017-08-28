@@ -1,4 +1,5 @@
 def organize_ms_data(file_directory):
+    import copy
     import pdb #python debugger
     import importlib #allows fresh importing of modules
     from netCDF4 import Dataset #allows for opening netCDF files
@@ -20,9 +21,16 @@ def organize_ms_data(file_directory):
     n_scns = len(sat) #the number of scans
     n_mz = len(mz) #the total number of recorded values
     mz_np = np.array(mz)
+
+    #change mz values to type numpy float64 because that's what the library values are for mz and they need to agree for dictionary key  and pandas data frame row-name purposes
+    mz_np2 = np.zeros(len(mz_np))
+    for i in range(0,len(mz_np)):
+        mz_np2[i] = np.float64(mz_np[i])
+    mz_np = copy.copy(mz_np2)
+    mz_np = np.around(mz_np,decimals=2) #round to have writable keys for dictionaries and pandas data frames
+
     mz_u = np.unique(mz_np) #unique scan values
     mz_u = np.sort(mz_u)
-    mz_u = np.around(mz_u,decimals=2)
 
     #some measurements at mz's that round to the same whole mz appear in a single scan.
     #In these cases, the value closest to the whole mz value is retained, the other discarded
@@ -39,7 +47,7 @@ def organize_ms_data(file_directory):
         if i == (n_scns-1): #if you at the last scan index
             scan_end_index = n_mz #this is not out of range because when specifiying a range to splice a list, the final value is not included
         #make a dictionary of pandas serieses where each dictionary entry is labeled as the sat, contains the pandas series which is indexed by the mz values
-        ic_dct[sat[i]] = pandas.Series(ic[scan_start_index:scan_end_index],index=mz[scan_start_index:scan_end_index])
+        ic_dct[sat[i]] = pandas.Series(ic[scan_start_index:scan_end_index],index=mz_np[scan_start_index:scan_end_index])
 
     #create the data frame with mz values down the rows and SATs across the columns from the dictionary of pandas serieses
     ic_df = pandas.DataFrame(ic_dct)

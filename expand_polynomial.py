@@ -12,12 +12,14 @@ def expand_polynomial(a,b):
 
 
     #import the module that will allow all other modules to be imported in a single line
-    import ImportModules #the module that contains import statements for the other required modules
+    #import ImportModules #the module that contains import statements for the other required modules
+    import numpy as np
+    import pandas
     import importlib #allows fresh importing of modules
-    importlib.reload(ImportModules) #reload the custom function in case it was changed
+    #importlib.reload(ImportModules) #reload the custom function in case it was changed
 
     #Import required modules
-    pdb,os,re,importlib,plotly,importlib,peakutils,bokeh,np,pandas,copy,scipy,Dataset,remove_repeats,savitzky_golay,FindBorders,ExtendBounds,fragment_library = ImportModules.ImportModules()
+    #pdb,os,re,importlib,plotly,importlib,peakutils,bokeh,np,pandas,copy,scipy,Dataset,remove_repeats,savitzky_golay,FindBorders,ExtendBounds,fragment_library = ImportModules.ImportModules()
 
     #redefine the input polynomial python arrays as numpy row matrices
     mid_a = np.matrix(a) #mass isotopomer distribution for a
