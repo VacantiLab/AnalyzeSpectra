@@ -20,7 +20,7 @@ def organize_ms_data(file_directory):
     sat = list(ncdf.variables['scan_acquisition_time']) #the scan acquisition times corresponding to each scan (over mz values)
     n_scns = len(sat) #the number of scans
     n_mz = len(mz) #the total number of recorded values
-    mz_np = np.array(mz)
+    mz_np = np.array(mz) #produces numpy float32 entries
 
     #change mz values to type numpy float64 because that's what the library values are for mz and they need to agree for dictionary key  and pandas data frame row-name purposes
     mz_np2 = np.zeros(len(mz_np))
