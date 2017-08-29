@@ -16,6 +16,8 @@ import create_output_directory
 importlib.reload(create_output_directory)
 import integrate_peaks
 importlib.reload(integrate_peaks)
+import BinData
+importlib.reload(BinData)
 
 #Get a list of all of the NetCDF files in the specified directory
 file_directory = '/Users/nate/Desktop/netcdf_test/'
@@ -47,6 +49,13 @@ for filename in files:
         #sat: scan acquisition times
         #n_scns: number of scans
         #mz_vals: the m/z values scanned
+
+    #bin the data as specified: move to organize_ms_data
+    ic_df = BinData.BinData(ic_df,1)
+        #the second input is what you are centering on, 1 for the intiger, 0.2 to the nearest 0.2, etc.
+
+    #reassign the mz values due to the binning
+    mz_vals = np.sort(np.array(list(ic_df.index.values)))
 
     #Process ms data
     print('subtracting baselines and smoothing')

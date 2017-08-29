@@ -7,7 +7,7 @@ from bokeh.layouts import column, row, widgetbox, layout
 from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput, Select
 from bokeh.plotting import Figure, output_file, show, reset_output
 
-mz_plot = ['174.05','175.05','176.05','177.05','178.05']
+mz_plot = ['174.0','175.0','176.0','177.0','178.0']
 time_key_plot = 't738.54700000000003'
 mz_colors = ['red','blue','green','purple','orange']
 file_directory = '/Users/nate/Desktop/netcdf_test/'
@@ -39,13 +39,13 @@ for key in source_dict_keys:
     source_dict[str(key)] = source_dict.pop(key) #new key on left of equal sign, old key on right
 
 #make smaller for testing
-new_source_dict = {}
-new_source_dict['174.05'] = source_dict['174.05']
-new_source_dict['175.05'] = source_dict['175.05']
-new_source_dict['176.05'] = source_dict['176.05']
-new_source_dict['177.05'] = source_dict['177.05']
-new_source_dict['178.05'] = source_dict['178.05']
-source_dict = copy.copy(new_source_dict)
+#new_source_dict = {}
+#new_source_dict['174.05'] = source_dict['174.05']
+#new_source_dict['175.05'] = source_dict['175.05']
+#new_source_dict['176.05'] = source_dict['176.05']
+#new_source_dict['177.05'] = source_dict['177.05']
+#new_source_dict['178.05'] = source_dict['178.05']
+#source_dict = copy.copy(new_source_dict)
 
 source_dict['x'] = x_data
 source_dict['blank'] = blank_data
@@ -137,11 +137,11 @@ for key in source_dict_timekeys_keys:
     source_dict_timekeys[str(key)] = source_dict_timekeys.pop(key)
 
 #make smaller for testing
-source_dict_timekeys_new = {}
-source_dict_timekeys_new[list(source_dict_timekeys.keys())[0]] = source_dict_timekeys[list(source_dict_timekeys.keys())[0]]
-source_dict_timekeys_new[list(source_dict_timekeys.keys())[1]] = source_dict_timekeys[list(source_dict_timekeys.keys())[1]]
-source_dict_timekeys_new[list(source_dict_timekeys.keys())[2]] = source_dict_timekeys[list(source_dict_timekeys.keys())[2]]
-source_dict_timekeys = copy.copy(source_dict_timekeys_new)
+#source_dict_timekeys_new = {}
+#source_dict_timekeys_new[list(source_dict_timekeys.keys())[0]] = source_dict_timekeys[list(source_dict_timekeys.keys())[0]]
+#source_dict_timekeys_new[list(source_dict_timekeys.keys())[1]] = source_dict_timekeys[list(source_dict_timekeys.keys())[1]]
+#source_dict_timekeys_new[list(source_dict_timekeys.keys())[2]] = source_dict_timekeys[list(source_dict_timekeys.keys())[2]]
+#source_dict_timekeys = copy.copy(source_dict_timekeys_new)
 
 source_dict_timekeys['x'] = file_data[filename]['mz_vals']
 test_time_value = list(source_dict_timekeys.keys())[0]
