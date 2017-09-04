@@ -1,40 +1,54 @@
 def fragment_library():
 
+    import pdb
     import numpy as np #this is numpy, allows for data frame and matrix handling
     import pandas
+    import re
 
-    atom_abundances = dict()
-    atom_abundances['c'] = pandas.Series([0.9893,0.0107,0],index=['M0','M1','M2'])
-    atom_abundances['h'] = pandas.Series([0.999885,0.000115,0],index=['M0','M1','M2'])
-    atom_abundances['n'] = pandas.Series([0.99632,0.00368,0],index=['M0','M1','M2'])
-    atom_abundances['o'] = pandas.Series([0.99757,0.00038,0.00205],index=['M0','M1','M2'])
-    atom_abundances['si'] = pandas.Series([0.922297,0.046832,0.030872],index=['M0','M1','M2'])
-
-    atom_abundances_df = pandas.DataFrame(atom_abundances)
-    atom_abundances_df = pandas.DataFrame.transpose(atom_abundances_df)
-
+    file_name_read = '/Users/Nate/Desktop/netcdf_test/tbdms_lib.txt'
     fragment_dict = dict()
-    fragment_dict['pyr174'] = {'formula':{'c':6,'h':12,'n':1,'o':3,'si':1},
-                               'rt':450,
-                               'mz':np.array([174,175,176,177,178]),
-                               'areas':dict(),
-                               'mid':dict(),
-                               'tot_area':0
-                              }
 
+    #open a .txt file with the fragment information and import it
+    #.txt file has format:
+    #    fragment: pyr174
+    #    formula: C6H12N1O3Si1
+    #    rt: 450
+    #    mz: 174 175 176 177 178
+    #
+    #    fragment: lac233
+    #    ...
+    with open(file_name_read, 'r') as read_file:
+        #read through the lines in the file one by one
+        outer_read_line = 0
+        for line in read_file:
+            outer_read_line = outer_read_line + 1 #iterate the line number
+            line_split = line.split(':') #split the line into a list of strings, colons mark separations
+            #if the first word on the line is 'fragment', gather the fragment information
+            if line_split[0]=='fragment':
+                fragment_name = line_split[1].lstrip().rstrip() #remove white space characters from the left and right of the fragment name
+                fragment_dict[fragment_name] = dict() #initialize a dictionary for the current fragment
+                fragment_dict[fragment_name]['areas'] = dict() #initialize the peak areas dictionary
+                fragment_dict[fragment_name]['mid'] = dict() #initialize the MID dictionary
+                #read through the same file line by line, but starting from the beginning
+                inner_read_line = 0
+                with open(file_name_read, 'r') as inner_read_file:
+                    for inner_line in inner_read_file:
+                        inner_read_line = inner_read_line + 1 #iterate the line number
+                        inner_line_split = inner_line.split(':') #split the line into a list of strings
+                        #read the fragment formula
+                        if inner_read_line == outer_read_line + 1:
+                            fragment_formula = inner_line_split[1].lstrip().rstrip()
+                            fragment_dict[fragment_name]['formula'] = fragment_formula
+                        #read the fragment retention time
+                        if inner_read_line == outer_read_line + 2:
+                            retention_time = inner_line_split[1].lstrip().rstrip()
+                            retention_time = np.fromstring(retention_time,dtype=float,sep=' ')
+                            fragment_dict[fragment_name]['rt'] = retention_time
+                        #read the fragment list of mz values to integrate
+                        if inner_read_line == outer_read_line + 3:
+                            mzs_to_integrate = inner_line_split[1].lstrip().rstrip()
+                            mzs_to_integrate = np.fromstring(mzs_to_integrate,dtype=float,sep=' ')
+                            fragment_dict[fragment_name]['mz'] = mzs_to_integrate
 
-    #atom_masses = {'c':12.0107,'h':1.00794,'n':14.0067,'o':15.999,'si':28.0855}
-    #atom_quantities = np.array(list(fragment_dict['pyr174']['formula'].values()))
-    #atom_masses = np.array(list(atom_masses.values()))
-
-    #fragment_dict['pyr174']['mass_values'] = atom_quantities*atom_masses
-    #fragment_dict['pyr174']['tot_mass'] = sum(fragment_dict['pyr174']['mass_values'])
-    #fragment_dict['pyr174']['mass_fractions'] = fragment_dict['pyr174']['mass_values']/fragment_dict['pyr174']['tot_mass']
-    #mass_fractions_dict = dict()
-    #mass_fractions_dict['pyr174'] = pandas.Series(fragment_dict['pyr174']['mass_fractions'],index=['c','h','n','o','si'])
-    #mass_fractions_df = pandas.DataFrame(mass_fractions_dict)
-    #mass_fractions_df = pandas.DataFrame.transpose(mass_fractions_df)
-
-    #fragment_dict['pyr174']['unlabeled_mid'] = mass_fractions_df.dot(atom_abundances_df)
 
     return(fragment_dict)
