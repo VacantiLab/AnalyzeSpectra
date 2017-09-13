@@ -6,6 +6,7 @@ import pdb
 from bokeh.layouts import column, row, widgetbox, layout
 from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput, Select
 from bokeh.plotting import Figure, output_file, show, reset_output
+from bokeh.io import curdoc
 
 mz_plot = ['174.0','175.0','176.0','177.0']
 time_key_plot = 't738.54700000000003'
@@ -15,7 +16,7 @@ filename = 'tbdms01_t47d_wt.CDF'
 output_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'
 
-output_file(output_plot_file)
+output_file(output_plot_file, title=filename) #title sets the title shown on the browser tab
 plot=Figure(title='ion counts vs. time', x_axis_label='time (s)',y_axis_label='ion counts',plot_width=950,plot_height=350)
 
 file_object = open(output_data_file,'rb')
@@ -184,6 +185,7 @@ l = layout([
   [plot2],
 ], sizing_mode='fixed')
 
+#set the name shown in the tab to the filename
 show(l)
 
 #reset the bokeh plot ColumnDataSource object because it stores things dependent on the python instance
