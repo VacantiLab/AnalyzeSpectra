@@ -18,6 +18,12 @@ import integrate_peaks
 importlib.reload(integrate_peaks)
 import BinData
 importlib.reload(BinData)
+import fragment_library
+importlib.reload(fragment_library)
+
+#process the library
+print('processing library...')
+fragment_dict = fragment_library.fragment_library()
 
 #Get a list of all of the NetCDF files in the specified directory
 file_directory = '/Users/nate/Desktop/netcdf_test/'
@@ -43,7 +49,7 @@ file_data = {}
 for filename in files:
     file_path = file_directory+filename
 
-    print('accessing and organizing m/z, scan acquisition time, and ion count data')
+    print('accessing and organizing m/z, scan acquisition time, and ion count data...')
     ic_df,sat,n_scns,mz_vals = organize_ms_data.organize_ms_data(file_path)
         #ic_df: ion count data frame
         #sat: scan acquisition times
@@ -58,7 +64,7 @@ for filename in files:
     mz_vals = np.sort(np.array(list(ic_df.index.values)))
 
     #Process ms data
-    print('subtracting baselines and smoothing')
+    print('subtracting baselines and smoothing...')
     (ic_smooth_dict,ic_smooth_dict_timekeys,peak_start_t_dict,peak_end_t_dict,
     peak_start_i_dict,peak_end_i_dict,x_data_numpy,p) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals)
          #ic_smooth_dict: a dictionary containing the smoothed and baseline corrected ion count data for each m/z value
@@ -70,7 +76,7 @@ for filename in files:
          #p: the plot (bokeh) object
 
     #integrate fragments in library
-    print('integrating fragment mass isotopomers listed in library')
+    print('integrating fragment mass isotopomers listed in library...')
     fragment_dict = integrate_peaks.integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
                                                     peak_start_i_dict,peak_end_i_dict,x_data_numpy)
     #fragment_dict: a dictionary containing information (including the mass isotopomer distributions) of each integrated metabolite fragment

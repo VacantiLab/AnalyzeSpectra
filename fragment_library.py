@@ -1,9 +1,12 @@
 def fragment_library():
 
+    import importlib #allows fresh importing of modules
     import pdb
     import numpy as np #this is numpy, allows for data frame and matrix handling
     import pandas
     import re
+    import calc_natural_mid
+    importlib.reload(calc_natural_mid)
 
     file_name_read = '/Users/Nate/Desktop/netcdf_test/tbdms_lib.txt'
     fragment_dict = dict()
@@ -50,5 +53,10 @@ def fragment_library():
                             mzs_to_integrate = np.fromstring(mzs_to_integrate,dtype=float,sep=' ')
                             fragment_dict[fragment_name]['mz'] = mzs_to_integrate
 
+
+    #calculate the natural mass isotopomer distrubutions for each fragment
+    fragment_list = list(dict.keys(fragment_dict))
+    for z in fragment_list:
+        fragment_dict[z]['natural_mid'] = calc_natural_mid.calc_natural_mid(fragment_dict[z]['formula'])
 
     return(fragment_dict)

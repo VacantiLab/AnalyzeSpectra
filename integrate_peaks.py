@@ -17,7 +17,6 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
         rt = fragment_dict[frag_iter]['rt']
 
         for i in mz:
-            print(i)
             #find the index of the peak in the mz curve (the first peak is 0, the second 1, the third 2, ...)
             possible_peak_starts = np.where(peak_start_t_dict[i] < rt)[0]
             if len(possible_peak_starts) > 0:
