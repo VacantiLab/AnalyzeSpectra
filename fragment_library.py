@@ -30,8 +30,8 @@ def fragment_library():
             if line_split[0]=='fragment':
                 fragment_name = line_split[1].lstrip().rstrip() #remove white space characters from the left and right of the fragment name
                 fragment_dict[fragment_name] = dict() #initialize a dictionary for the current fragment
-                fragment_dict[fragment_name]['areas'] = dict() #initialize the peak areas dictionary
-                fragment_dict[fragment_name]['mid'] = dict() #initialize the MID dictionary
+                fragment_dict[fragment_name]['areas'] = np.array([]) #initialize the peak areas dictionary
+                fragment_dict[fragment_name]['mid'] = np.array([]) #initialize the MID dictionary
                 #read through the same file line by line, but starting from the beginning
                 inner_read_line = 0
                 with open(file_name_read, 'r') as inner_read_file:

@@ -31,18 +31,24 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
                 peak_present = rt < prosp_peak_end_t
 
             if not peak_present:
-                fragment_dict[frag_iter]['areas'][i] = 0.0
+                fragment_dict[frag_iter]['areas'] = np.append(fragment_dict[frag_iter]['areas'],0)
             if peak_present:
                 x_start_i = peak_start_i_dict[i][prosp_peak_start_nm]
                 x_end_i = peak_end_i_dict[i][prosp_peak_start_nm]
                 x_range_i = np.arange(x_start_i,x_end_i)
                 x_range_t = x_data_numpy[x_range_i]
                 y_range_ic = ic_smooth_dict[i][x_range_i]
-                fragment_dict[frag_iter]['areas'][i] = scipy.integrate.simps(y_range_ic,x_range_t)
-        fragment_dict[frag_iter]['tot_area'] = sum(fragment_dict[frag_iter]['areas'].values())
+                integrated_area = scipy.integrate.simps(y_range_ic,x_range_t)
+                fragment_dict[frag_iter]['areas'] = np.append(fragment_dict[frag_iter]['areas'],integrated_area)
+        fragment_dict[frag_iter]['tot_area'] = np.sum(fragment_dict[frag_iter]['areas'])
         if fragment_dict[frag_iter]['tot_area'] > 0:
-            fragment_dict[frag_iter]['mid'] = {k: v / fragment_dict[frag_iter]['tot_area'] for k, v in fragment_dict[frag_iter]['areas'].items()}
+            fragment_dict[frag_iter]['mid'] = fragment_dict[frag_iter]['areas']/fragment_dict[frag_iter]['tot_area']
         if fragment_dict[frag_iter]['tot_area'] == 0:
-            fragment_dict[frag_iter]['mid'] = {k: 0 for k, v in fragment_dict[frag_iter]['areas'].items()}
+            fragment_dict[frag_iter]['mid'] = 0*fragment_dict[frag_iter]['areas']
+
+
+        #clever way to iterate through dictionary - not used here anymore
+        #if fragment_dict[frag_iter]['tot_area'] == 0:
+        #    fragment_dict[frag_iter]['mid'] = {k: 0 for k, v in fragment_dict[frag_iter]['areas'].items()}
 
     return(fragment_dict)
