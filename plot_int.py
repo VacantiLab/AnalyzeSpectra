@@ -8,7 +8,7 @@ from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput, Select
 from bokeh.plotting import Figure, output_file, show, reset_output
 from bokeh.io import curdoc
 
-mz_plot = ['174.0','175.0','176.0','177.0']
+mz_plot = ['459.0','blank','blank','blank']
 time_key_plot = 't738.54700000000003'
 mz_colors = ['red','blue','green','purple']
 file_directory = '/Users/nate/Desktop/netcdf_test/'
@@ -17,7 +17,7 @@ output_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'
 
 output_file(output_plot_file, title=filename) #title sets the title shown on the browser tab
-plot=Figure(title='ion counts vs. time', x_axis_label='time (s)',y_axis_label='ion counts',plot_width=950,plot_height=350)
+plot=Figure(title='ion counts vs. time', x_axis_label='time (s)',y_axis_label='ion counts',plot_width=950,plot_height=300)
 
 file_object = open(output_data_file,'rb')
 file_data = pickle.load(file_object)
@@ -120,8 +120,37 @@ mz_text[3].js_on_change('value', callback3)
 #Make the ion-count vs. mz plot for each scan acquisition time
 source_dict_timekeys = file_data[filename]['ics_smooth_timekeys']
 source_dict_timekeys_keys = list(source_dict_timekeys.keys())
+
+#map timekeys to evenly spaced intervals
+#    the slider can only take an evenly spaced interval as input options
+#    each timekey must be mapped to one of these values to use the slider
+#make the interval
+timekeys_array = np.array(source_dict_timekeys_keys)
+n_timekeys = len(timekeys_array)
+timekeys_start = timekeys_array[0]
+timekeys_end = timekeys_array[n_timekeys-1]
+range_timekeys = timekeys_end - timekeys_start
+timekeys_interval = range_timekeys/n_timekeys
+timekeys_even_intervals = np.arange(timekeys_start,timekeys_end,timekeys_interval)
+
+#map to the above made interval
+j=0
+timekeys_string = list(timekeys_array)
+for z in timekeys_array:
+    mapped_key = timekeys_even_intervals-z
+    mapped_key = np.absolute(mapped_key)
+    mapped_key_loc = np.argmin(mapped_key)
+    timekeys_array[j] = timekeys_even_intervals[mapped_key_loc]
+    timekeys_array[j] = np.round(timekeys_array[j],decimals=5)
+    timekeys_string[j] = str(timekeys_array[j])
+    j = j+1
+
+#reset the keys in the time-mzs dictionary to the newly mapped timekeys
+j=0
 for key in source_dict_timekeys_keys:
-    source_dict_timekeys[str(key)] = source_dict_timekeys.pop(key)
+    source_dict_timekeys[timekeys_string[j]] = source_dict_timekeys.pop(key)
+    j=j+1
+
 
 #make smaller for testing
 #source_dict_timekeys_new = {}
@@ -135,7 +164,7 @@ test_time_value = list(source_dict_timekeys.keys())[0]
 source_dict_timekeys['y'] = source_dict_timekeys[test_time_value]
 
 source_timekeys = ColumnDataSource(data=source_dict_timekeys)
-plot2 = Figure(title='ion counts vs. mz', x_axis_label='m/z',y_axis_label='ion counts',plot_width=950,plot_height=350)
+plot2 = Figure(title='ion counts vs. mz', x_axis_label='m/z',y_axis_label='ion counts',plot_width=950,plot_height=300)
 plot2.vbar(x='x', bottom=0, width=0.5, top='y',color='firebrick',source=source_timekeys)
 
 callback6 = CustomJS(args=dict(source=source_timekeys), code="""
@@ -152,7 +181,7 @@ callback6 = CustomJS(args=dict(source=source_timekeys), code="""
  """)
 
 time_select = Select(title="Scan Acquisition Time:", value=test_time_value, options=list(source_dict_timekeys.keys()))
-time_slider = Slider(start=395.572, end=2716.746, value=395.572, step=0.343, title='Scan Acquisition Time', callback=callback6, callback_policy='mouseup')
+time_slider = Slider(start=timekeys_start, end=timekeys_end, value=timekeys_start, step=timekeys_interval, title='Scan Acquisition Time', callback=callback6, callback_policy='mouseup')
 
 callback5 = CustomJS(args=dict(source=source_timekeys), code="""
      var data = source.data;
