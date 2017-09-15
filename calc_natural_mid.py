@@ -57,15 +57,19 @@ def calc_natural_mid(formula):
     #                                        .
     #                                        .
     atom_mids = np.zeros([n_row,n_rel_abuns]) #initialize the matrix
-    atom_index = 0 #initialize the atom counter
+    atom_index = 0 #initialize the atom counter, this tracks the identity of the atom
+                   #    if you go from the first to the second C, this will not changed
+                   #    if you go from the last C to the first H this will increase by one
     for i in range(0,n_row): #iterate through the rows of the atom mid matrix
-        if i < sum(formula_numbers[0:atom_index+1]):
+        new_atom_id_index = sum(formula_numbers[0:atom_index+1]) #'+1' is necessary because the end of the range is not included in python
+        #corresponds to the next row that the identity of the atom will change
+        if i < new_atom_id_index: #if the atom identity has not changed
             current_atom = formula_atoms[atom_index]
             atom_mids[i,] = atom_abundances[current_atom]
-        if i >= sum(formula_numbers[0:atom_index+1]):
+        if i >= new_atom_id_index: #if the atom identity has changed
             current_atom = formula_atoms[atom_index+1]
             atom_mids[i,] = atom_abundances[current_atom]
-            atom_index = atom_index + 1
+            atom_index = atom_index + 1 #only iterate the atom_index if the atom identity has changed
 
     expanded_placeholder = [1]
     for i in range(0,n_row):
