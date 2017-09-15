@@ -71,7 +71,10 @@ def calc_natural_mid(formula):
             atom_mids[i,] = atom_abundances[current_atom]
             atom_index = atom_index + 1 #only iterate the atom_index if the atom identity has changed
 
-    expanded_placeholder = [1]
+    #given the formula A2B3 where A and B have isotopic abundances of [A_M0 A_M1 A_M2] and [B_M0 B_M1 B_M2]
+    #the vector of mass isotopomeric abundace of A2B3 can be found by multiplying out the vecotors of atomic isotopic abundances as if they were polynomials, and combining like terms
+    #the M0, M1, ... are be treated as exponents; thus (A_M0)*(B_M2) gives an M2 term (0+2)
+    expanded_placeholder = [1] #initializes the MID vector of the fragemnt specified by the formula
     for i in range(0,n_row):
         expanded = expand_polynomial.expand_polynomial(expanded_placeholder,atom_mids[i,])
         expanded_placeholder = np.array(expanded['prob'])
