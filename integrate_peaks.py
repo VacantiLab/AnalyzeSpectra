@@ -7,7 +7,7 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
     import fragment_library #a custom function
     importlib.reload(fragment_library) #reload the custom function in case it was changed
 
-    fragment_dict = fragment_library.fragment_library()
+    fragment_dict,fragment_list = fragment_library.fragment_library()
     fragments_ls = list(fragment_dict.keys())
 
     mzs_of_peak_starts = np.array(list(peak_start_t_dict.keys()))

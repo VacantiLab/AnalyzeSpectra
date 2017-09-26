@@ -20,10 +20,12 @@ import BinData
 importlib.reload(BinData)
 import fragment_library
 importlib.reload(fragment_library)
+import print_integrated_peaks
+importlib.reload(print_integrated_peaks)
 
 #process the library
 print('processing library...')
-fragment_dict = fragment_library.fragment_library()
+fragment_dict,fragment_list = fragment_library.fragment_library()
 
 #Get a list of all of the NetCDF files in the specified directory
 file_directory = '/Users/nate/Desktop/netcdf_test/'
@@ -50,7 +52,7 @@ for filename in files:
     file_path = file_directory+filename
 
     print('accessing and organizing m/z, scan acquisition time, and ion count data...')
-    ic_df,sat,n_scns,mz_vals = organize_ms_data.organize_ms_data(file_path)
+    ic_df,sat,n_scns,mz_vals,tic = organize_ms_data.organize_ms_data(file_path)
         #ic_df: ion count data frame
         #sat: scan acquisition times
         #n_scns: number of scans
@@ -74,6 +76,10 @@ for filename in files:
          #peak_end_i_dict: a dictionary with all of the peak ending indices for each m/z ion count plot
          #x_data_numpy: scan acquisition time values
          #p: the plot (bokeh) object
+
+    #add the total ion count to the dictionary
+    #    note it is not smoothed because it does not really make sense to smooth total ion count data
+    ic_smooth_dict['tic'] = tic
 
     #integrate fragments in library
     print('integrating fragment mass isotopomers listed in library...')
@@ -117,9 +123,5 @@ file_object = open(output_data_file,'wb')
 pickle.dump(file_data,file_object)
 file_object.close()
 
-file_object = open(output_data_file,'rb')
-file_data2 = pickle.load(file_object)
-file_object.close()
-
-    #show the plot
-    #bkp.show(p)
+#Print output to a text file_data
+print_integrated_peaks.print_integrated_peaks(file_directory,files,fragment_list,file_data)

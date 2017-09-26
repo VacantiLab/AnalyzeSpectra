@@ -18,6 +18,7 @@ def organize_ms_data(file_directory):
     mz = ncdf.variables['mass_values'] #all of the mz values for each of the 'intensity_values', all scans are concatenated as a single array
     si = ncdf.variables['scan_index'] #marks the python index of the starting position of each scan within the 'intensity_values'
     sat = list(ncdf.variables['scan_acquisition_time']) #the scan acquisition times corresponding to each scan (over mz values)
+    tic = np.array(ncdf.variables['total_intensity']) #store the total ion count for each scan
     n_scns = len(sat) #the number of scans
     n_mz = len(mz) #the total number of recorded values
     mz_np = np.array(mz) #produces numpy float32 entries
@@ -64,4 +65,4 @@ def organize_ms_data(file_directory):
     #NaN values exist because not all scans have measurements recorded for the same set of mz values (as explained above)
     ic_df = ic_df.fillna(value=0)
 
-    return(ic_df,sat,n_scns,mz_u)
+    return(ic_df,sat,n_scns,mz_u,tic)

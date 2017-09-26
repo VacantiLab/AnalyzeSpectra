@@ -59,4 +59,4 @@ def fragment_library():
     for z in fragment_list:
         fragment_dict[z]['natural_mid'] = calc_natural_mid.calc_natural_mid(fragment_dict[z]['formula'])
 
-    return(fragment_dict)
+    return(fragment_dict,fragment_list)

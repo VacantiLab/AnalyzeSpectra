@@ -8,11 +8,12 @@ from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput, Select
 from bokeh.plotting import Figure, output_file, show, reset_output
 from bokeh.io import curdoc
 
-mz_plot = ['459.0','blank','blank','blank']
+mz_plot = ['tic','blank','blank','blank']
 time_key_plot = 't738.54700000000003'
 mz_colors = ['red','blue','green','purple']
 file_directory = '/Users/nate/Desktop/netcdf_test/'
 filename = 'tbdms01_t47d_wt.CDF'
+#filename = 'F01_A549_UGlc_NTKD.CDF'
 output_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'
 
@@ -34,7 +35,7 @@ for i in range(0,len(blank_data)):
 
 
 #change the key names to strings
-source_dict = file_data[filename]['ics_smooth_bc']
+source_dict = file_data[filename]['ics_smooth_bc'] #bc: baseline-corrected
 source_dict_keys = list(source_dict.keys())
 for key in source_dict_keys:
     source_dict[str(key)] = source_dict.pop(key) #new key on left of equal sign, old key on right
@@ -130,8 +131,9 @@ n_timekeys = len(timekeys_array)
 timekeys_start = timekeys_array[0]
 timekeys_end = timekeys_array[n_timekeys-1]
 range_timekeys = timekeys_end - timekeys_start
-timekeys_interval = range_timekeys/n_timekeys
-timekeys_even_intervals = np.arange(timekeys_start,timekeys_end,timekeys_interval)
+timekeys_interval = range_timekeys/(n_timekeys-1)
+timekeys_even_intervals = np.arange(timekeys_start,timekeys_end+timekeys_interval,timekeys_interval)
+#    you must add a timekeys_interval to the end because np.arange does not include the last point
 
 #map to the above made interval
 j=0
