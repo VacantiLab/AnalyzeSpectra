@@ -32,6 +32,7 @@ def fragment_library():
                 fragment_dict[fragment_name] = dict() #initialize a dictionary for the current fragment
                 fragment_dict[fragment_name]['areas'] = np.array([]) #initialize the peak areas dictionary
                 fragment_dict[fragment_name]['mid'] = np.array([]) #initialize the MID dictionary
+                fragment_dict[fragment_name]['mid_c'] = np.array([]) #initialize the corrected MID dictionary
                 #read through the same file line by line, but starting from the beginning
                 inner_read_line = 0
                 with open(file_name_read, 'r') as inner_read_file:

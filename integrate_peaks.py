@@ -6,6 +6,8 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
     import scipy #contains simpsons integration function
     import fragment_library #a custom function
     importlib.reload(fragment_library) #reload the custom function in case it was changed
+    import correct_mid
+    importlib.reload(correct_mid)
 
     fragment_dict,fragment_list = fragment_library.fragment_library()
     fragments_ls = list(fragment_dict.keys())
@@ -46,6 +48,12 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
         if fragment_dict[frag_iter]['tot_area'] == 0:
             fragment_dict[frag_iter]['mid'] = 0*fragment_dict[frag_iter]['areas']
 
+        #correct the mids, will work if the MID is all zeros
+        #    in order to print, all fragments must have a corrected mid
+        #    these corrected MIDs must be the same length for a fragment across all samples (are formula dependent so they will be)
+        mid_to_correct = fragment_dict[frag_iter]['mid']
+        formula_of_mid_to_correct = fragment_dict[frag_iter]['formula']
+        fragment_dict[frag_iter]['mid_c'] = correct_mid.correct_mid(mid_to_correct,formula_of_mid_to_correct)
 
         #clever way to iterate through dictionary - not used here anymore
         #if fragment_dict[frag_iter]['tot_area'] == 0:
