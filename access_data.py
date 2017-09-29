@@ -83,8 +83,8 @@ for filename in files:
 
     #integrate fragments in library
     print('integrating fragment mass isotopomers listed in library...')
-    fragment_dict = integrate_peaks.integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
-                                                    peak_start_i_dict,peak_end_i_dict,x_data_numpy)
+    fragment_dict_complete = integrate_peaks.integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
+                                                    peak_start_i_dict,peak_end_i_dict,x_data_numpy,fragment_dict,fragment_list)
     #fragment_dict: a dictionary containing information (including the mass isotopomer distributions) of each integrated metabolite fragment
 
     #Store the processed data for each filename in a dictionary
@@ -109,7 +109,7 @@ for filename in files:
     #        ....peak_endings
     #            ....mz_value (there is one of these for every mz scanned)
     file_data[filename] = {}
-    file_data[filename]['fragments'] = fragment_dict
+    file_data[filename]['fragments'] = copy.deepcopy(fragment_dict_complete)
     file_data[filename]['ics_smooth_bc'] = ic_smooth_dict #bc stands for baseline-corrected
     file_data[filename]['ics_smooth_timekeys'] = ic_smooth_dict_timekeys
     file_data[filename]['sats'] = x_data_numpy

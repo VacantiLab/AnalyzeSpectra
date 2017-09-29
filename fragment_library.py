@@ -7,6 +7,8 @@ def fragment_library():
     import re
     import calc_natural_mid
     importlib.reload(calc_natural_mid)
+    import create_correction_matrix
+    importlib.reload(create_correction_matrix)
 
     file_name_read = '/Users/Nate/Desktop/netcdf_test/tbdms_lib.txt'
     fragment_dict = dict()
@@ -43,6 +45,7 @@ def fragment_library():
                         if inner_read_line == outer_read_line + 1:
                             fragment_formula = inner_line_split[1].lstrip().rstrip()
                             fragment_dict[fragment_name]['formula'] = fragment_formula
+                            fragment_dict[fragment_name]['CM_i'] = create_correction_matrix.create_correction_matrix(fragment_formula)
                         #read the fragment retention time
                         if inner_read_line == outer_read_line + 2:
                             retention_time = inner_line_split[1].lstrip().rstrip()

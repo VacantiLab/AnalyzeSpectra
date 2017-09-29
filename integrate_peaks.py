@@ -1,4 +1,4 @@
-def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy):
+def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,fragment_dict,fragments_list):
     import importlib #allows fresh importing of modules
     import pdb #python debugger
     import numpy as np #this is numpy, allows for data frame and matrix handling
@@ -9,12 +9,9 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
     import correct_mid
     importlib.reload(correct_mid)
 
-    fragment_dict,fragment_list = fragment_library.fragment_library()
-    fragments_ls = list(fragment_dict.keys())
-
     mzs_of_peak_starts = np.array(list(peak_start_t_dict.keys()))
 
-    for frag_iter in fragments_ls:
+    for frag_iter in fragments_list:
         mz = fragment_dict[frag_iter]['mz']
         rt = fragment_dict[frag_iter]['rt']
 
@@ -53,7 +50,8 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
         #    these corrected MIDs must be the same length for a fragment across all samples (are formula dependent so they will be)
         mid_to_correct = fragment_dict[frag_iter]['mid']
         formula_of_mid_to_correct = fragment_dict[frag_iter]['formula']
-        fragment_dict[frag_iter]['mid_c'] = correct_mid.correct_mid(mid_to_correct,formula_of_mid_to_correct)
+        CM_i = fragment_dict[frag_iter]['CM_i']
+        fragment_dict[frag_iter]['mid_c'] = correct_mid.correct_mid(mid_to_correct,formula_of_mid_to_correct,CM_i)
 
         #clever way to iterate through dictionary - not used here anymore
         #if fragment_dict[frag_iter]['tot_area'] == 0:
