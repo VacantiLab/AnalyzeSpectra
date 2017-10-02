@@ -59,8 +59,8 @@ for filename in files:
         #mz_vals: the m/z values scanned
 
     #bin the data as specified: move to organize_ms_data
-    ic_df = BinData.BinData(ic_df,1)
-        #the second input is what you are centering on, 1 for the intiger, 0.2 to the nearest 0.2, etc.
+    ic_df = BinData.BinData(ic_df,1.0005)
+        #the second input is the width of the bin
 
     #reassign the mz values due to the binning
     mz_vals = np.sort(np.array(list(ic_df.index.values)))
