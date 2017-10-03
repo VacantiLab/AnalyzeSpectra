@@ -48,7 +48,6 @@ def create_correction_matrix(formula):
         broken_formula_correct[n_formula_entries+1] = broken_formula_correct[n_formula_entries+1].astype(np.str)
 
         #update the string version of the formula from the array version
-        print(broken_formula_correct)
         new_formula = ''
         for j in range(0,n_formula_entries_heavy):
             new_formula = new_formula + broken_formula_correct[j]

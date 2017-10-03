@@ -31,6 +31,7 @@ def fragment_library():
             #if the first word on the line is 'fragment', gather the fragment information
             if line_split[0]=='fragment':
                 fragment_name = line_split[1].lstrip().rstrip() #remove white space characters from the left and right of the fragment name
+                print('    ' + fragment_name)
                 fragment_dict[fragment_name] = dict() #initialize a dictionary for the current fragment
                 fragment_dict[fragment_name]['areas'] = np.array([]) #initialize the peak areas dictionary
                 fragment_dict[fragment_name]['mid'] = np.array([]) #initialize the MID dictionary

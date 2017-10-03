@@ -23,13 +23,29 @@ importlib.reload(fragment_library)
 import print_integrated_peaks
 importlib.reload(print_integrated_peaks)
 
-#process the library
-print('processing library...')
-fragment_dict,fragment_list = fragment_library.fragment_library()
-
-#Get a list of all of the NetCDF files in the specified directory
+#Get a list of all of the files in the specified directory
 file_directory = '/Users/nate/Desktop/netcdf_test/'
 files = listdir(file_directory)
+
+library_processed = 'library.p' in files
+
+if not library_processed:
+    #process the library
+    print('processing library...')
+    fragment_dict,fragment_list = fragment_library.fragment_library()
+
+    #Save the library into a python readable file
+    output_library_file = file_directory + 'library.p'
+    with open(output_library_file,'wb') as library_file_object:
+        pickle.dump(fragment_dict,library_file_object)
+
+if library_processed:
+    #load the processed library
+    print('opening previously processed library...')
+    input_library_file = file_directory + 'library.p'
+    with open(input_library_file,'rb') as library_file_object:
+        fragment_dict = pickle.load(library_file_object)
+        fragment_list = list(dict.keys(fragment_dict))
 
 #Remove filenames that are not NetCDF files
 netcdf_pattern = re.compile('.cdf$|.netcdf$',re.IGNORECASE)
@@ -49,9 +65,10 @@ file_data = {}
 
 #Iterate through each NetCDF file and process the data
 for filename in files:
+    print(filename + ':')
     file_path = file_directory+filename
 
-    print('accessing and organizing m/z, scan acquisition time, and ion count data...')
+    print('    accessing and organizing m/z, scan acquisition time, and ion count data...')
     ic_df,sat,n_scns,mz_vals,tic = organize_ms_data.organize_ms_data(file_path)
         #ic_df: ion count data frame
         #sat: scan acquisition times
@@ -66,7 +83,7 @@ for filename in files:
     mz_vals = np.sort(np.array(list(ic_df.index.values)))
 
     #Process ms data
-    print('subtracting baselines and smoothing...')
+    print('    subtracting baselines and smoothing...')
     (ic_smooth_dict,ic_smooth_dict_timekeys,peak_start_t_dict,peak_end_t_dict,
     peak_start_i_dict,peak_end_i_dict,x_data_numpy,p) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals)
          #ic_smooth_dict: a dictionary containing the smoothed and baseline corrected ion count data for each m/z value
@@ -82,7 +99,7 @@ for filename in files:
     ic_smooth_dict['tic'] = tic
 
     #integrate fragments in library
-    print('integrating fragment mass isotopomers listed in library...')
+    print('    integrating fragment mass isotopomers listed in library...')
     fragment_dict_complete = integrate_peaks.integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
                                                     peak_start_i_dict,peak_end_i_dict,x_data_numpy,fragment_dict,fragment_list)
     #fragment_dict: a dictionary containing information (including the mass isotopomer distributions) of each integrated metabolite fragment
@@ -125,3 +142,5 @@ file_object.close()
 
 #Print output to a text file_data
 print_integrated_peaks.print_integrated_peaks(file_directory,files,fragment_list,file_data)
+
+print('Data processed successfully.')
