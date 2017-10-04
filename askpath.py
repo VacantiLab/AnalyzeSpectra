@@ -5,4 +5,4 @@ root = Tk()
 root.withdraw()
 
 directory = filedialog.askdirectory() + '/'
-root.update()
+root.update() #required so the directory request dialog box disappears and does not freeze
