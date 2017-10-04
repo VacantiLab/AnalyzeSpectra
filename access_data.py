@@ -8,6 +8,8 @@ import numpy as np #this is numpy, allows for data frame and matrix handling
 import pandas #a module which allows for making data frames
 import copy
 import pickle #allows for saving of dictionary files
+from tkinter import Tk #allows for asking for a directory through a GUI
+from tkinter.filedialog import askdirectory #allows for asking for a directory through a GUI
 import organize_ms_data
 importlib.reload(organize_ms_data)
 import process_ms_data
@@ -23,8 +25,13 @@ importlib.reload(fragment_library)
 import print_integrated_peaks
 importlib.reload(print_integrated_peaks)
 
+#ask for the directory where the netCDF and library.txt files are
+root = Tk()
+root.withdraw() #closes the tkinter GUI window because the rest of the program is not run through the GUI
+file_directory = askdirectory() + '/'
+root.update() #required so the directory request dialog box disappears and does not freeze
+
 #Get a list of all of the files in the specified directory
-file_directory = '/Users/nate/Desktop/netcdf_test/'
 files = listdir(file_directory)
 
 library_processed = 'library.p' in files
