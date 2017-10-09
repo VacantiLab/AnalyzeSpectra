@@ -12,7 +12,7 @@ from bokeh.io import curdoc
 mz_plot = ['tic','blank','blank','blank']
 mz_colors = ['red','blue','green','purple']
 file_directory = '/Users/nate/Desktop/netcdf_test/'
-filename = 'tbdms01_t47d_wt.CDF'
+filename = 'alkanes_tbdmsp.CDF'
 output_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'
 
