@@ -2,6 +2,7 @@ import numpy as np
 import pickle #allows for saving of dictionary files
 import copy
 import pdb
+import re
 
 from bokeh.layouts import column, row, widgetbox, layout
 from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput, Select
@@ -9,11 +10,9 @@ from bokeh.plotting import Figure, output_file, show, reset_output
 from bokeh.io import curdoc
 
 mz_plot = ['tic','blank','blank','blank']
-time_key_plot = 't738.54700000000003'
 mz_colors = ['red','blue','green','purple']
 file_directory = '/Users/nate/Desktop/netcdf_test/'
 filename = 'tbdms01_t47d_wt.CDF'
-#filename = 'F01_A549_UGlc_NTKD.CDF'
 output_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'
 
@@ -38,7 +37,9 @@ for i in range(0,len(blank_data)):
 source_dict = file_data[filename]['ics_smooth_bc'] #bc: baseline-corrected
 source_dict_keys = list(source_dict.keys())
 for key in source_dict_keys:
-    source_dict[str(key)] = source_dict.pop(key) #new key on left of equal sign, old key on right
+    new_key = str(key) #change the float key to a string
+    new_key = re.sub('\..*$','',new_key) #remove the decimal and everything following
+    source_dict[new_key] = source_dict.pop(key) #new key on left of equal sign, old key on right
 
 #make smaller for testing
 #new_source_dict = {}
@@ -61,8 +62,8 @@ y = ['y0','y1','y2','y3']
 
 for j in [0,1,2,3]:
     plot.line('x',y[j],source=source,color=mz_colors[j]) #update the plot object for the current mz
-    #mz_text[j] = TextInput(title=mz_colors[j], value=str(mz_plot[j])) #the textbox widget, the value must be a string
-    mz_text[j] = Select(title=mz_colors[j], value=str(mz_plot[j]), options=list(source_dict.keys()))
+    mz_text[j] = TextInput(title=mz_colors[j], value=str(mz_plot[j])) #the textbox widget, the value must be a string
+    #mz_text[j] = Select(title=mz_colors[j], value=str(mz_plot[j]), options=list(source_dict.keys()))
 
 callback0 = CustomJS(args=dict(source=source), code="""
     var data = source.data;
@@ -201,10 +202,10 @@ time_select.js_on_change('value', callback5)
 #time_slider.js_on_change('value', callback6)
 
 # Set up layouts and add to document
-text_box0 = widgetbox(mz_text[0], width=100, height=20)
-text_box1 = widgetbox(mz_text[1], width=100, height=20)
-text_box2 = widgetbox(mz_text[2], width=100, height=20)
-text_box3 = widgetbox(mz_text[3], width=100, height=20)
+text_box0 = widgetbox(mz_text[0], width=175, height=20)
+text_box1 = widgetbox(mz_text[1], width=175, height=20)
+text_box2 = widgetbox(mz_text[2], width=175, height=20)
+text_box3 = widgetbox(mz_text[3], width=175, height=20)
 time_box = widgetbox(time_select,width=200,height=350)
 time_slider_box = widgetbox(time_slider,width=1000,height=30)
 #layout = row(text_boxes, plot, plot2)
