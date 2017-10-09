@@ -24,6 +24,8 @@ import fragment_library
 importlib.reload(fragment_library)
 import print_integrated_peaks
 importlib.reload(print_integrated_peaks)
+import find_ri
+importlib.reload(find_ri)
 
 #ask for the directory where the netCDF and library.txt files are
 root = Tk()
@@ -104,6 +106,10 @@ for filename in files:
     #add the total ion count to the dictionary
     #    note it is not smoothed because it does not really make sense to smooth total ion count data
     ic_smooth_dict['tic'] = tic
+
+    #transform scan acquisition times to retention indices
+    if filename == 'alkanes.CDF':
+        ri = find_ri.find_ri(ic_smooth_dict,mz_vals)
 
     #integrate fragments in library
     print('    integrating fragment mass isotopomers listed in library...')
