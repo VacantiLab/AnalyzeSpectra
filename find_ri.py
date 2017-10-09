@@ -41,8 +41,4 @@ def find_ri(ic_smooth_dict,mz_vals):
     #find the mz values of those mz's above the threshold
     alkane_mz_rec = alkane_mz_rec[[alkane_elut_ind]]
 
-
-
-    pdb.set_trace()
-
     return(norm_mz_maxv)
