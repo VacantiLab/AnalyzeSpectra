@@ -109,7 +109,7 @@ for filename in files:
 
     #transform scan acquisition times to retention indices
     if filename == 'alkanes.CDF':
-        ri = find_ri.find_ri(ic_smooth_dict,mz_vals,sat)
+        ri_array = find_ri.find_ri(ic_smooth_dict,mz_vals,sat)
 
     #integrate fragments in library
     print('    integrating fragment mass isotopomers listed in library...')
