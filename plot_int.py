@@ -36,7 +36,7 @@ source = {}
 mz_text = {}
 legend = {}
 
-x_data = file_data[filename]['sats'] #this does not change with mz so it is set outside the loop
+x_data = file_data[filename]['ri'] #this does not change with mz so it is set outside the loop
 blank_data = np.zeros(len(x_data))
 for i in range(0,len(blank_data)):
     blank_data[i] = np.nan

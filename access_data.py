@@ -143,6 +143,7 @@ for filename in files:
     file_data[filename]['ics_smooth_bc'] = ic_smooth_dict #bc stands for baseline-corrected
     file_data[filename]['ics_smooth_timekeys'] = ic_smooth_dict_timekeys
     file_data[filename]['sats'] = x_data_numpy
+    file_data[filename]['ri'] = ri_array
     file_data[filename]['mz_vals'] = mz_vals
     file_data[filename]['peak_beginnings'] = peak_start_t_dict
     file_data[filename]['peak_endings'] = peak_end_t_dict
