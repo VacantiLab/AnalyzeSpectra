@@ -25,7 +25,10 @@ filename = 'alkanes.CDF'
 output_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'
 
-output_file(output_plot_file, title=filename) #title sets the title shown on the browser tab
+output_file(output_plot_file, title=filename, mode='inline')
+#    title sets the title shown on the browser tab
+#    mode=inline allows it to produce the plot without being connected to the internet
+#        CDN loading is the default and requires an internet connection
 plot=Figure(title='ion counts vs. time', x_axis_label='time (s)',y_axis_label='ion counts',plot_width=950,plot_height=300)
 
 file_object = open(output_data_file,'rb')
