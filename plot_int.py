@@ -9,10 +9,19 @@ from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput, Select
 from bokeh.plotting import Figure, output_file, show, reset_output
 from bokeh.io import curdoc
 
+from tkinter import Tk #allows for asking for a directory through a GUI
+from tkinter.filedialog import askdirectory #allows for asking for a directory through a GUI
+
 mz_plot = ['tic','blank','blank','blank']
 mz_colors = ['red','blue','green','purple']
-file_directory = '/Users/nate/Desktop/netcdf_test/'
-filename = 'alkanes_tbdmsp.CDF'
+
+#ask for the directory where the netCDF and library.txt files are
+root = Tk()
+root.withdraw() #closes the tkinter GUI window because the rest of the program is not run through the GUI
+file_directory = askdirectory() + '/'
+root.update() #required so the directory request dialog box disappears and does not freeze
+
+filename = 'alkanes.CDF'
 output_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'
 
