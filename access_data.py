@@ -26,6 +26,8 @@ import print_integrated_peaks
 importlib.reload(print_integrated_peaks)
 import find_ri
 importlib.reload(find_ri)
+import get_ri_keys_dict
+importlib.reload(get_ri_keys_dict)
 
 #ask for the directory where the netCDF and library.txt files are
 root = Tk()
@@ -93,7 +95,7 @@ for filename in files:
 
     #Process ms data
     print('    subtracting baselines and smoothing...')
-    (ic_smooth_dict,ic_smooth_dict_timekeys,peak_start_t_dict,peak_end_t_dict,
+    (ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
     peak_start_i_dict,peak_end_i_dict,x_data_numpy,p) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals)
          #ic_smooth_dict: a dictionary containing the smoothed and baseline corrected ion count data for each m/z value
          #peak_start_t_dict: a dictionary with all of the peak beginning times for each m/z ion count plot
@@ -110,6 +112,9 @@ for filename in files:
     #transform scan acquisition times to retention indices
     if filename == 'alkanes.CDF':
         ri_array = find_ri.find_ri(ic_smooth_dict,mz_vals,sat)
+
+    #inverty the ic_smooth_dict so that retention indices are the keys and a vector of intensities for each mz are the items
+    ic_smooth_dict_timekeys = get_ri_keys_dict.get_ri_keys_dict(ic_smooth_dict,ri_array,mz_vals)
 
     #integrate fragments in library
     print('    integrating fragment mass isotopomers listed in library...')

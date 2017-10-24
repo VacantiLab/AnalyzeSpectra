@@ -1,4 +1,6 @@
 def find_ri(ic_smooth_dict,mz_vals,sat):
+    #finds the retention indices
+
     import numpy as np
     import pdb
 
