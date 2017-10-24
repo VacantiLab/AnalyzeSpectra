@@ -43,18 +43,25 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
                 integrated_area = scipy.integrate.simps(y_range_ic,x_range_t)
                 fragment_dict_complete[frag_iter]['areas'] = np.append(fragment_dict_complete[frag_iter]['areas'],integrated_area)
         fragment_dict_complete[frag_iter]['tot_area'] = np.sum(fragment_dict_complete[frag_iter]['areas'])
+
+        #if peaks are found, the mid must be normalized and corrected for natural abundances
         if fragment_dict_complete[frag_iter]['tot_area'] > 0:
             fragment_dict_complete[frag_iter]['mid'] = fragment_dict_complete[frag_iter]['areas']/fragment_dict_complete[frag_iter]['tot_area']
-        if fragment_dict_complete[frag_iter]['tot_area'] == 0:
-            fragment_dict_complete[frag_iter]['mid'] = 0*fragment_dict_complete[frag_iter]['areas']
+            #correct the mids, will work if the MID is all zeros
+            #    in order to print, all fragments must have a corrected mid
+            #    these corrected MIDs must be the same length for a fragment across all samples (are formula dependent so they will be)
+            mid_to_correct = fragment_dict_complete[frag_iter]['mid']
+            formula_of_mid_to_correct = fragment_dict_complete[frag_iter]['formula']
+            CM_i = fragment_dict_complete[frag_iter]['CM_i']
+            fragment_dict_complete[frag_iter]['mid_c'] = correct_mid.correct_mid(mid_to_correct,formula_of_mid_to_correct,CM_i)
 
-        #correct the mids, will work if the MID is all zeros
-        #    in order to print, all fragments must have a corrected mid
-        #    these corrected MIDs must be the same length for a fragment across all samples (are formula dependent so they will be)
-        mid_to_correct = fragment_dict_complete[frag_iter]['mid']
-        formula_of_mid_to_correct = fragment_dict_complete[frag_iter]['formula']
-        CM_i = fragment_dict_complete[frag_iter]['CM_i']
-        fragment_dict_complete[frag_iter]['mid_c'] = correct_mid.correct_mid(mid_to_correct,formula_of_mid_to_correct,CM_i)
+        #if there are no peaks found, the metabolite is not present and all mid entries are 0
+        if fragment_dict_complete[frag_iter]['tot_area'] == 0:
+            atom_quantity = 6 #atoms that can acquire a lable (set at 6 for now), should come from fragment library
+            n_mid_entries = atom_quantity + 1 #accounts for M0
+            fragment_dict_complete[frag_iter]['mid'] = fragment_dict_complete[frag_iter]['areas']
+            fragment_dict_complete[frag_iter]['mid_c'] = np.zeros(n_mid_entries)
+
 
         #clever way to iterate through dictionary - not used here anymore
         #if fragment_dict_complete[frag_iter]['tot_area'] == 0:
