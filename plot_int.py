@@ -22,10 +22,11 @@ file_directory = askdirectory() + '/'
 root.update() #required so the directory request dialog box disappears and does not freeze
 
 filename = 'P01_SUM149_NT_siRNA.CDF'
+sample_name = filename.split('.')[0]
 output_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'
 
-output_file(output_plot_file, title=filename, mode='inline')
+output_file(output_plot_file, title=sample_name, mode='inline')
 #    title sets the title shown on the browser tab
 #    mode=inline allows it to produce the plot without being connected to the internet
 #        CDN loading is the default and requires an internet connection
@@ -39,14 +40,14 @@ source = {}
 mz_text = {}
 legend = {}
 
-x_data = file_data[filename]['ri'] #this does not change with mz so it is set outside the loop
+x_data = file_data[sample_name]['ri'] #this does not change with mz so it is set outside the loop
 blank_data = np.zeros(len(x_data))
 for i in range(0,len(blank_data)):
     blank_data[i] = np.nan
 
 
 #change the key names to strings
-source_dict = file_data[filename]['ics_smooth_bc'] #bc: baseline-corrected
+source_dict = file_data[sample_name]['ics_smooth_bc'] #bc: baseline-corrected
 source_dict_keys = list(source_dict.keys())
 for key in source_dict_keys:
     new_key = str(key) #change the float key to a string
@@ -132,7 +133,7 @@ mz_text[2].js_on_change('value', callback2)
 mz_text[3].js_on_change('value', callback3)
 
 #Make the ion-count vs. mz plot for each scan acquisition time
-source_dict_timekeys = file_data[filename]['ics_smooth_timekeys']
+source_dict_timekeys = file_data[sample_name]['ics_smooth_timekeys']
 source_dict_timekeys_keys = list(source_dict_timekeys.keys())
 
 #map timekeys to evenly spaced intervals
@@ -174,7 +175,7 @@ for key in source_dict_timekeys_keys:
 #source_dict_timekeys_new[list(source_dict_timekeys.keys())[2]] = source_dict_timekeys[list(source_dict_timekeys.keys())[2]]
 #source_dict_timekeys = copy.copy(source_dict_timekeys_new)
 
-source_dict_timekeys['x'] = file_data[filename]['mz_vals']
+source_dict_timekeys['x'] = file_data[sample_name]['mz_vals']
 test_time_value = list(source_dict_timekeys.keys())[0]
 source_dict_timekeys['y'] = source_dict_timekeys[test_time_value]
 
@@ -229,7 +230,7 @@ l = layout([
   [plot2],
 ], sizing_mode='fixed')
 
-#set the name shown in the tab to the filename
+#set the name shown in the tab to the sample_name
 show(l)
 
 #reset the bokeh plot ColumnDataSource object because it stores things dependent on the python instance

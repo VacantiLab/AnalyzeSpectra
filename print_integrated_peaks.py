@@ -1,19 +1,19 @@
-def print_integrated_peaks(file_directory,files,fragment_list,file_data):
+def print_integrated_peaks(file_directory,samples,fragment_list,file_data):
 
     import pdb
 
     output_text_file = file_directory + 'integrated_peaks.txt'
     file_object_text = open(output_text_file,'w')
 
-    files_string = '\t'.join(files)
-    file_object_text.write(' \t' + files_string)
+    samples_string = '\t'.join(samples)
+    file_object_text.write(' \t' + samples_string)
     file_object_text.write('\n')
 
     file_object_text.write('Retention Times\n')
     for fragment in fragment_list:
         file_object_text.write(fragment)
         file_object_text.write('\t')
-        for filename in files:
+        for filename in samples:
             rt = str(file_data[filename]['fragments'][fragment]['rt'][0])
             file_object_text.write(rt)
             file_object_text.write('\t')
@@ -24,7 +24,7 @@ def print_integrated_peaks(file_directory,files,fragment_list,file_data):
     for fragment in fragment_list:
         file_object_text.write(fragment)
         file_object_text.write('\t')
-        for filename in files:
+        for filename in samples:
             rt = str(file_data[filename]['fragments'][fragment]['tot_area'])
             file_object_text.write(rt)
             file_object_text.write('\t')
@@ -39,7 +39,7 @@ def print_integrated_peaks(file_directory,files,fragment_list,file_data):
             fragment_mi_name = fragment + ' ' + 'M' + str(mid_members[M])
             file_object_text.write(fragment_mi_name)
             file_object_text.write('\t')
-            for filename in files:
+            for filename in samples:
                 current_mi = str(file_data[filename]['fragments'][fragment]['mid_c'][M])
                 file_object_text.write(current_mi)
                 file_object_text.write('\t')
