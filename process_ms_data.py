@@ -48,7 +48,7 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
         y_data_smooth[smooth_neg_indices] = y_data_numpy[smooth_neg_indices]
 
         #find the indices of peaks
-        thres = 10000/np.amax(y_data_smooth)
+        thres = 3000/np.amax(y_data_smooth)
         if thres > 1:
             thres = 1
         indexes = peakutils.indexes(y_data_smooth, thres=thres, min_dist=10)

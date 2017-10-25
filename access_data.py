@@ -28,6 +28,8 @@ import find_ri
 importlib.reload(find_ri)
 import get_ri_keys_dict
 importlib.reload(get_ri_keys_dict)
+import calc_coelut
+importlib.reload(calc_coelut)
 
 #ask for the directory where the netCDF and library.txt files are
 root = Tk()
@@ -129,8 +131,11 @@ for filename in files:
         peak_loc_ind = peak_i_dict[mz_val]
         peak_ri_dict[mz_val] = ri_array[peak_loc_ind]
 
-    #inverty the ic_smooth_dict so that retention indices are the keys and a vector of intensities for each mz are the items
+    #invert the ic_smooth_dict so that retention indices are the keys and a vector of intensities for each mz are the items
     ic_smooth_dict_timekeys = get_ri_keys_dict.get_ri_keys_dict(ic_smooth_dict,ri_array,mz_vals)
+
+    #calculate the coelution dictionary with the retention indices as keys
+    coelut_dict = calc_coelut.calc_coelut(peak_ri_dict,mz_vals,ri_array)
 
     #integrate fragments in library
     print('    integrating fragment mass isotopomers listed in library...')
