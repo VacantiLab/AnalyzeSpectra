@@ -47,8 +47,6 @@ if not library_processed:
     print('processing library...')
     fragment_dict,fragment_list = fragment_library.fragment_library()
 
-    pdb.set_trace()
-
     #Save the library into a python readable file
     output_library_file = file_directory + 'library.p'
     with open(output_library_file,'wb') as library_file_object:
