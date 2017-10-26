@@ -61,12 +61,21 @@ source_dict['y0'] = source_dict[mz_plot[0]] #the ics for the current mz
 source_dict['y1'] = source_dict[mz_plot[1]]
 source_dict['y2'] = source_dict[mz_plot[2]]
 source_dict['y3'] = source_dict[mz_plot[3]]
+
+#set the legend labels of the initially displayed values
+#    there must be a label specified for each point, thus the mz lable is repeated for as many points as there are
+source_dict['label0'] = np.repeat(mz_plot[0],len(source_dict[mz_plot[0]]))
+source_dict['label1'] = np.repeat(mz_plot[1],len(source_dict[mz_plot[0]]))
+source_dict['label2'] = np.repeat(mz_plot[2],len(source_dict[mz_plot[0]]))
+source_dict['label3'] = np.repeat(mz_plot[3],len(source_dict[mz_plot[0]]))
+
 source = ColumnDataSource(data=source_dict) #for bokeh widgets it is stored in a ColmnDataSource object
 
 y = ['y0','y1','y2','y3']
+labels = ['label0','label1','label2','label3']
 
 for j in [0,1,2,3]:
-    plot.line('x',y[j],source=source,color=mz_colors[j]) #update the plot object for the current mz
+    plot.line('x',y[j],source=source,color=mz_colors[j],legend=labels[j]) #update the plot object for the current mz
     mz_text[j] = TextInput(title=mz_colors[j], value=str(mz_plot[j])) #the textbox widget, the value must be a string
     #mz_text[j] = Select(title=mz_colors[j], value=str(mz_plot[j]), options=list(source_dict.keys()))
 
@@ -75,10 +84,13 @@ callback0 = CustomJS(args=dict(source=source), code="""
     var f = cb_obj.value
     x = data['x']
     y0 = data['y0']
+    label0 = data['label0']
     to_change_to = data[f]
     for (i = 0; i < x.length; i++) {
         y0[i] = to_change_to[i]
+        label0[i] = f
     }
+    data['label0'] = label0
     source.change.emit();
 """)
 
@@ -87,10 +99,13 @@ callback1 = CustomJS(args=dict(source=source), code="""
     var f = cb_obj.value
     x = data['x']
     y1 = data['y1']
+    label1 = data['label1']
     to_change_to = data[f]
     for (i = 0; i < x.length; i++) {
         y1[i] = to_change_to[i]
+        label1[i] = f
     }
+    data['label1'] = label1
     source.change.emit();
 """)
 
@@ -99,10 +114,13 @@ callback2 = CustomJS(args=dict(source=source), code="""
     var f = cb_obj.value
     x = data['x']
     y2 = data['y2']
+    label2 = data['label2']
     to_change_to = data[f]
     for (i = 0; i < x.length; i++) {
         y2[i] = to_change_to[i]
+        label2[i] = f
     }
+    data['label2'] = label2
     source.change.emit();
 """)
 
@@ -111,10 +129,13 @@ callback3 = CustomJS(args=dict(source=source), code="""
     var f = cb_obj.value
     x = data['x']
     y3 = data['y3']
+    label3 = data['label3']
     to_change_to = data[f]
     for (i = 0; i < x.length; i++) {
         y3[i] = to_change_to[i]
+        label3[i] = f
     }
+    data['label3'] = label3
     source.change.emit();
 """)
 
