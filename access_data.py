@@ -139,8 +139,9 @@ for filename in files:
 
     #integrate fragments in library
     print('    integrating fragment mass isotopomers listed in library...')
-    fragment_dict_complete = integrate_peaks.integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
-                                                    peak_start_i_dict,peak_end_i_dict,x_data_numpy,fragment_dict,fragment_list)
+    metabolite_dict_complete = integrate_peaks.integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
+                                                    peak_start_i_dict,peak_end_i_dict,x_data_numpy,metabolite_dict,
+                                                    metabolite_list,ri_array)
     #fragment_dict: a dictionary containing information (including the mass isotopomer distributions) of each integrated metabolite fragment
 
     #Store the processed data for each filename in a dictionary
@@ -165,7 +166,7 @@ for filename in files:
     #        ....peak_endings
     #            ....mz_value (there is one of these for every mz scanned)
     file_data[sample_name] = {}
-    file_data[sample_name]['fragments'] = copy.deepcopy(fragment_dict_complete)
+    file_data[sample_name]['metabolites'] = copy.deepcopy(metabolite_dict_complete)
     file_data[sample_name]['ics_smooth_bc'] = ic_smooth_dict #bc stands for baseline-corrected
     file_data[sample_name]['ics_smooth_timekeys'] = ic_smooth_dict_timekeys
     file_data[sample_name]['sats'] = x_data_numpy
@@ -186,6 +187,7 @@ pickle.dump(file_data,file_object)
 file_object.close()
 
 #Print output to a text file_data
+pdb.set_trace()
 print_integrated_peaks.print_integrated_peaks(file_directory,samples,fragment_list,file_data)
 
 print('Data processed successfully.')

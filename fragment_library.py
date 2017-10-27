@@ -64,15 +64,23 @@ def fragment_library():
                                     fragment_line_n = fragment_line_n + 1
                                     fragment_line_split = fragment_line.split(':')
                                     fragment_line_item = fragment_line_split[1].lstrip().rstrip()
+                                    #once you have the fragment name, you can initialize a dictionary containing all of the fragment information
+                                    #    you can also initialize the numpy arrays that are members of that dictionary
                                     if fragment_line_n == metabolite_line_n:
                                         fragment_name = fragment_line_item
                                         metabolite_dict[metabolite_name]['fragments'][fragment_name] = dict()
+                                        metabolite_dict[metabolite_name]['fragments'][fragment_name]['areas'] = np.array([])
+                                    #when you are at the formula line, record the formula and calculate the inverted correction matrix
                                     if fragment_line_n == metabolite_line_n + 1:
-                                        metabolite_dict[metabolite_name]['fragments'][fragment_name]['formula'] = fragment_line_item
+                                        frag_formula = fragment_line_item
+                                        metabolite_dict[metabolite_name]['fragments'][fragment_name]['formula'] = frag_formula
+                                        metabolite_dict[metabolite_name]['fragments'][fragment_name]['CM_i'] = create_correction_matrix.create_correction_matrix(frag_formula)
+                                    #when at the appropriate line, record the mz's that will be integrated
                                     if fragment_line_n == metabolite_line_n + 2:
                                         mzs_to_integrate = np.fromstring(fragment_line_item,dtype=float,sep=' ')
                                         metabolite_dict[metabolite_name]['fragments'][fragment_name]['mzs_to_integrate'] = mzs_to_integrate
 
+    #get a list of all of the metabolites
     metabolite_list = list(dict.keys(metabolite_dict))
 
     for metabolite in metabolite_list:
