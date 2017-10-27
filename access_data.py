@@ -187,7 +187,6 @@ pickle.dump(file_data,file_object)
 file_object.close()
 
 #Print output to a text file_data
-pdb.set_trace()
-print_integrated_peaks.print_integrated_peaks(file_directory,samples,fragment_list,file_data)
+print_integrated_peaks.print_integrated_peaks(file_directory,samples,metabolite_list,file_data)
 
 print('Data processed successfully.')
