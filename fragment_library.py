@@ -16,12 +16,12 @@ def fragment_library():
 
     #open a .txt file with the fragment information and import it
     #.txt file has format:
+    #    metabolite: pyruvate
+    #    retention index: 1223
+    #    peak profile: 151 152 174 175
     #    fragment: pyr174
     #    formula: C6H12N1O3Si1
-    #    rt: 450
-    #    mz: 174 175 176 177 178
-    #
-    #    fragment: lac233
+    #    mzs to integrate: 174 175 176 177 178
     #    ...
     with open(file_name_read, 'r') as read_file:
         #read through the lines in the file one by one
@@ -81,5 +81,4 @@ def fragment_library():
         for z in fragment_list:
             metabolite_dict[metabolite]['fragments'][z]['natural_mid'] = calc_natural_mid.calc_natural_mid(metabolite_dict[metabolite]['fragments'][z]['formula'])
 
-    pdb.set_trace()
     return(metabolite_dict,metabolite_list)

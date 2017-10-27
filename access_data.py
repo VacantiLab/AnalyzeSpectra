@@ -45,20 +45,20 @@ library_processed = 'library.p' in files
 if not library_processed:
     #process the library
     print('processing library...')
-    fragment_dict,fragment_list = fragment_library.fragment_library()
+    metabolite_dict,metabolite_list = fragment_library.fragment_library()
 
     #Save the library into a python readable file
     output_library_file = file_directory + 'library.p'
     with open(output_library_file,'wb') as library_file_object:
-        pickle.dump(fragment_dict,library_file_object)
+        pickle.dump(metabolite_dict,library_file_object)
 
 if library_processed:
     #load the processed library
     print('opening previously processed library...')
     input_library_file = file_directory + 'library.p'
     with open(input_library_file,'rb') as library_file_object:
-        fragment_dict = pickle.load(library_file_object)
-        fragment_list = list(dict.keys(fragment_dict))
+        metabolite_dict = pickle.load(library_file_object)
+        metabolite_list = list(dict.keys(metabolite_dict))
 
 #Remove filenames that are not NetCDF files
 netcdf_pattern = re.compile('.cdf$|.netcdf$',re.IGNORECASE)
