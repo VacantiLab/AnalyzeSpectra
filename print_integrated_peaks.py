@@ -41,21 +41,21 @@ def print_integrated_peaks(file_directory,samples,metabolite_list,file_data):
     file_object_text.write('MIDs\n')
     for metabolite_iter in metabolite_list:
         fragment_list = list(dict.keys(file_data[samples[0]]['metabolites'][metabolite_iter]['fragments']))
-    for fragment in fragment_list:
-        mid_length = len(file_data[samples[0]]['metabolites'][metabolite_iter]['fragments'][fragment]['mid_c'])
-        mid_members = range(0,mid_length)
-        for M in mid_members:
-            fragment_mi_name = fragment + ' ' + 'M' + str(mid_members[M])
-            file_object_text.write(fragment_mi_name)
-            file_object_text.write('\t')
-            for sample_name in samples:
-                mi_to_round = file_data[sample_name]['metabolites'][metabolite_iter]['fragments'][fragment]['mid_c'][M]
-                mi_to_print = np.round(mi_to_round,decimals=6)
-                current_mi = str(mi_to_print)
-                file_object_text.write(current_mi)
+        for fragment in fragment_list:
+            mid_length = len(file_data[samples[0]]['metabolites'][metabolite_iter]['fragments'][fragment]['mid_c'])
+            mid_members = range(0,mid_length)
+            for M in mid_members:
+                fragment_mi_name = fragment + ' ' + 'M' + str(mid_members[M])
+                file_object_text.write(fragment_mi_name)
                 file_object_text.write('\t')
+                for sample_name in samples:
+                    mi_to_round = file_data[sample_name]['metabolites'][metabolite_iter]['fragments'][fragment]['mid_c'][M]
+                    mi_to_print = np.round(mi_to_round,decimals=6)
+                    current_mi = str(mi_to_print)
+                    file_object_text.write(current_mi)
+                    file_object_text.write('\t')
+                file_object_text.write('\n')
             file_object_text.write('\n')
-        file_object_text.write('\n')
 
 
     file_object_text.close()
