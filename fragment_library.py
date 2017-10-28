@@ -95,10 +95,10 @@ def fragment_library():
     #get a list of all of the metabolites
     metabolite_list = list(dict.keys(metabolite_dict))
 
-    for metabolite in metabolite_list:
+    for metabolite_name in metabolite_list:
         #calculate the natural mass isotopomer distrubutions for each fragment
         fragment_list = list(dict.keys(metabolite_dict[metabolite_name]['fragments']))
         for z in fragment_list:
-            metabolite_dict[metabolite]['fragments'][z]['natural_mid'] = calc_natural_mid.calc_natural_mid(metabolite_dict[metabolite]['fragments'][z]['formula'])
+            metabolite_dict[metabolite_name]['fragments'][z]['natural_mid'] = calc_natural_mid.calc_natural_mid(metabolite_dict[metabolite_name]['fragments'][z]['formula'])
 
     return(metabolite_dict,metabolite_list)
