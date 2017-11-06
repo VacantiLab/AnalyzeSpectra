@@ -8,8 +8,8 @@ def FindBorders(indexes,y_base_cor,sat):
     #for each peak index, find the border prior to and following the corresponding peak
     j=0
     for i in indexes:
-        #for each peak, the initial border candidates are 10% of the peak height
-        border_candidates = 0.1*y_base_cor[i] >= y_base_cor
+        #for each peak, the initial border candidates are 50% of the peak height
+        border_candidates = 0.5*y_base_cor[i] >= y_base_cor
 
         #find the initial beginning border by finding the nearest border candidate prior to the peak index
         bor_cand_prior = border_candidates[0:i] #find all of the border candidates prior to the peak

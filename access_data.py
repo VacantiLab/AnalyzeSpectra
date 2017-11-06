@@ -127,9 +127,15 @@ for filename in files:
 
     #find ri of each peak
     peak_ri_dict = dict()
+    peak_start_ri_dict = dict()
+    peak_end_ri_dict = dict()
     for mz_val in mz_vals:
         peak_loc_ind = peak_i_dict[mz_val]
+        peak_start_ind = peak_start_i_dict[mz_val]
+        peak_end_ind = peak_end_i_dict[mz_val]
         peak_ri_dict[mz_val] = ri_array[peak_loc_ind]
+        peak_start_ri_dict[mz_val] = ri_array[peak_start_ind]
+        peak_end_ri_dict[mz_val] = ri_array[peak_end_ind]
 
     #invert the ic_smooth_dict so that retention indices are the keys and a vector of intensities for each mz are the items
     ic_smooth_dict_timekeys = get_ri_keys_dict.get_ri_keys_dict(ic_smooth_dict,ri_array,mz_vals)
@@ -177,6 +183,8 @@ for filename in files:
     file_data[sample_name]['peak_indices'] = peak_i_dict
     file_data[sample_name]['peak_ris'] = peak_ri_dict
     file_data[sample_name]['peak_maxes'] = peak_max_dict
+    file_data[sample_name]['peak_start_ris'] = peak_start_ri_dict
+    file_data[sample_name]['peak_end_ris'] = peak_end_ri_dict
 
     i=i+1
 
