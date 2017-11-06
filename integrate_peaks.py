@@ -72,7 +72,7 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
 
             #if there are no peaks found, the metabolite is not present and all mid entries are 0
             if metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['tot_area'] == 0:
-                atom_quantity = 6 #atoms that can acquire a lable (set at 6 for now), should come from fragment library
+                atom_quantity = 3 #atoms that can acquire a lable (set at 6 for now), should come from fragment library
                 n_mid_entries = atom_quantity + 1 #accounts for M0
                 metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['mid'] = metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['areas']
                 metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['mid_c'] = np.zeros(n_mid_entries)

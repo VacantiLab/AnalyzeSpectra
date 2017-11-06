@@ -27,7 +27,7 @@ def create_correction_matrix(formula):
 
     #temporary for citrate!!!
     #need to replace this with the number of metabolite atoms in the formula
-    atom_quantity = 6
+    atom_quantity = 3
 
     #add the "heavy atom to the end of the broken formula array", initially its quantity is 0
     broken_formula = np.append(broken_formula,np.array(['Hv','0']))
