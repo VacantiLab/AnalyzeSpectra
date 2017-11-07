@@ -85,16 +85,17 @@ def fragment_library():
                                         fragment_line_item = fragment_line_split[1].lstrip().rstrip()
                                         frag_formula = fragment_line_item
                                         metabolite_dict[metabolite_name]['fragments'][fragment_name]['formula'] = frag_formula
-                                        metabolite_dict[metabolite_name]['fragments'][fragment_name]['CM_i'] = create_correction_matrix.create_correction_matrix(frag_formula)
-                                    #when at the appropriate line, record the mz's that will be integrated
+                                    #when at the appropriate line, record the atoms in the fragment that are part of the original metabolite
                                     if fragment_line_n == metabolite_line_n + 2:
-                                        fragment_line_item = fragment_line_split[1].lstrip().rstrip()
-                                        mzs_to_integrate = np.fromstring(fragment_line_item,dtype=float,sep=' ')
-                                        metabolite_dict[metabolite_name]['fragments'][fragment_name]['mzs_to_integrate'] = mzs_to_integrate
-                                    if fragment_line_n == metabolite_line_n + 3:
                                         fragment_line_item = fragment_line_split[1].lstrip().rstrip()
                                         metabolite_atoms = fragment_line_item
                                         metabolite_dict[metabolite_name]['fragments'][fragment_name]['metabolite_atoms'] = metabolite_atoms
+                                        metabolite_dict[metabolite_name]['fragments'][fragment_name]['CM_i'] = create_correction_matrix.create_correction_matrix(frag_formula)
+                                    #when at the appropriate line, record the mz's that will be integrated
+                                    if fragment_line_n == metabolite_line_n + 3:
+                                        fragment_line_item = fragment_line_split[1].lstrip().rstrip()
+                                        mzs_to_integrate = np.fromstring(fragment_line_item,dtype=float,sep=' ')
+                                        metabolite_dict[metabolite_name]['fragments'][fragment_name]['mzs_to_integrate'] = mzs_to_integrate
 
 
     #get a list of all of the metabolites
