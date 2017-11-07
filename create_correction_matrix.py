@@ -1,4 +1,4 @@
-def create_correction_matrix(formula):
+def create_correction_matrix(formula,metabolite_atoms):
 
     import importlib
     import pdb
@@ -8,6 +8,11 @@ def create_correction_matrix(formula):
     import re
     import calc_natural_mid
     importlib.reload(calc_natural_mid)
+    import quantity_of_atom
+    importlib.reload(quantity_of_atom)
+
+    #define the atom that can acquire a lable
+    atom_labeled = 'C'
 
     #break the formula up so atoms and quantities are consecutive entries in a numpy array
     broken_formula = np.array(re.findall('[A-Z][a-z]?|[0-9]+', formula))
@@ -16,18 +21,13 @@ def create_correction_matrix(formula):
     #        all components are strings
     n_formula_entries = len(broken_formula)
 
-    #the number of rows of the correction matrix is equal to the quantity of the atom being corrected for
-    #    this should really be the number of that atom in the metabolite, will shorten run time and give more accurate results
-    #    metabolite atoms need to be recorded in the library
-    atom_index = np.where(broken_formula=='C')[0][0]
-    atom_quantity_index = atom_index+1
-    atom_quantity = broken_formula[atom_quantity_index]
-    atom_quantity = atom_quantity.astype(np.int)
-    n_rows = atom_quantity
+    #find the index of the number of the atom which can acquire a label in the formula for the full fragment
+    #    it is used in creating the correction matrix below because successive quantities of this atom need to be subtracted and a heavy atom put in its place
+    atom_index = np.where(broken_formula==atom_labeled)[0][0]
+    atom_quantity_index = atom_index+1 #refering to full fragment
 
-    #temporary for citrate!!!
-    #need to replace this with the number of metabolite atoms in the formula
-    atom_quantity = 3
+    #the number of rows of the correction matrix is equal to the quantity of the atom being corrected for that are in the fragment and the original metabolite
+    atom_quantity = quantity_of_atom.quantity_of_atom(metabolite_atoms,atom_labeled) #this does not refer to the full fragment!
 
     #add the "heavy atom to the end of the broken formula array", initially its quantity is 0
     broken_formula = np.append(broken_formula,np.array(['Hv','0']))

@@ -90,7 +90,7 @@ def fragment_library():
                                         fragment_line_item = fragment_line_split[1].lstrip().rstrip()
                                         metabolite_atoms = fragment_line_item
                                         metabolite_dict[metabolite_name]['fragments'][fragment_name]['metabolite_atoms'] = metabolite_atoms
-                                        metabolite_dict[metabolite_name]['fragments'][fragment_name]['CM_i'] = create_correction_matrix.create_correction_matrix(frag_formula)
+                                        metabolite_dict[metabolite_name]['fragments'][fragment_name]['CM_i'] = create_correction_matrix.create_correction_matrix(frag_formula,metabolite_atoms)
                                     #when at the appropriate line, record the mz's that will be integrated
                                     if fragment_line_n == metabolite_line_n + 3:
                                         fragment_line_item = fragment_line_split[1].lstrip().rstrip()
