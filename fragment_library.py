@@ -67,7 +67,7 @@ def fragment_library():
                         #    if this is the case, read through the file again to record the fragment information
                         #    you must not have passed a blank space line prior to seeing the fragment indicator, elsewise you are on a new metabolite
                         #    you must be passed the current metabolite indicator line, elsewise you are on the previous metabolite
-                        if (metabolite_line_title == 'fragment') & before_blankline_border & (metabolite_line_n > file_line_n):
+                        if (metabolite_line_title == 'FRAGMENT') & before_blankline_border & (metabolite_line_n > file_line_n):
                             with open(file_name_read, 'r') as fragment_read_file:
                                 fragment_line_n = 0
                                 for fragment_line in fragment_read_file:

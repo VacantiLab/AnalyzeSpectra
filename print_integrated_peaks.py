@@ -31,7 +31,7 @@ def print_integrated_peaks(file_directory,samples,metabolite_list,file_data):
             file_object_text.write('\t')
             for sample_name in samples:
                 area_to_round = file_data[sample_name]['metabolites'][metabolite_iter]['fragments'][fragment]['tot_area']
-                area_to_print = np.round(area_to_round,decimals=3)
+                area_to_print = np.round(area_to_round,decimals=0)
                 area = str(area_to_print)
                 file_object_text.write(area)
                 file_object_text.write('\t')

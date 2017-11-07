@@ -1,4 +1,4 @@
-def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,metabolite_dict,metabolite_list,ri_array):
+def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,metabolite_dict,metabolite_list,ri_array,mz_vals):
     import importlib #allows fresh importing of modules
     import pdb #python debugger
     import numpy as np #this is numpy, allows for data frame and matrix handling
@@ -32,17 +32,19 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
 
             for i in mzs_to_integrate:
                 #find the index of the peak corresponding to the given rt in the mz curve (the first peak is 0, the second 1, the third 2, ...)
-                possible_peak_starts = np.where(peak_start_t_dict[i] < rt)[0]
-                if len(possible_peak_starts) > 0:
-                    prosp_peak_start_nm = max(possible_peak_starts)
-                if len(possible_peak_starts) == 0:
-                    peak_present = False
+                peak_present = False
+                if i in mz_vals: #it is possible there were no values above threshhold recorded in the ms scan so there would be no entry for that mz in the data dictionary
+                    possible_peak_starts = np.where(peak_start_t_dict[i] < rt)[0]
+                    if len(possible_peak_starts) > 0:
+                        prosp_peak_start_nm = max(possible_peak_starts)
+                    if len(possible_peak_starts) == 0:
+                        peak_present = False
 
-                #find the time at which the peak is finished eluting
-                if len(possible_peak_starts) > 0:
-                    prosp_peak_end_t = peak_end_t_dict[i][prosp_peak_start_nm]
-                    #if the peak ends after the retention time, then there is a peak (the the proposed peak was required to start before the retention time two lines ago)
-                    peak_present = rt < prosp_peak_end_t
+                    #find the time at which the peak is finished eluting
+                    if len(possible_peak_starts) > 0:
+                        prosp_peak_end_t = peak_end_t_dict[i][prosp_peak_start_nm]
+                        #if the peak ends after the retention time, then there is a peak (the the proposed peak was required to start before the retention time two lines ago)
+                        peak_present = rt < prosp_peak_end_t
 
                 #if there is no peak detected for that mz_to_integrate of the fragment, record zero as the peak area
                 if not peak_present:

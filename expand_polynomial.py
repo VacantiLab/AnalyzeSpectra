@@ -16,10 +16,7 @@ def expand_polynomial(a,b):
     import numpy as np
     import pandas
     import importlib #allows fresh importing of modules
-    #importlib.reload(ImportModules) #reload the custom function in case it was changed
-
-    #Import required modules
-    #pdb,os,re,importlib,plotly,importlib,peakutils,bokeh,np,pandas,copy,scipy,Dataset,remove_repeats,savitzky_golay,FindBorders,ExtendBounds,fragment_library = ImportModules.ImportModules()
+    import pdb
 
     #redefine the input polynomial python arrays as numpy row matrices
     mid_a = np.matrix(a) #mass isotopomer distribution for a
@@ -58,6 +55,11 @@ def expand_polynomial(a,b):
     #combine the relative mass isotopmer abundances for ab combinations with the same mass isotopomer mz value
     grouped = factored.groupby('m_isotopomer')
     factored = grouped.aggregate(np.sum)
+
+    #shorten factored to remove negligible values
+    n_factored = len(factored)
+    if n_factored > 10:
+        factored = factored.iloc[0:10]
 
     #return the DataFrame containing the mass isotopomer distrubution of the molecule ab
     return(factored)
