@@ -141,7 +141,9 @@ for filename in files:
     ic_smooth_dict_timekeys = get_ri_keys_dict.get_ri_keys_dict(ic_smooth_dict,ri_array,mz_vals)
 
     #calculate the coelution dictionary with the retention indices as keys
-    coelut_dict = calc_coelut.calc_coelut(peak_ri_dict,mz_vals,ri_array)
+    #    coelution_dict has keys of ri's and arrays of mz's whoe peaks elute at those ri's
+    #    coelution_dict_val is the same except the arrays are the corresponding intensity values of the eluting peaks at the ri of the key 
+    coelut_dict,coelut_dict_val = calc_coelut.calc_coelut(peak_ri_dict,mz_vals,ri_array,ic_smooth_dict)
 
     #integrate fragments in library
     print('    integrating fragment mass isotopomers listed in library...')
