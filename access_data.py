@@ -142,7 +142,7 @@ for filename in files:
 
     #calculate the coelution dictionary with the retention indices as keys
     #    coelution_dict has keys of ri's and arrays of mz's whoe peaks elute at those ri's
-    #    coelution_dict_val is the same except the arrays are the corresponding intensity values of the eluting peaks at the ri of the key 
+    #    coelution_dict_val is the same except the arrays are the corresponding intensity values of the eluting peaks at the ri of the key
     coelut_dict,coelut_dict_val = calc_coelut.calc_coelut(peak_ri_dict,mz_vals,ri_array,ic_smooth_dict)
 
     #integrate fragments in library
