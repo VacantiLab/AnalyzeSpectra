@@ -46,15 +46,15 @@ for mz in coelution_array:
 mz_groups = list(dict.keys(groups))
 
 #calculate the signature array
-#    this array will have the initial mz value of a group followed by the relative abundance of each other member
-#    for example a signature array of 175 0.25 0.1 0.02 233 0.4 0.1 means there are 2 groups: 175 176 177 178 and 233 234 235
+#    this array will have the initial mz value of a group followed by the relative abundance of each member
+#    for example a signature array of 175 0.63 0.25 0.1 0.02 233 0.5 0.4 0.1 means there are 2 groups: 175 176 177 178 and 233 234 235
 #        the corresponding relative abundances are 0.63 0.25 0.1 0.02 and 0.5 0.4 0.1
 signature_array = np.array([])
 for mz in mz_groups:
     signature_array = np.append(signature_array,mz)
     values_array = values[mz]
     values_array_norm = values_array/np.sum(values_array)
-    indices_to_iterate = np.arange(1,len(values_array),1) #start at 1 because you do not want the 0 index here
+    indices_to_iterate = np.arange(0,len(values_array),1) #start at 1 because you do not want the 0 index here
     for i in indices_to_iterate:
         signature_array = np.append(signature_array,values_array_norm[i])
 

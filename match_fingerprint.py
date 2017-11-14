@@ -1,16 +1,24 @@
-def match_fingerprint(ri_array,coelut_dict,coelut_dict_val):
+def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict):
     import numpy as np
     import importlib
     import pdb
     import find_closest
     importlib.reload(find_closest)
 
-    #create the fingerprint dictionary
-    #    each key is the first mz of a group of mz values
-    #    the values are the fractional abundance of the first mz and subsequent integer increments
+    #specify the metabolite - will be done as input to the function later
+    metabolite = 'lactate'
+
+    #determine the metabolite fingerprint array
+    metabolite_peak_profile = metabolite_dict[metabolite]['peak_profile']
+
+    #convert the peak profile stored in the library into the metabolite fingerprint dictionary used by this function
     fingerprint = dict()
-    fingerprint[261] = np.array([0.059,0.016,0.022,0.698,0.137,0.061,0.076])
-    fingerprint[233] = np.array([0.057,0.036,0.712,0.139,0.057])
+    for item in metabolite_peak_profile:
+        if item > 1:
+            fingerprint[item] = np.array([])
+            current_key = item
+        if item <= 1:
+            fingerprint[current_key] = np.append(fingerprint[current_key],item)
 
     #define the retention index of the metabolite as found in the library
     metabolite_ri = 1388
@@ -54,6 +62,22 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val):
                 #for each group of mz values, the key name is the first mz
                 #the ri's where all members of the group are eluting is recorded
 
-    #next objective is to find the times common to all members of metabolite_elut_ri_dict
-    #also have a mechanism to say the metabolite is not present
+    #find the retention indices where all groups are present
+    j = 0
+    for mz in group_mz_list:
+        if j==0:
+            intersection = metabolite_elut_ri_dict[mz]
+        if not j==0:
+            intersection = np.intersect1d(intersection,metabolite_elut_ri_dict[mz])
+        j = j+1
+
+    #report if the metabolite is present and if so, what its observed retention index is
+    metabolite_present = False
+    metabolite_retention_index = 0
+    if len(intersection) > 0:
+        metabolite_present = True
+        metabolite_retention_index = np.median(intersection)
+
     pdb.set_trace()
+
+    return(metabolite_present,metabolite_retention_index)
