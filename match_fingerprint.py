@@ -51,6 +51,8 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val):
             lib_in_samp = np.all(lib_in_samp_ind)
             if lib_in_samp:
                 metabolite_elut_ri_dict[mz] = np.append(metabolite_elut_ri_dict[mz],ri)
+                #for each group of mz values, the key name is the first mz
+                #the ri's where all members of the group are eluting is recorded
 
     #next objective is to find the times common to all members of metabolite_elut_ri_dict
     #also have a mechanism to say the metabolite is not present
