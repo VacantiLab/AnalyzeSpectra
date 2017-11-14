@@ -21,7 +21,7 @@ root.withdraw() #closes the tkinter GUI window because the rest of the program i
 file_directory = askdirectory() + '/'
 root.update() #required so the directory request dialog box disappears and does not freeze
 
-filename = 'P02_SUM149_NT_siRNA.CDF'
+filename = 'tbdms01_t47d_wt.CDF'
 sample_name = filename.split('.')[0]
 output_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'

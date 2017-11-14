@@ -24,12 +24,14 @@ import fragment_library
 importlib.reload(fragment_library)
 import print_integrated_peaks
 importlib.reload(print_integrated_peaks)
-import find_ri
-importlib.reload(find_ri)
+import find_ri_conversion
+importlib.reload(find_ri_conversion)
 import get_ri_keys_dict
 importlib.reload(get_ri_keys_dict)
 import calc_coelut
 importlib.reload(calc_coelut)
+import convert_rt_ri
+importlib.reload(convert_rt_ri)
 
 #ask for the directory where the netCDF and library.txt files are
 root = Tk()
@@ -121,9 +123,16 @@ for filename in files:
     #    note it is not smoothed because it does not really make sense to smooth total ion count data
     ic_smooth_dict['tic'] = tic
 
-    #transform scan acquisition times to retention indices
+    #the first sample must always be alkanes - plan to make this optional later
+    #find the retention time to retention index conversion
+    #    one array is retention indices and the other is corresponding retention times
     if sample_name == 'alkanes':
-        ri_array = find_ri.find_ri(ic_smooth_dict,mz_vals,sat)
+        ri_sat,ri_rec = find_ri_conversion.find_ri_conversion(ic_smooth_dict,mz_vals,sat)
+
+    #convert the retention times of the current sample to retention indices
+    #    doing this for each sample allows for samples with differing quantities of scan acquisition times
+    #    to be analyzed with the same alkane sample for retention index calculation
+    ri_array = convert_rt_ri.convert_rt_ri(ri_sat,ri_rec,sat)
 
     #find ri of each peak
     peak_ri_dict = dict()

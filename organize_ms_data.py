@@ -17,7 +17,7 @@ def organize_ms_data(file_directory):
     ic = ncdf.variables['intensity_values'] #all of the ion count measurements for each scan. scans are concatenated into a single array
     mz = ncdf.variables['mass_values'] #all of the mz values for each of the 'intensity_values', all scans are concatenated as a single array
     si = ncdf.variables['scan_index'] #marks the python index of the starting position of each scan within the 'intensity_values'
-    sat = list(ncdf.variables['scan_acquisition_time']) #the scan acquisition times corresponding to each scan (over mz values)
+    sat = np.array(list(ncdf.variables['scan_acquisition_time'])) #the scan acquisition times corresponding to each scan (over mz values)
     tic = np.array(ncdf.variables['total_intensity']) #store the total ion count for each scan
     n_scns = len(sat) #the number of scans
     n_mz = len(mz) #the total number of recorded values
