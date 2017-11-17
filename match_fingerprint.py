@@ -1,9 +1,13 @@
-def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict):
+def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_vals):
     import numpy as np
     import importlib
     import pdb
     import find_closest
     importlib.reload(find_closest)
+
+    #find the mz index range of the scan
+    mz_scan_start = mz_vals[0]
+    mz_scan_end = mz_vals[len(mz_vals)-1]
 
     #specify the metabolite - will be done as input to the function later
     metabolite = 'lactate'
@@ -19,6 +23,9 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict):
             current_key = item
         if item <= 1:
             fingerprint[current_key] = np.append(fingerprint[current_key],item)
+
+    #trim the peak profile so that entries outiside of the mz scan range are not considered in the match
+    test_var = trim_peak_profile(1,4)
 
     #define the retention index of the metabolite as found in the library
     metabolite_ri = 1388
@@ -81,3 +88,7 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict):
     pdb.set_trace()
 
     return(metabolite_present,metabolite_retention_index)
+
+def trim_peak_profile(a_var,b_var):
+    c_var = a_var + b_var
+    return(c_var)
