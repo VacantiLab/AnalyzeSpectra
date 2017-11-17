@@ -24,6 +24,11 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
         if item <= 1:
             fingerprint[current_key] = np.append(fingerprint[current_key],item)
 
+    #test a fingerprint
+    #fingerprint = dict()
+    #fingerprint[148] = np.array([0.3,0.4,0.01,0.04])
+    #fingerprint[233] = np.array([0.21,0.41,0.012,0.045])
+
     #trim the peak profile so that entries outiside of the mz scan range are not considered in the match
     fingerprint = trim_peak_profile(fingerprint,mz_scan_start,mz_scan_end)
 
@@ -92,30 +97,37 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
 #Supporting Functions##############################
 def trim_peak_profile(fingerprint,mz_scan_start,mz_scan_end):
 
+    import numpy as np
+    import pdb
+
     #retrieve a list of all mz values beginning a group
     group_mz_list = list(dict.keys(fingerprint))
 
     #iterate througn those values
     for mz in group_mz_list:
-        #if you find an mz value beginning a group that is smaller than the smallest mz value scanned, examine it further
+        #if you find an mz value beginning a group that is smaller than the smallest mz value scanned
+        #    remove the key and all associated values if all associated values are less than the first scanned mz value
+        #    if the mz key value (group start value) is less than the scan start but there are mz values within the group that are not
+        #        remove all values smaller than the mz scan start, renormalize the group, and rename the group (the key) after the new smallest value
         if mz < mz_scan_start:
-            group_mz = fingerpring[mz] #retrieve an array of all of the mz values in that group
+            group_mz = fingerprint[mz] #retrieve an array of all of the mz values in that group
             n_group_mz = len(group_mz) #retrieve the number of mz values in that group
             #iterate through each individual value in that group
+            #keep track of the number of values that must be removed (those less than the first mz value scanned)
+            remove_count = 0
             for i in np.arange(0,n_group_mz):
-                #keep track of the number of values that must be removed (those less than the first mz value scanned)
-                remove_count = 0
                 if mz+i < mz_scan_start:
                     remove_count = remove_count + 1
             #remove the values corresponding to thouse found to be smaller than the smallest value scnaned
-            indices_to_delete = np.range(0,remove_count)
+            indices_to_delete = np.arange(0,remove_count)
             group_mz = np.delete(group_mz,indices_to_delete)
             #update the dicionary key entry appropriately
             if len(group_mz) == 0: #remove the key entirely if it corresponds to an empty array
-                fingerprint[mz] = fingerprint.pop[mz,None]
+                del fingerprint[mz]
             if len(group_mz) > 0: #rename the entry after the smallest (first) value
-                new_key = group_mz[0]
-                fingerprint[new_key] = fingerprint.pop[mz]
-    return(fingerprint)
+                fingerprint[mz] = group_mz/np.sum(group_mz)
+                new_key = mz + remove_count
+                fingerprint[new_key] = fingerprint.pop(mz)
 
-    return(c_var)
+    
+    return(fingerprint)
