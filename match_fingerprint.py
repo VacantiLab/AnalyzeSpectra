@@ -25,7 +25,7 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
             fingerprint[current_key] = np.append(fingerprint[current_key],item)
 
     #trim the peak profile so that entries outiside of the mz scan range are not considered in the match
-    test_var = trim_peak_profile(1,4)
+    fingerprint = trim_peak_profile(fingerprint,mz_scan_start,mz_scan_end)
 
     #define the retention index of the metabolite as found in the library
     metabolite_ri = 1388
@@ -89,6 +89,33 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
 
     return(metabolite_present,metabolite_retention_index)
 
-def trim_peak_profile(a_var,b_var):
-    c_var = a_var + b_var
+#Supporting Functions##############################
+def trim_peak_profile(fingerprint,mz_scan_start,mz_scan_end):
+
+    #retrieve a list of all mz values beginning a group
+    group_mz_list = list(dict.keys(fingerprint))
+
+    #iterate througn those values
+    for mz in group_mz_list:
+        #if you find an mz value beginning a group that is smaller than the smallest mz value scanned, examine it further
+        if mz < mz_scan_start:
+            group_mz = fingerpring[mz] #retrieve an array of all of the mz values in that group
+            n_group_mz = len(group_mz) #retrieve the number of mz values in that group
+            #iterate through each individual value in that group
+            for i in np.arange(0,n_group_mz):
+                #keep track of the number of values that must be removed (those less than the first mz value scanned)
+                remove_count = 0
+                if mz+i < mz_scan_start:
+                    remove_count = remove_count + 1
+            #remove the values corresponding to thouse found to be smaller than the smallest value scnaned
+            indices_to_delete = np.range(0,remove_count)
+            group_mz = np.delete(group_mz,indices_to_delete)
+            #update the dicionary key entry appropriately
+            if len(group_mz) == 0: #remove the key entirely if it corresponds to an empty array
+                fingerprint[mz] = fingerprint.pop[mz,None]
+            if len(group_mz) > 0: #rename the entry after the smallest (first) value
+                new_key = group_mz[0]
+                fingerprint[new_key] = fingerprint.pop[mz]
+    return(fingerprint)
+
     return(c_var)
