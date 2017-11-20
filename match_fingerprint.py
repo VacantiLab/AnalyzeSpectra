@@ -12,6 +12,9 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
     #specify the metabolite - will be done as input to the function later
     metabolite = 'lactate'
 
+    #define the retention index of the metabolite as found in the library
+    metabolite_ri = 1388
+
     #determine the metabolite fingerprint array
     metabolite_peak_profile = metabolite_dict[metabolite]['peak_profile']
 
@@ -25,15 +28,18 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
             fingerprint[current_key] = np.append(fingerprint[current_key],item)
 
     #test a fingerprint
-    #fingerprint = dict()
-    #fingerprint[148] = np.array([0.3,0.4,0.01,0.04])
-    #fingerprint[233] = np.array([0.21,0.41,0.012,0.045])
+    fingerprint = dict()
+    fingerprint[148] = np.array([0.3,0.4,0.01,0.04])
+    fingerprint[233] = np.array([0.21,0.41,0.012,0.045])
+    fingerprint[647] = np.array([0.2,0.4,0.8])
+    fingerprint[645] = np.array([0.4,0.5,0.9,0.8,0.1])
+    fingerprint[648] = np.array([1,4,5,6])
 
     #trim the peak profile so that entries outiside of the mz scan range are not considered in the match
+    #    if an mz key is below the mz scan range, remove member entries that are below the scan range and rename the key of the group
+    #    if the mz key is above the mz scan range, remove it and all members
+    #    remove all members of any mz group which correspond to mz values above the scan range
     fingerprint = trim_peak_profile(fingerprint,mz_scan_start,mz_scan_end)
-
-    #define the retention index of the metabolite as found in the library
-    metabolite_ri = 1388
 
     #define the window around the library retention index the metabolite is allowed to be found
     ri_window = 5
@@ -85,12 +91,10 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
 
     #report if the metabolite is present and if so, what its observed retention index is
     metabolite_present = False
-    metabolite_retention_index = 0
+    metabolite_retention_index = np.array([])
     if len(intersection) > 0:
         metabolite_present = True
         metabolite_retention_index = np.median(intersection)
-
-    pdb.set_trace()
 
     return(metabolite_present,metabolite_retention_index)
 
@@ -105,6 +109,8 @@ def trim_peak_profile(fingerprint,mz_scan_start,mz_scan_end):
 
     #iterate througn those values
     for mz in group_mz_list:
+        #keep track if the mz key is removed or renamed so a removed key isn't referenced later
+        mz_key_removed_renamed = False
         #if you find an mz value beginning a group that is smaller than the smallest mz value scanned
         #    remove the key and all associated values if all associated values are less than the first scanned mz value
         #    if the mz key value (group start value) is less than the scan start but there are mz values within the group that are not
@@ -124,10 +130,32 @@ def trim_peak_profile(fingerprint,mz_scan_start,mz_scan_end):
             #update the dicionary key entry appropriately
             if len(group_mz) == 0: #remove the key entirely if it corresponds to an empty array
                 del fingerprint[mz]
+                mz_key_removed_renamed = True
             if len(group_mz) > 0: #rename the entry after the smallest (first) value
                 fingerprint[mz] = group_mz/np.sum(group_mz)
                 new_key = mz + remove_count
                 fingerprint[new_key] = fingerprint.pop(mz)
+                mz_key_removed_renamed = True
 
-    
+        #if the current mz key is higher than the highest mz scanned, remove it from the metabolite fingerprint
+        if (mz > mz_scan_end) & (not mz_key_removed_renamed):
+            del fingerprint[mz]
+            mz_key_removed_renamed = True
+
+        #if the current mz key is lower than the highest mz scanned
+        #    check to see if any of the members of that group are higher than the highest mz scanned
+        #    remove them from the metabolite profile if they are
+        if (mz <= mz_scan_end) & (not mz_key_removed_renamed):
+            group_mz = fingerprint[mz]
+            n_group_mz = len(group_mz)
+            indices_to_delete = np.array([])
+            j = 0
+            for i in np.arange(0,n_group_mz):
+                if mz + i > mz_scan_end:
+                    indices_to_delete = np.append(indices_to_delete,j)
+                j = j+1
+
+            group_mz = np.delete(group_mz,indices_to_delete)
+            fingerprint[mz] = group_mz
+
     return(fingerprint)

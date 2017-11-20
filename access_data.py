@@ -34,10 +34,13 @@ import convert_rt_ri
 importlib.reload(convert_rt_ri)
 
 #ask for the directory where the netCDF and library.txt files are
-root = Tk()
-root.withdraw() #closes the tkinter GUI window because the rest of the program is not run through the GUI
-file_directory = askdirectory() + '/'
-root.update() #required so the directory request dialog box disappears and does not freeze
+#root = Tk()
+#root.withdraw() #closes the tkinter GUI window because the rest of the program is not run through the GUI
+#file_directory = askdirectory() + '/'
+#root.update() #required so the directory request dialog box disappears and does not freeze
+
+#manually enter file directory because tkinter is giving troubles when used with pdb.set_trace()
+file_directory = '/Users/nate/Dropbox/Research/Lehtio_Laboratory/Projects/metabolite_integration_tool/netcdf_test/'
 
 #Get a list of all of the files in the specified directory
 files = listdir(file_directory)
