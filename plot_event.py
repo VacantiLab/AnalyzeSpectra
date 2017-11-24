@@ -1,29 +1,27 @@
+import importlib
 import numpy as np
 import pickle #allows for saving of dictionary files
 import copy
 import pdb
 import re
+import get_directory
+importlib.reload(get_directory)
 
 from bokeh.layouts import column, row, widgetbox, layout
 from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput, Select
 from bokeh.plotting import Figure, output_file, show, reset_output
 from bokeh.io import curdoc
 
-from tkinter import Tk #allows for asking for a directory through a GUI
-from tkinter.filedialog import askdirectory #allows for asking for a directory through a GUI
-
 mz_plot = ['tic','blank','blank','blank']
 mz_colors = ['red','blue','green','purple']
 
-#ask for the directory where the netCDF and library.txt files are
-root = Tk()
-root.withdraw() #closes the tkinter GUI window because the rest of the program is not run through the GUI
-file_directory = askdirectory() + '/'
-root.update() #required so the directory request dialog box disappears and does not freeze
+#retrieve file directory
+retrieve_directory_method = 'manual'
+file_directory = get_directory.get_directory(retrieve_directory_method)
 
-filename = 'P02_SUM149_NT_siRNA.CDF'
+filename = 'tbdms01_t47d_wt.CDF'
 sample_name = filename.split('.')[0]
-output_data_file = file_directory + 'processed_data.p'
+input_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'
 
 output_file(output_plot_file, title=sample_name, mode='inline')
@@ -32,7 +30,7 @@ output_file(output_plot_file, title=sample_name, mode='inline')
 #        CDN loading is the default and requires an internet connection
 plot=Figure(title='ion counts vs. time', x_axis_label='retention index',y_axis_label='ion counts',plot_width=950,plot_height=300)
 
-file_object = open(output_data_file,'rb')
+file_object = open(input_data_file,'rb')
 file_data = pickle.load(file_object)
 file_object.close()
 

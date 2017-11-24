@@ -1,11 +1,33 @@
 
 import numpy as np
+import importlib
 from tkinter import Tk #allows for asking for a directory through a GUI
 from tkinter.filedialog import askdirectory #allows for asking for a directory through a GUI
+import find_closest
+importlib.reload(find_closest)
+
+#retrieve the file_directory
+retrieve_directory_method = 'manual'
+file_directory = get_directory.get_directory(retrieve_directory_method)
+
+#initialize the filename and retention index for testing the function
+filename = 'tbdms01_t47d_wt.CDF'
+sample_name = 'tbdms01_t47d_wt'
+input_data_file = file_directory + 'processed_data.p'
+ri = 1393
+ri_array = file_data[sample_name]['ri']
+
+#open the data specified by the filename
+file_object = open(input_data_file,'rb')
+file_data = pickle.load(file_object)
+file_object.close()
+
+#find the closest recorded retention index to that specified
+ri_closest = find_closest.find_closest(ri,ri_array)[1]
 
 #initialize coelution arrays for testing the function
-coelution_array = np.array([174,175,176,177,178,180,192,233,234,235,236,303,307])
-coelution_val = np.array([1003,506,102,23,500,607,3067,1001,200,43,76,89,87])
+coelution_array = file_data[sample_name]['coelution_dictionary'][ri_closest]
+coelution_val = file_data[sample_name]['coelution_dicionary_values'][ri_closest]
 
 #initialize the array containing the peaks you considered when looking for groups
 peaks_considered = np.array([])
@@ -67,12 +89,6 @@ for item in signature_array:
     if item < 1:
         item = np.round(item,3)
     sig_array_str = np.append(sig_array_str,item.astype('str'))
-
-#ask for the directory where to print the fragment signature
-root = Tk()
-root.withdraw() #closes the tkinter GUI window because the rest of the program is not run through the GUI
-file_directory = askdirectory() + '/'
-root.update() #required so the directory request dialog box disappears and does not freeze
 
 #write to the output file
 file_path = file_directory + 'fragment_signature.txt'

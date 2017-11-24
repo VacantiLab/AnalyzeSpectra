@@ -8,8 +8,6 @@ import numpy as np #this is numpy, allows for data frame and matrix handling
 import pandas #a module which allows for making data frames
 import copy
 import pickle #allows for saving of dictionary files
-from tkinter import Tk #allows for asking for a directory through a GUI
-from tkinter.filedialog import askdirectory #allows for asking for a directory through a GUI
 import organize_ms_data
 importlib.reload(organize_ms_data)
 import process_ms_data
@@ -32,15 +30,13 @@ import calc_coelut
 importlib.reload(calc_coelut)
 import convert_rt_ri
 importlib.reload(convert_rt_ri)
+import get_directory
+importlib.reload(get_directory)
 
-#ask for the directory where the netCDF and library.txt files are
-#root = Tk()
-#root.withdraw() #closes the tkinter GUI window because the rest of the program is not run through the GUI
-#file_directory = askdirectory() + '/'
-#root.update() #required so the directory request dialog box disappears and does not freeze
 
-#manually enter file directory because tkinter is giving troubles when used with pdb.set_trace()
-file_directory = '/Users/nate/Dropbox/Research/Lehtio_Laboratory/Projects/metabolite_integration_tool/netcdf_test/'
+#retrieve file directory
+retrieve_directory_method = 'manual'
+file_directory = get_directory.get_directory(retrieve_directory_method)
 
 #Get a list of all of the files in the specified directory
 files = listdir(file_directory)
@@ -199,6 +195,8 @@ for filename in files:
     file_data[sample_name]['peak_maxes'] = peak_max_dict
     file_data[sample_name]['peak_start_ris'] = peak_start_ri_dict
     file_data[sample_name]['peak_end_ris'] = peak_end_ri_dict
+    file_data[sample_name]['coelution_dictionary'] = coelut_dict
+    file_data[sample_name]['coelution_dicionary_values'] = coelut_dict_val
 
     i=i+1
 
