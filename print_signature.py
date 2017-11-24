@@ -1,10 +1,20 @@
 
 import numpy as np
 import importlib
+import pickle
+import pdb
 from tkinter import Tk #allows for asking for a directory through a GUI
 from tkinter.filedialog import askdirectory #allows for asking for a directory through a GUI
 import find_closest
 importlib.reload(find_closest)
+import get_directory
+importlib.reload(get_directory)
+
+#the access_data.py script must be run first to produce the necessary input file
+#This function finds consecutive mz groups of 3 or more that are eluting at the specified retention index
+#    additionally, the values at this retention index must be decreasing as mz increases within a group
+#The output of this function is a text file containing the metabolite signature
+#    mz_value1 group_tic1 mid1_1 mid1_2 mid1_3 mz_value2 group_tic2 mid2_1 mid2_2 mid2_3 mid2_4 ...
 
 #retrieve the file_directory
 retrieve_directory_method = 'manual'
@@ -15,12 +25,14 @@ filename = 'tbdms01_t47d_wt.CDF'
 sample_name = 'tbdms01_t47d_wt'
 input_data_file = file_directory + 'processed_data.p'
 ri = 1393
-ri_array = file_data[sample_name]['ri']
 
 #open the data specified by the filename
 file_object = open(input_data_file,'rb')
 file_data = pickle.load(file_object)
 file_object.close()
+
+#retrieve the retention index array
+ri_array = file_data[sample_name]['ri']
 
 #find the closest recorded retention index to that specified
 ri_closest = find_closest.find_closest(ri,ri_array)[1]
@@ -28,6 +40,7 @@ ri_closest = find_closest.find_closest(ri,ri_array)[1]
 #initialize coelution arrays for testing the function
 coelution_array = file_data[sample_name]['coelution_dictionary'][ri_closest]
 coelution_val = file_data[sample_name]['coelution_dicionary_values'][ri_closest]
+
 
 #initialize the array containing the peaks you considered when looking for groups
 peaks_considered = np.array([])
@@ -48,20 +61,33 @@ for mz in coelution_array:
         peaks_considered = np.append(peaks_considered,mz) #add the mz value to the list of considered values
         peak_count = 0 #initialize the peak count within this group
         peak_present = True #a peak is present for this mz value because it came from the coelution array
+        peak_first = True #intially the peak is the potential first of the group
+        peak_smaller = False #this peak is not smaller than the previous because it is first
         #keep checking to see if the next mz value is in the coeluting peaks until you find it is not
-        while peak_present == True:
+        #    that next value must also be smaller than the previous value
+        #    an exception is of course the first value of the group
+        while (peak_present) & (peak_first | peak_smaller):
             peak_count = peak_count+1 #increase the peak count, because you entered this loop
-            peaks_considered = np.append(peaks_considered,mz+peak_count) #you just considered another peak, include it in the list
-            #if you have three consecutive mz values eluting, you have a group
-            if peak_count==3:
-                groups[mz] = np.array([mz,mz+1,mz+2]) #set the initial group array stored in the group dictionary
+            #if you have four consecutive mz values eluting, you have a group
+            if peak_count==4:
+                groups[mz] = np.array([mz,mz+1,mz+2,mz+3]) #set the initial group array stored in the group dictionary
                 values[mz] = np.array([coelution_val[j],coelution_val[j+1],coelution_val[j+2]]) #store the corresponding ion count values for each mz in the group
             #continue adding to that group if it grows
-            if peak_count > 3:
+            if peak_count > 4:
                 groups[mz] = np.append(groups[mz],mz+peak_count-1)
                 values[mz] = np.append(values[mz],coelution_val[j+peak_count-1])
-            #determine if the next peak is present and if you should go through the while loop again
+            #determine if the next peak is present and if it is smaller than the current peak (if you should go through the while loop again)
             peak_present = mz+peak_count in coelution_array
+            if peak_present == True:
+                peak_first = False #because your on the next peak, it is no longer the first peak
+                peak_smaller = coelution_val[j+peak_count] < coelution_val[j+peak_count-1]
+                #if the peak is there, only state it was considered if it is smaller than the previous value
+                #    if it is larger than the previous value, it must be left to possibly start its own group
+                if peak_smaller:
+                    peaks_considered = np.append(peaks_considered,mz+peak_count) #you just considered another peak, include it in the list
+            #if the next peak is not present, you need not search for it in the next iteration
+            if peak_present == False:
+                peaks_considered = np.append(peaks_considered,mz+peak_count) #you just considered another peak, include it in the list
     j = j+1
 
 #determine the mz values that start a group of mz values
@@ -78,15 +104,22 @@ for mz in mz_groups:
     group_tic = np.sum(values_array) #get the total sum intensity of all group members
     signature_array = np.append(signature_array,group_tic)
     values_array_norm = values_array/np.sum(values_array)
-    indices_to_iterate = np.arange(0,len(values_array),1) #start at 1 because you do not want the 0 index here
+    indices_to_iterate = np.arange(0,len(values_array),1)
     for i in indices_to_iterate:
         signature_array = np.append(signature_array,values_array_norm[i])
 
 #convert items in the signature_array to strings for printing into a .txt file
 sig_array_str = np.array([])
 for item in signature_array:
-    #round values less than one to 3 decimal places
-    if item < 1:
+    if item > 1:
+        is_mid = False
+    if item <= 1:
+        is_mid = True
+    #round to 0 decimal places if it is an mz or tic value
+    if not is_mid:
+        item = np.round(item,0)
+    #round to 3 decimal places if it is an mid value
+    if is_mid:
         item = np.round(item,3)
     sig_array_str = np.append(sig_array_str,item.astype('str'))
 
