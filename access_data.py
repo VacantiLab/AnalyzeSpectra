@@ -32,6 +32,8 @@ import convert_rt_ri
 importlib.reload(convert_rt_ri)
 import get_directory
 importlib.reload(get_directory)
+import even_borders
+importlib.reload(even_borders)
 
 
 #retrieve file directory
@@ -147,6 +149,10 @@ for filename in files:
 
     #invert the ic_smooth_dict so that retention indices are the keys and a vector of intensities for each mz are the items
     ic_smooth_dict_timekeys = get_ri_keys_dict.get_ri_keys_dict(ic_smooth_dict,ri_array,mz_vals)
+
+    #calculate peak overlap dictionary
+    print('    finding coeluting peaks ...')
+    peak_overlap_dictionary = even_borders.even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals)
 
     #calculate the coelution dictionary with the retention indices as keys
     #    coelution_dict has keys of ri's and arrays of mz's whoe peaks elute at those ri's

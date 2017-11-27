@@ -71,7 +71,7 @@ for mz in coelution_array:
             #if you have four consecutive mz values eluting, you have a group
             if peak_count==4:
                 groups[mz] = np.array([mz,mz+1,mz+2,mz+3]) #set the initial group array stored in the group dictionary
-                values[mz] = np.array([coelution_val[j],coelution_val[j+1],coelution_val[j+2]]) #store the corresponding ion count values for each mz in the group
+                values[mz] = np.array([coelution_val[j],coelution_val[j+1],coelution_val[j+2],coelution_val[j+3]]) #store the corresponding ion count values for each mz in the group
             #continue adding to that group if it grows
             if peak_count > 4:
                 groups[mz] = np.append(groups[mz],mz+peak_count-1)
@@ -122,6 +122,8 @@ for item in signature_array:
     if is_mid:
         item = np.round(item,3)
     sig_array_str = np.append(sig_array_str,item.astype('str'))
+
+pdb.set_trace()
 
 #write to the output file
 file_path = file_directory + 'fragment_signature.txt'
