@@ -63,6 +63,9 @@ def even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals):
 
     #create the dictionary marking the peak indices where an index corresponds to a scan acquisition
     #    the keys of the dictionary are mz values and the value is 0 for no peak at that index and 1 for a peak
+    #    the values indicating a peak are assigned over a range
+    #    say the peak has borders from indices 1000 to 1020
+    #        the peak may be indicated to extend from the 25th to 80th percentile of the range (the inner 50% of the index range)
 
     #initialize the dictionary
     peak_range_dict = dict()

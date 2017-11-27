@@ -10,10 +10,10 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
     mz_scan_end = mz_vals[len(mz_vals)-1]
 
     #specify the metabolite - will be done as input to the function later
-    metabolite = 'lactate'
+    metabolite = 'pyruvate'
 
     #define the retention index of the metabolite as found in the library
-    metabolite_ri = 1388
+    metabolite_ri = metabolite_dict[metabolite]['ri']
 
     #determine the metabolite fingerprint array
     metabolite_peak_profile = metabolite_dict[metabolite]['peak_profile']
@@ -35,28 +35,28 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
         j = j+1
 
     #test a fingerprint
-    fingerprint = dict()
-    fingerprint[148] = np.array([0.3,0.4,0.2,0.1])
-    fingerprint[233] = np.array([0.2,0.4,0.3,0.1])
-    fingerprint[647] = np.array([0.2,0.4,0.4])
-    fingerprint[645] = np.array([0.4,0.5,0.05,0.03,0.02])
-    fingerprint[648] = np.array([0.1,0.4,0.45,0.05])
-    fingerprint[651] = np.array([0.3,0.5,0.15,0.05])
-    fingerprint[345] = np.array([0.2,0.4,0.3,0.1])
-    fingerprint[445] = np.array([0.2,0.4,0.3,0.1])
-    fingerprint[456] = np.array([0.2,0.4,0.3,0.1])
+    #fingerprint = dict()
+    #fingerprint[148] = np.array([0.3,0.4,0.2,0.1])
+    #fingerprint[233] = np.array([0.2,0.4,0.3,0.1])
+    #fingerprint[647] = np.array([0.2,0.4,0.4])
+    #fingerprint[645] = np.array([0.4,0.5,0.05,0.03,0.02])
+    #fingerprint[648] = np.array([0.1,0.4,0.45,0.05])
+    #fingerprint[651] = np.array([0.3,0.5,0.15,0.05])
+    #fingerprint[345] = np.array([0.2,0.4,0.3,0.1])
+    #fingerprint[445] = np.array([0.2,0.4,0.3,0.1])
+    #fingerprint[456] = np.array([0.2,0.4,0.3,0.1])
 
     #test a corresponding group_tic_dict
-    group_tic_dict = dict()
-    group_tic_dict[148] = 1409875
-    group_tic_dict[233] = 7890523
-    group_tic_dict[647] = 290856
-    group_tic_dict[645] = 8943679
-    group_tic_dict[648] = 7812520
-    group_tic_dict[651] = 10098763
-    group_tic_dict[345] = 134985
-    group_tic_dict[445] = 495863254
-    group_tic_dict[456] = 36846
+    #group_tic_dict = dict()
+    #group_tic_dict[148] = 1409875
+    #group_tic_dict[233] = 7890523
+    #group_tic_dict[647] = 290856
+    #group_tic_dict[645] = 8943679
+    #group_tic_dict[648] = 7812520
+    #group_tic_dict[651] = 10098763
+    #group_tic_dict[345] = 134985
+    #group_tic_dict[445] = 495863254
+    #group_tic_dict[456] = 36846
 
     #trim the peak profile so that entries outiside of the mz scan range are not considered in the match
     #    if an mz key is below the mz scan range, remove member entries that are below the scan range and rename the key of the group
@@ -66,6 +66,7 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
 
     #rank the groups by abundance and only retain those above the 20th percentile
     #    this allows for the lower abundance dictionary fragments to be missing in the spectrum and still have a match
+    #    you can exclude at most the percentile * number_of_groups, so if the percentile is 20, you must have 5 groups to exclude 1
     percentile = 20
     ranked_fingerprint,ranked_group_tic_dict = return_ranked_fingerprint(fingerprint,group_tic_dict,percentile)
 
@@ -124,8 +125,8 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
         metabolite_present = True
         metabolite_retention_index = np.median(intersection)
 
-    pdb.set_trace()
 
+    pdb.set_trace()
     return(metabolite_present,metabolite_retention_index)
 
 

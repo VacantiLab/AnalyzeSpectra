@@ -24,7 +24,7 @@ file_directory = get_directory.get_directory(retrieve_directory_method)
 filename = 'tbdms01_t47d_wt.CDF'
 sample_name = 'tbdms01_t47d_wt'
 input_data_file = file_directory + 'processed_data.p'
-ri = 1393
+ri = 2467.5
 
 #open the data specified by the filename
 file_object = open(input_data_file,'rb')
@@ -123,7 +123,6 @@ for item in signature_array:
         item = np.round(item,3)
     sig_array_str = np.append(sig_array_str,item.astype('str'))
 
-pdb.set_trace()
 
 #write to the output file
 file_path = file_directory + 'fragment_signature.txt'

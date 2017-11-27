@@ -1,4 +1,4 @@
-def calc_coelut(peak_ri_dict,mz_vals,ri_array,ic_smooth_dict):
+def calc_coelut(peak_ri_dict,mz_vals,ri_array,ic_smooth_dict,peak_overlap_dictionary):
     #calculates the coelution dictionary
     #    coelut_dict has each retention index as a key
     #    the corresponding items are arrays of the masses with peaks that elut at that ri
@@ -22,11 +22,18 @@ def calc_coelut(peak_ri_dict,mz_vals,ri_array,ic_smooth_dict):
         coelut_dict_val[ri] = np.array([])
         #iterate through the mz values to check for peaks
         for mz in mz_vals:
-            #get a vector of the differences between peak ri's and the current ri at the current mz
-            test_array = np.absolute(peak_ri_dict[mz] - ri)
-            #determine if any of these ri's are within the window from the current ri
-            test_logical = test_array < ri_window
-            elutes = np.any(test_logical)
+            elutes = False
+            if peak_overlap_dictionary[mz][ri_i] == 1:
+                elutes = True
+
+                ##THE OLD WAY GIVEN AN RI WINDOW
+                ##get a vector of the differences between peak ri's and the current ri at the current mz
+                #test_array = np.absolute(peak_ri_dict[mz] - ri)
+                ##determine if any of these ri's are within the window from the current ri
+                #test_logical = test_array < ri_window
+                #elutes = np.any(test_logical)
+
+
             #if the current mz elutes within an ri window of the current ri, append it to the elution vector for the current ri
             #    also append the value of that peak at the current ri to the respective array
             if elutes:
