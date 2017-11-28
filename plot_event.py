@@ -19,7 +19,7 @@ mz_colors = ['red','blue','green','purple']
 retrieve_directory_method = 'manual'
 file_directory = get_directory.get_directory(retrieve_directory_method)
 
-filename = 'tbdms01_t47d_wt.CDF'
+filename = 'P02_SUM149_NT_siRNA.CDF'
 sample_name = filename.split('.')[0]
 input_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'

@@ -64,9 +64,7 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
     #rank the groups by abundance and only retain those above the 20th percentile
     #    this allows for the lower abundance dictionary fragments to be missing in the spectrum and still have a match
     #    you can exclude at most the percentile * number_of_groups, so if the percentile is 20, you must have 5 groups to exclude 1
-    percentile = 20
-    ranked_fingerprint,ranked_group_tic_dict = return_ranked_fingerprint(fingerprint,group_tic_dict,percentile)
-
+    ranked_fingerprint,ranked_group_tic_dict = return_ranked_fingerprint(fingerprint,group_tic_dict)
     #define the window around the library retention index the metabolite is allowed to be found
     ri_window = 5
     ri_upper = metabolite_ri + ri_window
@@ -83,6 +81,16 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
 
     #get a list of the mz values heading each defined group of mz values
     group_mz_list = list(dict.keys(ranked_fingerprint))
+
+    #get a list of all group mz values: not just the ones leading and naming the group
+    group_mz_vals_all = np.array([])
+    for mz_group_name in group_mz_list:
+        group_mz_vals_all = np.append(group_mz_vals_all,mz_group_name)
+        mz_group_length = len(ranked_fingerprint[mz_group_name])
+        to_add_then_append_array = np.arange(1,mz_group_length+1)
+        for i in to_add_then_append_array:
+            to_append = mz_group_name + i
+            group_mz_vals_all = np.append(group_mz_vals_all,to_append)
 
     #initialize the values for each key of metabolite_elut_ri_dict to be an empty np array
     for mz in group_mz_list:
@@ -117,7 +125,7 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
     #    the median of these is reported as the retention index of the metabolite
     if len(intersection) > 0:
         max_ri_array = np.array([])
-        for mz_to_max in group_mz_list:
+        for mz_to_max in group_mz_vals_all:
             intersection_indices = np.array([])
             for i in intersection:
                 intersection_index = np.where(ri_array==i)
@@ -129,6 +137,7 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
             max_ri = ri_array[max_ri_index]
             max_ri_array = np.append(max_ri_array,max_ri)
         max_ri = np.median(max_ri_array)
+
 
     #report if the metabolite is present and if so, what its observed retention index is
     metabolite_present = False
@@ -220,7 +229,7 @@ def trim_peak_profile(fingerprint,group_tic_dict,mz_scan_start,mz_scan_end):
 ################################################################################
 ################################################################################
 
-def return_ranked_fingerprint(fingerprint,group_tic_dict,percentile):
+def return_ranked_fingerprint(fingerprint,group_tic_dict):
     import numpy as np
     import pdb
     import copy
@@ -232,11 +241,19 @@ def return_ranked_fingerprint(fingerprint,group_tic_dict,percentile):
     #retrieve a list of all mz values beginning a group
     group_mz_list = list(dict.keys(fingerprint))
 
-    #in order to remove groups from consideration, you must have a minimum number of groups
-    rank_length_cut_off = percentile/100 * len(group_mz_list) > 1
 
-    if rank_length_cut_off:
+    #set the percentile above which the groups are retained (based on abundance)
+    n_groups = len(group_mz_list)
+    if n_groups <= 3:
+        percentile = 0
+    if (n_groups > 3) & (n_groups <= 5):
+        percentile = 20
+    if (n_groups > 5) & (n_groups <= 10):
+        percentile = 40
+    if (n_groups > 10):
+        percentile = 50
 
+    if percentile > 0:
         #retrieve a list of corresponding total ion counts
         ion_counts = np.array([])
         for mz in group_mz_list:
