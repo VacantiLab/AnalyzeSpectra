@@ -17,7 +17,9 @@ def print_integrated_peaks(file_directory,samples,metabolite_list,file_data):
             file_object_text.write(fragment)
             file_object_text.write('\t')
             for sample_name in samples:
-                ri = str(file_data[sample_name]['metabolites'][metabolite_iter]['ri'][0])
+                ri = file_data[sample_name]['metabolites'][metabolite_iter]['ri']
+                ri = np.round(ri,decimals=1)
+                ri = str(ri)
                 file_object_text.write(ri)
                 file_object_text.write('\t')
             file_object_text.write('\n')

@@ -1,4 +1,4 @@
-def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,metabolite_dict,metabolite_list,ri_array,mz_vals):
+def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,metabolite_dict,metabolite_list,ri_array,mz_vals,coelut_dict,coelut_dict_val):
     import importlib #allows fresh importing of modules
     import pdb #python debugger
     import numpy as np #this is numpy, allows for data frame and matrix handling
@@ -13,6 +13,8 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
     importlib.reload(ri_to_rt)
     import quantity_of_atom
     importlib.reload(quantity_of_atom)
+    import match_fingerprint
+    importlib.reload(match_fingerprint)
 
     #initialize a dictionary that will contain all of the quantified metabolite information
     metabolite_dict_complete = copy.deepcopy(metabolite_dict)
@@ -23,8 +25,14 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
     #iterate through the metabolite names so you can then iterate through the fragments of each metabolite for integration
     for metabolite_iter in metabolite_list:
         fragments_list = list(dict.keys(metabolite_dict[metabolite_iter]['fragments']))
-        ri = metabolite_dict_complete[metabolite_iter]['ri']
-        rt = ri_to_rt.ri_to_rt(sat_array,ri_array,ri)
+        met_present,ri = match_fingerprint.match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_vals,ic_smooth_dict,metabolite_iter)
+        if met_present:
+            rt = ri_to_rt.ri_to_rt(sat_array,ri_array,ri)
+        if not met_present:
+            ri = 0
+            rt = 0
+        metabolite_dict_complete[metabolite_iter]['ri'] = ri
+        metabolite_dict_complete[metabolite_iter]['rt'] = rt
 
         #iterate through the fragments of each metabolite and integrate
         for frag_iter in fragments_list:
@@ -36,8 +44,8 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
                 if i in mz_vals: #it is possible there were no values above threshhold recorded in the ms scan so there would be no entry for that mz in the data dictionary
                     possible_peak_starts = np.where(peak_start_t_dict[i] < rt)[0]
                     if len(possible_peak_starts) > 0:
-                        prosp_peak_start_nm = max(possible_peak_starts)
-                    if len(possible_peak_starts) == 0:
+                        prosp_peak_start_nm = max(possible_peak_starts) #prospective peak start
+                    if (len(possible_peak_starts) == 0) | (not met_present):
                         peak_present = False
 
                     #find the time at which the peak is finished eluting

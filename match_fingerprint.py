@@ -123,6 +123,8 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
 
     #find the ris where the mzs of the groups are at a max
     #    the median of these is reported as the retention index of the metabolite
+    metabolite_present = False
+    metabolite_retention_index = np.array([])
     if len(intersection) > 0:
         max_ri_array = np.array([])
         for mz_to_max in group_mz_vals_all:
@@ -138,13 +140,18 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
             max_ri_array = np.append(max_ri_array,max_ri)
         max_ri = np.median(max_ri_array)
 
+        #the maximum eluting peak must be expected in the library for the metabolite to be
+        #    considered present
+        peak_mz_array = coelut_dict[max_ri]
+        peak_val_array = coelut_dict_val[max_ri]
+        max_val_index = np.argmax(peak_val_array)
+        mz_with_max_peak = peak_mz_array[max_val_index]
+        max_mz_peak_in_lib = mz_with_max_peak in group_mz_vals_all
 
-    #report if the metabolite is present and if so, what its observed retention index is
-    metabolite_present = False
-    metabolite_retention_index = np.array([])
-    if len(intersection) > 0:
-        metabolite_present = True
-        metabolite_retention_index = max_ri
+        #report if the metabolite is present and if so, what its observed retention index is
+        if max_mz_peak_in_lib:
+            metabolite_present = True
+            metabolite_retention_index = max_ri
 
 
     return(metabolite_present,metabolite_retention_index)
