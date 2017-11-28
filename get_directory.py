@@ -11,6 +11,6 @@ def get_directory(retrieve_directory_method):
 
     if retrieve_directory_method == 'manual':
         #manually enter file directory because tkinter is giving troubles when used with pdb.set_trace()
-        file_directory = '/Users/nate/Dropbox/Research/Lehtio_Laboratory/Projects/GCMS_raw_data/2017_11_03_sknbe2_nmyckd_bt20_phen05uM.AIA/polar_metabolites_mox_tbdms/'
+        file_directory = '/Users/nate/Dropbox/Research/Lehtio_Laboratory/Projects/metabolite_integration_tool/netcdf_test/'
 
     return(file_directory)

@@ -1,4 +1,4 @@
-def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,metabolite_dict,metabolite_list,ri_array,mz_vals,coelut_dict,coelut_dict_val):
+def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,metabolite_dict,metabolite_list,ri_array,mz_vals,coelut_dict,coelut_dict_val,sample_name):
     import importlib #allows fresh importing of modules
     import pdb #python debugger
     import numpy as np #this is numpy, allows for data frame and matrix handling
@@ -25,7 +25,7 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
     #iterate through the metabolite names so you can then iterate through the fragments of each metabolite for integration
     for metabolite_iter in metabolite_list:
         fragments_list = list(dict.keys(metabolite_dict[metabolite_iter]['fragments']))
-        met_present,ri = match_fingerprint.match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_vals,ic_smooth_dict,metabolite_iter)
+        met_present,ri = match_fingerprint.match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_vals,ic_smooth_dict,metabolite_iter,sample_name)
         if met_present:
             rt = ri_to_rt.ri_to_rt(sat_array,ri_array,ri)
         if not met_present:
