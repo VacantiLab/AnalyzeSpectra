@@ -1,4 +1,4 @@
-def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_vals):
+def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_vals,ic_smooth_dict,metabolite):
     import numpy as np
     import importlib
     import pdb
@@ -8,9 +8,6 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
     #find the mz index range of the scan
     mz_scan_start = mz_vals[0]
     mz_scan_end = mz_vals[len(mz_vals)-1]
-
-    #specify the metabolite - will be done as input to the function later
-    metabolite = 'pyruvate'
 
     #define the retention index of the metabolite as found in the library
     metabolite_ri = metabolite_dict[metabolite]['ri']
@@ -95,19 +92,17 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
     #    at each retention index, the coeluting peaks are examined
     #    the set of coeluting peaks is tested against each group of mz values
     #    for each group of mz values, the retention indices where all members of the group of mz values are in the coeluting peaks is recoreded
-    for i in range(ri_lower_ind,ri_upper_ind+1):
+    ri_index_range = range(ri_lower_ind,ri_upper_ind+1)
+    for i in ri_index_range:
         ri = ri_array[i]
         peak_mz_array = coelut_dict[ri]
         peak_val_array = coelut_dict_val[ri]
         for mz in group_mz_list:
-            n_mz = len(ranked_fingerprint[mz])
-            mz_in_group = np.arange(mz,mz+n_mz)
-            lib_in_samp_ind = np.isin(mz_in_group,peak_mz_array)
-            lib_in_samp = np.all(lib_in_samp_ind)
-            if lib_in_samp:
+            group_present = check_group(mz,ranked_fingerprint,peak_mz_array,peak_val_array,ri,mz_scan_end)
+            if group_present:
                 metabolite_elut_ri_dict[mz] = np.append(metabolite_elut_ri_dict[mz],ri)
                 #for each group of mz values, the key name is the first mz
-                #the ri's where all members of the group are eluting is recorded
+                #the ri's where group-eluting criteria is satisfied is recorded
 
     #find the retention indices where all groups are present
     j = 0
@@ -118,21 +113,36 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
             intersection = np.intersect1d(intersection,metabolite_elut_ri_dict[mz])
         j = j+1
 
+    #find the ris where the mzs of the groups are at a max
+    #    the median of these is reported as the retention index of the metabolite
+    if len(intersection) > 0:
+        max_ri_array = np.array([])
+        for mz_to_max in group_mz_list:
+            intersection_indices = np.array([])
+            for i in intersection:
+                intersection_index = np.where(ri_array==i)
+                intersection_indices = np.append(intersection_indices,intersection_index)
+                intersection_indices = intersection_indices.astype(int)
+            value_array = ic_smooth_dict[mz_to_max][intersection_indices]
+            max_index = np.argmax(value_array)
+            max_ri_index = intersection_indices[max_index]
+            max_ri = ri_array[max_ri_index]
+            max_ri_array = np.append(max_ri_array,max_ri)
+        max_ri = np.median(max_ri_array)
+
     #report if the metabolite is present and if so, what its observed retention index is
     metabolite_present = False
     metabolite_retention_index = np.array([])
     if len(intersection) > 0:
         metabolite_present = True
-        metabolite_retention_index = np.median(intersection)
+        metabolite_retention_index = max_ri
 
 
-    pdb.set_trace()
     return(metabolite_present,metabolite_retention_index)
 
-
-
-
-#Supporting Functions##############################
+#Supporting Functions
+################################################################################
+################################################################################
 def trim_peak_profile(fingerprint,group_tic_dict,mz_scan_start,mz_scan_end):
 
     import numpy as np
@@ -207,7 +217,8 @@ def trim_peak_profile(fingerprint,group_tic_dict,mz_scan_start,mz_scan_end):
 
     return(fingerprint,group_tic_dict)
 
-###############################################################################
+################################################################################
+################################################################################
 
 def return_ranked_fingerprint(fingerprint,group_tic_dict,percentile):
     import numpy as np
@@ -247,3 +258,80 @@ def return_ranked_fingerprint(fingerprint,group_tic_dict,percentile):
 
     #return the updated values
     return(ranked_fingerprint,ranked_group_tic_dict)
+
+################################################################################
+################################################################################
+
+def check_group(mz,ranked_fingerprint,peak_mz_array,peak_val_array,ri,mz_scan_end):
+    #this function sets the rules to determine if a group led by an mz is present
+    import numpy as np
+    import pdb
+
+    #Initialize the three specifcations that determine if the group is present
+    quantity_requirement = False
+    quantity_requirement_with_shift = False
+    magnitude_requirement = False
+
+    #specify the mz values contained within the group
+    n_mz = len(ranked_fingerprint[mz])
+    mz_in_group = np.arange(mz,mz+n_mz)
+
+    #for the mz values in this group, determine how many of them are in the coelution array
+    #    the coelution array is supplied for a given retention index
+    #if enough of the mz values are coeluting, the quantity requirement is met
+    index_in_coelut_array = np.array([])
+    for i in mz_in_group:
+        index_in_coelut = np.where(peak_mz_array==i)
+        index_in_coelut_array = np.append(index_in_coelut_array,index_in_coelut)
+    if len(index_in_coelut_array >= n_mz-1):
+        quantity_requirement = True
+
+    #metabolites may labeled, so the mz group is extended and a new quantity requirement is set
+    #    this new quantity requirement OR the previous one must be satisfied to say the metabolite is present
+    last_mz_in_group = mz_in_group[n_mz-1]
+    mzs_to_append = np.array([last_mz_in_group+1,last_mz_in_group+2,last_mz_in_group+3])
+    mz_group_extended = np.append(mz_in_group,mzs_to_append)
+    n_mz_extended = len(mz_group_extended)
+    for i in mz_group_extended:
+        index_in_coelut = np.where(peak_mz_array==i)
+        index_in_coelut_array = np.append(index_in_coelut_array,index_in_coelut)
+    if len(index_in_coelut_array >= n_mz_extended-2):
+        quantity_requirement_with_shift = True
+
+    #the value associated with the mz prior to that defining the group cannot be larger than
+    #    all of the first 4 values of the group
+    #    you must also consider if you are at the end of the mz scan range
+    #        if so this test cannot be used
+    if not mz-1 in peak_mz_array:
+        magnitude_requirement = True
+    at_end_mz_scan_range = mz+4 > mz_scan_end
+
+    if (mz-1 in peak_mz_array) & (not at_end_mz_scan_range):
+        prior_index = np.where(peak_mz_array==mz-1)[0]
+        prior_value = peak_val_array[prior_index]
+        group_indices = np.arange(prior_index+1,prior_index+5)
+        n_in_group_val_array = 0
+        prior_value_smaller_array = np.array([])
+        n_prior_value_smaller = 0
+        for i in group_indices:
+            #at the given ri, all peaks may not be eluting
+            if len(peak_val_array) >= i+1:
+                group_value = peak_val_array[i]
+                n_in_group_val_array = n_in_group_val_array + 1
+                prior_value_smaller = prior_value < group_value
+                prior_value_smaller = np.append(prior_value_smaller_array,prior_value_smaller)
+        n_prior_value_smaller = sum(prior_value_smaller_array)
+
+        #if there is a single value the prior magnitude is less than in the group
+        #    then this criteria is met
+        if (n_prior_value_smaller > 0):
+            magnitude_requirement = True
+
+    #if you are at the end of the scan range, this criteria is not applicable and is given to be satisfied
+    if at_end_mz_scan_range:
+        magnitude_requirement = True
+
+    #determine if the group is present from the above three specified criteria
+    group_present = (quantity_requirement | quantity_requirement_with_shift) & magnitude_requirement
+
+    return(group_present)
