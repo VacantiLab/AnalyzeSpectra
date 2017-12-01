@@ -1,14 +1,19 @@
-def find_ri_conversion(ic_smooth_dict,mz_vals,sat):
+def find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_val_sat,sample_name):
     #finds the retention indices
 
     import numpy as np
     import pdb
+    import importlib
+    import match_fingerprint
+    importlib.reload(match_fingerprint)
+    #import get_alkane_dict
+    #importlib.reload(get_alkane_dict)
 
     sat_array = np.array(sat)
 
     #set define the alkane mz values, highest to lowest
     #    they range from 128 to 576, the last value in the series is not included below so it must be 114
-    alkane_mz = np.arange(576,114,-14)
+    alkane_mz = np.arange(562,100,-14)
     alkane_nc = np.arange(40,7,-1) #the number of carbon atoms corresponding to the alkane mz's
 
     #for each mz vs time plot within the defined alkane mz values, find the maximum
@@ -33,6 +38,21 @@ def find_ri_conversion(ic_smooth_dict,mz_vals,sat):
             alkane_mz_maxv = np.append(alkane_mz_maxv,max_val) #the maximum ion count for that mz
             alkane_mz_maxi = np.append(alkane_mz_maxi,max_ind) #the index of that maximum value
         j = j+1
+
+    #for each index where an alkane mz maximum was recorded, determine if that max is due to the alkane eluting
+    #    if it is eluting, record the index where it elutes
+    #    the recorded index is corresponds to the array containing all alkane masses that were scanned
+    #        thus the sat, mz, and nc value of the alkanes corresponding can all be gathered from this array of indices
+    #in progress
+    j = 0
+    alkane_elut_ind = np.array([])
+    for i in alkane_mz_maxi:
+        metabolite = np.array_str(alkane_nc_rec[i]) + '_carbon_alkane'
+        alkane_dict = get_alkane_dict.get_alkane_dict()
+        alkane_present,alkane_rt = match_fingerprint.match_fingerprint(sat,coelut_dict_sat,coelut_dict_val_sat,alkane_dict,mz_vals,ic_smooth_dict,metabolite,sample_name)
+        if alkane_present == True:
+            alkane_elut_ind = np.append(alkane_elut_ind,i)
+
 
     #for all of the recorded alkane mz ion count values, find the maximum
     max_alkane_val = np.amax(alkane_mz_maxv)
