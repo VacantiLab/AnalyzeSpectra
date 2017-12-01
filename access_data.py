@@ -111,7 +111,7 @@ for filename in files:
     print('    subtracting baselines and smoothing...')
     (ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
     peak_start_i_dict,peak_end_i_dict,x_data_numpy,peak_i_dict,
-    peak_max_dict,p) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals)
+    peak_max_dict,p,peak_sat_dict) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals)
          #ic_smooth_dict: a dictionary containing the smoothed and baseline corrected ion count data for each m/z value
          #peak_start_t_dict: a dictionary with all of the peak beginning times for each m/z ion count plot
          #peak_end_t_dict: a dictionary with all of the peak ending times for each m/z ion count plot
@@ -124,10 +124,18 @@ for filename in files:
     #    note it is not smoothed because it does not really make sense to smooth total ion count data
     ic_smooth_dict['tic'] = tic
 
+    #calculate peak overlap dictionary
+    print('    finding coeluting peaks ...')
+    peak_overlap_dictionary = even_borders.even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals)
+
     #the first sample must always be alkanes - plan to make this optional later
     #find the retention time to retention index conversion
     #    one array is retention indices and the other is corresponding retention times
     if sample_name == 'alkanes':
+        #calculate the coelution dictionary with the scan acquisition times as keys
+        #    coelution_dict_sat has keys of sat's and arrays of mz's whoe peaks elute at those sat's
+        #    coelution_dict_val is the same except the arrays are the corresponding intensity values of the eluting peaks at the sat of the key
+        coelut_dict_sat,coelut_dict_val_sat = calc_coelut.calc_coelut(peak_sat_dict,mz_vals,sat,ic_smooth_dict,peak_overlap_dictionary)
         ri_sat,ri_rec = find_ri_conversion.find_ri_conversion(ic_smooth_dict,mz_vals,sat)
 
     #convert the retention times of the current sample to retention indices
@@ -149,10 +157,6 @@ for filename in files:
 
     #invert the ic_smooth_dict so that retention indices are the keys and a vector of intensities for each mz are the items
     ic_smooth_dict_timekeys = get_ri_keys_dict.get_ri_keys_dict(ic_smooth_dict,ri_array,mz_vals)
-
-    #calculate peak overlap dictionary
-    print('    finding coeluting peaks ...')
-    peak_overlap_dictionary = even_borders.even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals)
 
     #calculate the coelution dictionary with the retention indices as keys
     #    coelution_dict has keys of ri's and arrays of mz's whoe peaks elute at those ri's

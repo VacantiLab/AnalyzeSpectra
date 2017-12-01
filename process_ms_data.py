@@ -25,6 +25,7 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
     peak_end_i_dict = dict()
     peak_i_dict = dict()
     peak_max_dict = dict()
+    peak_sat_dict = dict()
 
     j=0
     for plotted_mz in mz_vals:
@@ -104,6 +105,7 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
         peak_start_i_dict[plotted_mz] = borders_prior_indices
         peak_end_i_dict[plotted_mz] = borders_after_indices
         peak_i_dict[plotted_mz] = indexes
+        peak_sat_dict = sat[indexes]
         peak_max_dict[plotted_mz] = y_peak_vals_base_cor
 
         #plot baseline corrected data and the peak locations
@@ -114,4 +116,4 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
 
         j=j+1 #index of mz
 
-    return(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,peak_i_dict,peak_max_dict,p)
+    return(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,peak_i_dict,peak_max_dict,p,peak_sat_dict)
