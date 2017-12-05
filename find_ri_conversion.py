@@ -22,6 +22,7 @@ def find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_va
     alkane_mz_maxv = np.array([]) #initialize the maximum value array
     alkane_mz_maxi = np.array([]) #initialize the maximum index array
     alkane_mz_sat = np.array([]) #initialize the sat array of the eluting alkane
+
     j = 0
     for i in alkane_mz:
         #check if the alkane mz has measured ion counts associated with it
@@ -38,6 +39,7 @@ def find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_va
             alkane_mz_maxv = np.append(alkane_mz_maxv,max_val) #the maximum ion count for that mz
             alkane_mz_maxi = np.append(alkane_mz_maxi,max_ind) #the index of that maximum value
         j = j+1
+    alkane_mz_maxi = alkane_mz_maxi.astype('int')
 
     #retrieve the dictionary containing the alkane peak profiles
     alkane_dict,alkane_names = get_alkane_dict.get_alkane_dict(alkane_nc_rec,alkane_mz_maxi,sat)
@@ -51,15 +53,16 @@ def find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_va
     #    the recorded index is corresponds to the array containing all alkane masses that were scanned
     #        thus the sat, mz, and nc value of the alkanes corresponding can all be gathered from this array of indices
     #in progress
-
     alkane_elut_ind = np.array([])
+    j = 0
     for alkane in alkane_names:
         metabolite = alkane
-        # this is having trouble with rt indices
-        alkane_present,alkane_rt = match_fingerprint.match_fingerprint(sat,coelut_dict_sat,coelut_dict_val_sat,alkane_dict,mz_vals,ic_smooth_dict,metabolite,sample_name)
+        ri_window = 1.5 #gives a little leway because peaks could be a little ugly if the chromatography is bad
+        alkane_present,alkane_rt = match_fingerprint.match_fingerprint(sat,coelut_dict_sat,coelut_dict_val_sat,alkane_dict,mz_vals,ic_smooth_dict,metabolite,sample_name,ri_window)
         if alkane_present == True:
-            alkane_elut_ind = np.append(alkane_elut_ind,i)
-
+            alkane_elut_ind = np.append(alkane_elut_ind,j)
+        j = j+1
+    alkane_elut_ind = alkane_elut_ind.astype('int')
 
     #find the number of carbons in the alkanes of those mz's above the threshold and convert to retention indices
     alkane_nc_rec = alkane_nc_rec[[alkane_elut_ind]]

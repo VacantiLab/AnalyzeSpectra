@@ -25,7 +25,8 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
     #iterate through the metabolite names so you can then iterate through the fragments of each metabolite for integration
     for metabolite_iter in metabolite_list:
         fragments_list = list(dict.keys(metabolite_dict[metabolite_iter]['fragments']))
-        met_present,ri = match_fingerprint.match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_vals,ic_smooth_dict,metabolite_iter,sample_name)
+        ri_window = 5
+        met_present,ri = match_fingerprint.match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_vals,ic_smooth_dict,metabolite_iter,sample_name,ri_window)
         if met_present:
             rt = ri_to_rt.ri_to_rt(sat_array,ri_array,ri)
         if not met_present:

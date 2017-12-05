@@ -1,4 +1,4 @@
-def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_vals,ic_smooth_dict,metabolite,sample_name):
+def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_vals,ic_smooth_dict,metabolite,sample_name,ri_window):
     import numpy as np
     import importlib
     import pdb
@@ -66,7 +66,6 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
     #    the percentile excluded depends on the number of groups there are in a library
     ranked_fingerprint,ranked_group_tic_dict = return_ranked_fingerprint(fingerprint,group_tic_dict)
     #define the window around the library retention index the metabolite is allowed to be found
-    ri_window = 5
     ri_upper = metabolite_ri + ri_window
     ri_lower = metabolite_ri - ri_window
 
@@ -128,7 +127,7 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
     #    the median of these is reported as the retention index of the metabolite
     metabolite_present = False #initialize this value
     metabolite_retention_index = np.array([]) #initialize this value
-    if len(intersection) >= 1: #there must be 3 points of overlap
+    if len(intersection) >= 1: #there must be 1 point of overlap
         max_ri_array = np.array([])
         for mz_to_max in group_mz_vals_all:
             intersection_indices = np.array([])
@@ -347,7 +346,6 @@ def check_group(mz,ranked_fingerprint,peak_mz_array,peak_val_array,ri,mz_scan_en
     #if you are at the end of the scan range, this criteria is not applicable and is given to be satisfied
     if at_end_mz_scan_range:
         magnitude_requirement = True
-
 
     #determine if the group is present from the above three specified criteria
     group_present = (quantity_requirement | quantity_requirement_with_shift) & magnitude_requirement
