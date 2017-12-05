@@ -6,8 +6,8 @@ def find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_va
     import importlib
     import match_fingerprint
     importlib.reload(match_fingerprint)
-    #import get_alkane_dict
-    #importlib.reload(get_alkane_dict)
+    import get_alkane_dict
+    importlib.reload(get_alkane_dict)
 
     sat_array = np.array(sat)
 
@@ -39,38 +39,27 @@ def find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_va
             alkane_mz_maxi = np.append(alkane_mz_maxi,max_ind) #the index of that maximum value
         j = j+1
 
+    #retrieve the dictionary containing the alkane peak profiles
+    alkane_dict,alkane_names = get_alkane_dict.get_alkane_dict(alkane_nc_rec,alkane_mz_maxi,sat)
+
+    #from here, use the alkane profile_dict to determine if the alkane is preent with fingerprint_match
+    #    the instances of ri have already been replaced with rt in the necessary dictionaries
+    #    the dictionaries available to this function should be passable to find_fingerprint
+
     #for each index where an alkane mz maximum was recorded, determine if that max is due to the alkane eluting
     #    if it is eluting, record the index where it elutes
     #    the recorded index is corresponds to the array containing all alkane masses that were scanned
     #        thus the sat, mz, and nc value of the alkanes corresponding can all be gathered from this array of indices
     #in progress
-    j = 0
+
     alkane_elut_ind = np.array([])
-    for i in alkane_mz_maxi:
-        metabolite = np.array_str(alkane_nc_rec[i]) + '_carbon_alkane'
-        alkane_dict = get_alkane_dict.get_alkane_dict()
+    for alkane in alkane_names:
+        metabolite = alkane
+        # this is having trouble with rt indices
         alkane_present,alkane_rt = match_fingerprint.match_fingerprint(sat,coelut_dict_sat,coelut_dict_val_sat,alkane_dict,mz_vals,ic_smooth_dict,metabolite,sample_name)
         if alkane_present == True:
             alkane_elut_ind = np.append(alkane_elut_ind,i)
 
-
-    #for all of the recorded alkane mz ion count values, find the maximum
-    max_alkane_val = np.amax(alkane_mz_maxv)
-
-    #normalize the alkane mz-specific maximum ion count values by the overall alkane mz ion count maximum
-    norm_mz_maxv = alkane_mz_maxv/max_alkane_val
-
-    #create a matrix for better visualization during function creation
-    alkane_matrix = np.matrix([alkane_mz_rec,norm_mz_maxv,alkane_mz_maxi])
-
-    #defind a threshold for the normalized value above for considering an alkane mz present
-    alk_ic_norm_thresh = 0.3
-
-    #find the indices of those values above the threshold
-    alkane_elut_ind = np.where(norm_mz_maxv > alk_ic_norm_thresh)[0]
-
-    #convert the array containing the indices of sat vector for maximum readings at alkane mz's to intiger values
-    alkane_mz_maxi = alkane_mz_maxi.astype(int)
 
     #find the number of carbons in the alkanes of those mz's above the threshold and convert to retention indices
     alkane_nc_rec = alkane_nc_rec[[alkane_elut_ind]]
