@@ -12,9 +12,9 @@ def find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_va
     sat_array = np.array(sat)
 
     #set define the alkane mz values, highest to lowest
-    #    they range from 128 to 576, the last value in the series is not included below so it must be 114
-    alkane_mz = np.arange(562,100,-14)
-    alkane_nc = np.arange(40,7,-1) #the number of carbon atoms corresponding to the alkane mz's
+    #    they range from 100 to 562, the last value in the series is not included below so it must be 114
+    alkane_mz = np.arange(562,128,-14)
+    alkane_nc = np.arange(40,9,-1) #the number of carbon atoms corresponding to the alkane mz's
 
     #for each mz vs time plot within the defined alkane mz values, find the maximum
     alkane_mz_rec = np.array([]) #initialize the recorded mz values array

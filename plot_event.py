@@ -19,7 +19,7 @@ mz_colors = ['red','blue','green','purple']
 retrieve_directory_method = 'manual'
 file_directory = get_directory.get_directory(retrieve_directory_method)
 
-filename = 'alkanes.CDF'
+filename = 'p01_sknbe2_scr_uglc.CDF'
 sample_name = filename.split('.')[0]
 input_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'
