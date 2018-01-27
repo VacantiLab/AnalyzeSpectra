@@ -1,4 +1,4 @@
-def fragment_library():
+def fragment_library(file_directory):
 
     import importlib #allows fresh importing of modules
     import pdb
@@ -11,7 +11,7 @@ def fragment_library():
     importlib.reload(create_correction_matrix)
 
     #file_name_read = '/Users/Nate/Desktop/netcdf_test/tbdms_lib.txt'
-    file_name_read = '/Users/Nate/Dropbox/Research/Lehtio_Laboratory/Projects/metabolite_integration_tool/netcdf_test/library.txt'
+    file_name_read = file_directory + 'library.txt'
     metabolite_dict = dict()
 
     #open a .txt file with the fragment information and import it

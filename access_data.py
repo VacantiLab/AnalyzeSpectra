@@ -48,7 +48,7 @@ library_processed = 'library.p' in files
 if not library_processed:
     #process the library
     print('processing library...')
-    metabolite_dict,metabolite_list = fragment_library.fragment_library()
+    metabolite_dict,metabolite_list = fragment_library.fragment_library(file_directory)
 
     #Save the library into a python readable file
     output_library_file = file_directory + 'library.p'
