@@ -38,22 +38,14 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
         #iterate through the fragments of each metabolite and integrate
         for frag_iter in fragments_list:
             mzs_to_integrate = metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['mzs_to_integrate']
-
             for i in mzs_to_integrate:
                 #find the index of the peak corresponding to the given rt in the mz curve (the first peak is 0, the second 1, the third 2, ...)
                 peak_present = False
                 if i in mz_vals: #it is possible there were no values above threshhold recorded in the ms scan so there would be no entry for that mz in the data dictionary
-                    possible_peak_starts = np.where(peak_start_t_dict[i] < rt)[0]
-                    if len(possible_peak_starts) > 0:
-                        prosp_peak_start_nm = max(possible_peak_starts) #prospective peak start
-                    if (len(possible_peak_starts) == 0) | (not met_present):
-                        peak_present = False
-
-                    #find the time at which the peak is finished eluting
-                    if len(possible_peak_starts) > 0:
-                        prosp_peak_end_t = peak_end_t_dict[i][prosp_peak_start_nm]
-                        #if the peak ends after the retention time, then there is a peak (the the proposed peak was required to start before the retention time two lines ago)
-                        peak_present = rt < prosp_peak_end_t
+                    if met_present: #the presence of the metabolite is checked here instead of outside the fragment iteration loop because the fragments are iterated through to fill with zeros for printing even if the metabolite is not present.
+                                    #this seems inefficient and can be fixed later - integration is not really expensive at this point
+                        if i in coelut_dict[ri]: #recall coelut dict has keys of ri and for each key is an array of mz's with peaks eluting at that ri
+                            peak_present = True
 
                 #if there is no peak detected for that mz_to_integrate of the fragment, record zero as the peak area
                 if not peak_present:
@@ -61,6 +53,7 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
 
                 #if there is a peak, then integrate it to find its area
                 if peak_present:
+                    pdb.set_trace()
                     x_start_i = peak_start_i_dict[i][prosp_peak_start_nm]
                     x_end_i = peak_end_i_dict[i][prosp_peak_start_nm]
                     x_range_i = np.arange(x_start_i,x_end_i)
