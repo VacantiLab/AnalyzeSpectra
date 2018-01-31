@@ -53,7 +53,8 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
 
                 #if there is a peak, then integrate it to find its area
                 if peak_present:
-                    pdb.set_trace()
+                    possible_peak_starts = np.where(peak_start_t_dict[i] < rt)[0] #there must be at least one peak start before the rt because there is a peak
+                    prosp_peak_start_nm = max(possible_peak_starts) #prospective peak start
                     x_start_i = peak_start_i_dict[i][prosp_peak_start_nm]
                     x_end_i = peak_end_i_dict[i][prosp_peak_start_nm]
                     x_range_i = np.arange(x_start_i,x_end_i)

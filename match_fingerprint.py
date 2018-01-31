@@ -141,6 +141,7 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
             max_ri = ri_array[max_ri_index]
             max_ri_array = np.append(max_ri_array,max_ri)
         max_ri = np.median(max_ri_array)
+        max_ri_ind,max_ri = find_closest.find_closest(max_ri,ri_array) #taking a median one line abouve may make the ri a value outside of the ri_array. it must be in the ri_array for indexing purposes.
 
         metabolite_present = True
         metabolite_retention_index = max_ri
