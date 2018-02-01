@@ -1,13 +1,19 @@
-def even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals):
+def even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_max_dict):
 
     #move the lower peak border towards the center of the peak until it corresponds
     #    to an equal height of the other border
     #create a dictionary marking the peak indices where an index corresponds to a scan acquisition
     #the keys of the dictionary are mz values and the value is 0 for no peak at that index and 1 for a peak
 
+    import importlib #allows fresh importing of modules
+    import pdb #python debugger
     import numpy as np
     import copy
     import pdb
+    import find_closest
+    importlib.reload(find_closest)
+
+    peak_height_fraction = 0.5
 
     #copy the input dictionaries so as not to change their values in the function
     peak_start_i_dict_copy = copy.deepcopy(peak_start_i_dict)
@@ -20,6 +26,7 @@ def even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals):
     #iterate through each mz value and relocate either the start or end border to make them equal height
     for mz in mz_vals:
         ion_counts = ic_smooth_dict[mz]
+        peak_max_array = peak_max_dict[mz]
         peak_start_i_array = peak_start_i_dict_copy[mz]
         peak_end_i_array = peak_end_i_dict_copy[mz]
         n_peaks = len(peak_start_i_array)
@@ -29,37 +36,65 @@ def even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals):
         #iterate through each peak and determine if the start or end needs to be moved towards the center
         #    the one with a lower height will be moved inwards until the heights are equal
         for peak_iteration in peak_iteration_array:
-            peak_start_less = False
-            peak_start_i_even = peak_start_i_array[peak_iteration]
-            peak_end_i_even = peak_end_i_array[peak_iteration]
-            #if the beginning of the peak is lower, move it in
-            while ion_counts[peak_start_i_even] < ion_counts[peak_end_i_even]:
-                old_dif = ion_counts[peak_end_i_even] - ion_counts[peak_start_i_even]
-                new_dif = ion_counts[peak_end_i_even] - ion_counts[peak_start_i_even + 1]
-                #only accept the move if it brings the borders closer in height value
-                accept_move = np.abs(new_dif) < np.abs(old_dif)
-                if accept_move:
-                    peak_start_i_even = peak_start_i_even + 1
-                #if you can't get any closer by moving in the same direction, break the loop
-                if not accept_move:
-                    break
-                #if you moved the start, indicate so so that the end isn't moved as well
-                peak_start_less = True
-            #if the end of the peak is lower, move it in
-            while (ion_counts[peak_start_i_even] > ion_counts[peak_end_i_even]) & (not peak_start_less):
-                old_dif = ion_counts[peak_end_i_even] - ion_counts[peak_start_i_even]
-                new_dif = ion_counts[peak_end_i_even-1] - ion_counts[peak_start_i_even]
-                #only accept the move if it brings the borders closer in height value
-                accept_move = np.abs(new_dif) < np.abs(old_dif)
-                if accept_move:
-                    peak_end_i_even = peak_end_i_even - 1
-                #if you can't get any closer by moving in the same direction, break the loop
-                if not accept_move:
-                    break
-            peak_start_i_even_array[peak_iteration] = peak_start_i_even
-            peak_end_i_even_array[peak_iteration] = peak_end_i_even
+
+            #find the maximum of the current peak
+            peak_max = peak_max_array[peak_iteration]
+
+            #find the border indices of the current peak
+            peak_start_i = peak_start_i_array[peak_iteration]
+            peak_end_i = peak_end_i_array[peak_iteration]
+
+            #find the ion count values for the current peak
+            peak_ic_array = ion_counts[peak_start_i:peak_end_i+1]
+
+            #find the index of the max of the current peak
+            peak_ic_array_max_i = np.argmax(peak_ic_array)
+
+            #find the number of values in the current peak
+            n_peak_points = len(peak_ic_array)
+
+            #divide the peak into increasing and decreasing halves
+            peak_ic_increasing = peak_ic_array[0:peak_ic_array_max_i]
+            peak_ic_decreasing = peak_ic_array[peak_ic_array_max_i:n_peak_points]
+
+            #find the ion counts that start and end the peak
+            peak_start_ic = ion_counts[peak_start_i]
+            peak_end_ic = ion_counts[peak_end_i]
+
+            #calculate the height of the peak based on the distance of the max from the higher peak border
+            height_bot_ref = max(peak_start_ic,peak_end_ic)
+
+            #calculate the ion count that marks halfway to the max from the higher peak border
+            half_height_ic = peak_height_fraction*(peak_max - height_bot_ref) + height_bot_ref
+
+            #Initialize the indices which mark the region where the peak above the half_height_ic as defined above
+            #    They must be initialized because the conditions described below may not be satisfied (due to artifacts) to search for them
+            peak_start_i_even_array[peak_iteration] = peak_start_i
+            peak_end_i_even_array[peak_iteration] = peak_end_i
+
+            #Each of the increasing and decreasing vectors must contain values to search them
+            #    Some may not because an artifact of baseline correcting is that few peaks have values of zero and could have length of 2 or maybe 1
+            #    Baseline correcting is performed after peaks are found because it considers peak location
+            #    Another artifact is that some "peaks" are always decreasing or increasing resulting in one of these vectors being empty
+            #    Anything recorded as a peak that is actually an artifact could be removed (at an expense), but these values are usually in the "noise" regime
+            if (len(peak_ic_increasing)>0) & (len(peak_ic_decreasing)>0):
+
+                #Find the indices where the peak is closest to it's half_height_ic
+                peak_ic_increasing_halfheight_i, peak_ic_increasing_halfheight_val = find_closest.find_closest(half_height_ic,peak_ic_increasing)
+                peak_ic_decreasing_halfheight_i, peak_ic_decreasing_halfheight_val = find_closest.find_closest(half_height_ic,peak_ic_decreasing)
+
+                #convert peak indices to overall indices for the mz value
+                peak_start_halfheight_i = peak_start_i + peak_ic_increasing_halfheight_i
+                peak_end_halfheight_i = peak_start_i + len(peak_ic_increasing) + peak_ic_decreasing_halfheight_i
+
+                #store these half_height_ic interval demarcating indices for each peak in an array
+                peak_start_i_even_array[peak_iteration] = peak_start_halfheight_i
+                peak_end_i_even_array[peak_iteration] = peak_end_halfheight_i
+
+        #store the arrays of half_height_ic interval demarcating indices for each mz in the dictionary initialized previously
         peak_start_i_even_dict[mz] = peak_start_i_even_array
         peak_end_i_even_dict[mz] = peak_end_i_even_array
+
 
     #create the dictionary marking the peak indices where an index corresponds to a scan acquisition
     #    the keys of the dictionary are mz values and the value is 0 for no peak at that index and 1 for a peak

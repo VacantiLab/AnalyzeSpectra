@@ -126,7 +126,7 @@ for filename in files:
 
     #calculate peak overlap dictionary
     print('    finding coeluting peaks ...')
-    peak_overlap_dictionary = even_borders.even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals)
+    peak_overlap_dictionary = even_borders.even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_max_dict)
 
     #the first sample must always be alkanes - plan to make this optional later
     #find the retention time to retention index conversion
