@@ -32,8 +32,8 @@ import convert_rt_ri
 importlib.reload(convert_rt_ri)
 import get_directory
 importlib.reload(get_directory)
-import even_borders
-importlib.reload(even_borders)
+import locate_overlap
+importlib.reload(locate_overlap)
 
 
 #retrieve file directory
@@ -126,7 +126,7 @@ for filename in files:
 
     #calculate peak overlap dictionary
     print('    finding coeluting peaks ...')
-    peak_overlap_dictionary = even_borders.even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_max_dict)
+    peak_overlap_dictionary = locate_overlap.locate_overlap(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_max_dict)
 
     #the first sample must always be alkanes - plan to make this optional later
     #find the retention time to retention index conversion

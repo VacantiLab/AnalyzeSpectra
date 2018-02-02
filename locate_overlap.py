@@ -1,9 +1,9 @@
-def even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_max_dict):
+def locate_overlap(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_max_dict):
 
-    #move the lower peak border towards the center of the peak until it corresponds
-    #    to an equal height of the other border
-    #create a dictionary marking the peak indices where an index corresponds to a scan acquisition
-    #the keys of the dictionary are mz values and the value is 0 for no peak at that index and 1 for a peak
+    #find the index borders designating the fractional-heights of each peak
+    #    if the fractional height is designated as 0.5, the indices found designate the borders marking the half-height width
+    #create a dictionary marking the peak overlap indices
+    #    the keys of the dictionary are mz values and the value is 0 for no peak at that index and 1 for a peak
 
     import importlib #allows fresh importing of modules
     import pdb #python debugger
@@ -20,8 +20,8 @@ def even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_m
     peak_end_i_dict_copy = copy.deepcopy(peak_end_i_dict)
 
     #initialize the peak border dictionaries where the borders are of equal height
-    peak_start_i_even_dict = dict()
-    peak_end_i_even_dict = dict()
+    peak_start_i_overlap_dict = dict()
+    peak_end_i_overlap_dict = dict()
 
     #iterate through each mz value and relocate either the start or end border to make them equal height
     for mz in mz_vals:
@@ -31,8 +31,8 @@ def even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_m
         peak_end_i_array = peak_end_i_dict_copy[mz]
         n_peaks = len(peak_start_i_array)
         peak_iteration_array = np.arange(0,n_peaks)
-        peak_start_i_even_array = copy.copy(peak_start_i_array)
-        peak_end_i_even_array = copy.copy(peak_end_i_array)
+        peak_start_i_overlap_array = copy.copy(peak_start_i_array)
+        peak_end_i_overlap_array = copy.copy(peak_end_i_array)
         #iterate through each peak and determine if the start or end needs to be moved towards the center
         #    the one with a lower height will be moved inwards until the heights are equal
         for peak_iteration in peak_iteration_array:
@@ -69,8 +69,8 @@ def even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_m
 
             #Initialize the indices which mark the region where the peak above the half_height_ic as defined above
             #    They must be initialized because the conditions described below may not be satisfied (due to artifacts) to search for them
-            peak_start_i_even_array[peak_iteration] = peak_start_i
-            peak_end_i_even_array[peak_iteration] = peak_end_i
+            peak_start_i_overlap_array[peak_iteration] = peak_start_i
+            peak_end_i_overlap_array[peak_iteration] = peak_end_i
 
             #Each of the increasing and decreasing vectors must contain values to search them
             #    Some may not because an artifact of baseline correcting is that few peaks have values of zero and could have length of 2 or maybe 1
@@ -88,19 +88,19 @@ def even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_m
                 peak_end_halfheight_i = peak_start_i + len(peak_ic_increasing) + peak_ic_decreasing_halfheight_i
 
                 #store these half_height_ic interval demarcating indices for each peak in an array
-                peak_start_i_even_array[peak_iteration] = peak_start_halfheight_i
-                peak_end_i_even_array[peak_iteration] = peak_end_halfheight_i
+                peak_start_i_overlap_array[peak_iteration] = peak_start_halfheight_i
+                peak_end_i_overlap_array[peak_iteration] = peak_end_halfheight_i
 
         #store the arrays of half_height_ic interval demarcating indices for each mz in the dictionary initialized previously
-        peak_start_i_even_dict[mz] = peak_start_i_even_array
-        peak_end_i_even_dict[mz] = peak_end_i_even_array
+        peak_start_i_overlap_dict[mz] = peak_start_i_overlap_array
+        peak_end_i_overlap_dict[mz] = peak_end_i_overlap_array
 
 
     #create the dictionary marking the peak indices where an index corresponds to a scan acquisition
     #    the keys of the dictionary are mz values and the value is 0 for no peak at that index and 1 for a peak
     #    the values indicating a peak are assigned over a range
     #    say the peak has borders from indices 1000 to 1020
-    #        the peak may be indicated to extend from the 25th to 80th percentile of the range (the inner 50% of the index range)
+    #        the peak may be indicated to extend from the beginning of its half (or whatever the designated fraction is) height to the end of it's half-height
 
     #initialize the dictionary
     peak_range_dict = dict()
@@ -111,17 +111,17 @@ def even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_m
         #initialize each key entry
         peak_range_dict[mz] = np.zeros(n_scans)
         all_indices = np.arange(0,n_scans)
-        peak_start_i_even_array = peak_start_i_even_dict[mz]
-        peak_end_i_even_array = peak_end_i_even_dict[mz]
-        n_peaks = len(peak_start_i_even_array)
+        peak_start_i_overlap_array = peak_start_i_overlap_dict[mz]
+        peak_end_i_overlap_array = peak_end_i_overlap_dict[mz]
+        n_peaks = len(peak_start_i_overlap_array)
         peak_iterations = np.arange(0,n_peaks)
         #iterate through each scan to determine if it occurs during a peak elution
         for i in all_indices:
             #iterate through each peak and check to see if it is eluting during the current scan
             j = 0
             for p in peak_iterations:
-                current_start = peak_start_i_even_array[p]
-                current_end = peak_end_i_even_array[p]
+                current_start = peak_start_i_overlap_array[p]
+                current_end = peak_end_i_overlap_array[p]
 
                 #if the current scan falls before the current peak
                 #    stop searching the peaks because subsequenc peaks have later starts (are in order)
@@ -148,7 +148,5 @@ def even_borders(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_m
                     peak_iterations = peak_iterations[new_peak_iterations_indices]
 
                 j = j+1
-
-
 
     return(peak_range_dict)
