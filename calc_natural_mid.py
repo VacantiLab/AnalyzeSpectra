@@ -19,10 +19,11 @@ def calc_natural_mid(formula):
     atom_abundances['N'] = pandas.Series([0.99632,0.00368,0],index=['M0','M1','M2'])
     atom_abundances['O'] = pandas.Series([0.99757,0.00038,0.00205],index=['M0','M1','M2'])
     atom_abundances['Si'] = pandas.Series([0.922297,0.046832,0.030872],index=['M0','M1','M2'])
+    atom_abundances['S'] = pandas.Series([0.9500,0.0075,0.0425],index=['M0','M1','M2'])
     atom_abundances['Hv'] = pandas.Series([0,1,0],index=['M0','M1','M2'])
 
     #determine how many relative abundances are being considered
-    n_rel_abuns = len(atom_abundances['C'])
+    n_rel_abuns = len(atom_abundances['S'])
 
     #make a data frame out of the atom_abundances library
     #atom_abundances_df = pandas.DataFrame(atom_abundances)
