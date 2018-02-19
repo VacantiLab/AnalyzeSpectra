@@ -37,7 +37,7 @@ importlib.reload(locate_overlap)
 
 
 #retrieve file directory
-retrieve_directory_method = 'manual'
+retrieve_directory_method = 'gui'
 file_directory = get_directory.get_directory(retrieve_directory_method)
 
 #Get a list of all of the files in the specified directory
