@@ -16,10 +16,19 @@ mz_plot = ['tic','blank','blank','blank']
 mz_colors = ['red','blue','green','purple']
 
 #retrieve file directory
-retrieve_directory_method = 'manual'
-file_directory = get_directory.get_directory(retrieve_directory_method)
+retrieve_directory_method = 'gui_file' #specifies you want to select the file with the gui
+file_path = get_directory.get_directory(retrieve_directory_method)
+#    returns the path to the file including the filename and extension
+file_directory = re.sub('/[^/]*$','',file_path)+'/'
+#    removes the filename and extension, leaving the terminating /
+#        '/[^/]*$': '/' -> match '/'; ''[^/]*'' -> any character except / any number of times; '$'' -> end of string
 
-filename = 'p07_t47d_250k.CDF'
+#get the file name
+regex_pattern = re.compile('/[^/]*$')
+filename_regex = regex_pattern.search(file_path)
+filename = filename_regex[0]
+filename = re.sub('/','',filename)
+
 sample_name = filename.split('.')[0]
 input_data_file = file_directory + 'processed_data.p'
 output_plot_file = file_directory + 'plot1.html'
