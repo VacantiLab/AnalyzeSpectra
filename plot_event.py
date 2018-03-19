@@ -17,6 +17,7 @@ mz_colors = ['red','blue','green','purple']
 
 #retrieve file directory
 retrieve_directory_method = 'gui_file' #specifies you want to select the file with the gui
+#    options are: 'manual', 'gui', 'manual_file', 'gui_file'
 file_path = get_directory.get_directory(retrieve_directory_method)
 #    returns the path to the file including the filename and extension
 file_directory = re.sub('/[^/]*$','',file_path)+'/'
@@ -47,7 +48,10 @@ source = {}
 mz_text = {}
 legend = {}
 
-x_data = file_data[sample_name]['ri'] #this does not change with mz so it is set outside the loop
+x_data_source = 'ri'
+#    can be 'ri' for retention indices or 'sats' for scan acquisition times
+
+x_data = file_data[sample_name][x_data_source] #this does not change with mz so it is set outside the loop
 blank_data = np.zeros(len(x_data))
 for i in range(0,len(blank_data)):
     blank_data[i] = np.nan

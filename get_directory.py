@@ -21,4 +21,8 @@ def get_directory(retrieve_directory_method):
         file_directory = askopenfilename()
         root.update() #required so the directory request dialog box disappears and does not freeze
 
+    if retrieve_directory_method == 'manual_file':
+        #manually enter file directory because tkinter is giving troubles when used with pdb.set_trace()
+        file_directory = '/Users/Nate/Desktop/test_cdfs/TBDMS01_A549NTKD_DMSO.CDF'
+
     return(file_directory)
