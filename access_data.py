@@ -207,7 +207,8 @@ for filename in files:
     file_data[sample_name]['peak_end_ris'] = peak_end_ri_dict
     file_data[sample_name]['coelution_dictionary'] = coelut_dict
     file_data[sample_name]['coelution_dicionary_values'] = coelut_dict_val
-
+    file_data[sample_name]['peak_overlap_dictionary'] = peak_overlap_dictionary
+    
     i=i+1
 
 #Save the output data into a python readable file

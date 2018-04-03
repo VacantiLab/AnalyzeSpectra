@@ -130,14 +130,7 @@ def locate_overlap(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak
 
                 #if the current scan is associated with a peak, mark it as a 1
                 if (i >= current_start) & (i <= current_end):
-                    current_interval = np.arange(current_start,current_end+1)
-                    inner_percentile_range = 50
-                    lower_percentile = (100-inner_percentile_range)/2
-                    upper_percentile = 100-lower_percentile
-                    current_interval_start = np.percentile(current_interval,lower_percentile)
-                    current_interval_end = np.percentile(current_interval,upper_percentile)
-                    if (i >= current_interval_start) & (i <= current_interval_end):
-                        peak_range_dict[mz][i] = 1
+                    peak_range_dict[mz][i] = 1
                     #once you find a peak associated with the current scan, you don't need to search the other peaks
                     break
 
