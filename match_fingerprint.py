@@ -155,12 +155,25 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
             metabolite_retention_index = max_ri
 
         # if i am looking at the alkanes sample, the first mz value must have a max intensity meeting a certain threshold for it to be considered present
+        # this tends to exclude larger alkanes that did not actually elute but have negligible peaks somewhere (I don't know why)
         max_value_threshold = 500
+        alkane_parent_ion = group_mz_vals_all[0]
+        alkane_parent_ion_max_val = max_value_array[0]
         if sample_name == 'alkanes':
-            threshold_condition = max_value_array[0] > max_value_threshold
+            threshold_condition = alkane_parent_ion_max_val > max_value_threshold
             if threshold_condition:
                 metabolite_present = True
                 metabolite_retention_index = max_ri
+
+            # the intensity of the next alkane parent ion must also not be above the threshold if it is present
+            # this excludes finding a smaller alkane that is not there because it is a fragment of a larger alkane
+            next_alkane_mz = alkane_parent_ion + 14
+            co_eluting_mz_array = coelut_dict[metabolite_ri] # if you use max_ri this is a problem for some reason
+            co_eluting_mz_val_array = coelut_dict_val[metabolite_ri]
+            if np.isin(next_alkane_mz,co_eluting_mz_array):
+                next_alkane_i = np.where(next_alkane_mz == co_eluting_mz_array)[0]
+                if co_eluting_mz_val_array[next_alkane_i] > max_value_threshold:
+                    metabolite_present = False
 
     return(metabolite_present,metabolite_retention_index)
 

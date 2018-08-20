@@ -54,6 +54,7 @@ def find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_va
     #        thus the sat, mz, and nc value of the alkanes corresponding can all be gathered from this array of indices
     #in progress
     alkane_elut_ind = np.array([])
+    alkane_rt_array = np.array([])
     j = 0
     for alkane in alkane_names:
         metabolite = alkane
@@ -61,6 +62,7 @@ def find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_va
         alkane_present,alkane_rt = match_fingerprint.match_fingerprint(sat,coelut_dict_sat,coelut_dict_val_sat,alkane_dict,mz_vals,ic_smooth_dict,metabolite,sample_name,ri_window)
         if alkane_present == True:
             alkane_elut_ind = np.append(alkane_elut_ind,j)
+            alkane_rt_array = np.append(alkane_rt_array,alkane_rt)
         j = j+1
     alkane_elut_ind = alkane_elut_ind.astype('int')
 
@@ -71,8 +73,6 @@ def find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_va
     #find the indices corresponding to the scan number of those mz's above the threshold
     alkane_mz_maxi = alkane_mz_maxi[[alkane_elut_ind]]
     ri_sat = sat_array[[alkane_mz_maxi]]
-
-    pdb.set_trace()
 
     #Transform the sat array to an ri array
 
