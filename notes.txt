@@ -1,0 +1,1 @@
+- The peak profile in the library causes match_fingerprint to look for certain peaks to match a group. Document those rules and maybe make them different for the alkanes (i.e. don't allow for labeling).
