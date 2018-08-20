@@ -49,6 +49,7 @@ mz_text = {}
 legend = {}
 
 x_data_source = 'ri'
+#x_data_source = 'sats'
 #    can be 'ri' for retention indices or 'sats' for scan acquisition times
 
 x_data = file_data[sample_name][x_data_source] #this does not change with mz so it is set outside the loop

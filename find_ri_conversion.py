@@ -72,6 +72,8 @@ def find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_va
     alkane_mz_maxi = alkane_mz_maxi[[alkane_elut_ind]]
     ri_sat = sat_array[[alkane_mz_maxi]]
 
+    pdb.set_trace()
+
     #Transform the sat array to an ri array
 
     #arrage retention index and corresponding retention time arrays in increasing order (should be in decreasing order previously)

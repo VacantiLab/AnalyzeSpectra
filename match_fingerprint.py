@@ -129,6 +129,7 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
     metabolite_retention_index = np.array([]) #initialize this value
     if len(intersection) >= 1: #there must be 1 point of overlap
         max_ri_array = np.array([])
+        max_value_array = np.array([])
         for mz_to_max in group_mz_vals_all:
             intersection_indices = np.array([])
             for i in intersection:
@@ -140,11 +141,26 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
             max_ri_index = intersection_indices[max_index]
             max_ri = ri_array[max_ri_index]
             max_ri_array = np.append(max_ri_array,max_ri)
+
+            max_value = np.amax(value_array)
+            max_value_array = np.append(max_value_array,max_value)
+
         max_ri = np.median(max_ri_array)
         max_ri_ind,max_ri = find_closest.find_closest(max_ri,ri_array) #taking a median one line abouve may make the ri a value outside of the ri_array. it must be in the ri_array for indexing purposes.
 
-        metabolite_present = True
-        metabolite_retention_index = max_ri
+        max_value = np.amax(max_value_array)
+
+        if sample_name != 'alkanes':
+            metabolite_present = True
+            metabolite_retention_index = max_ri
+
+        # if i am looking at the alkanes sample, the first mz value must have a max intensity meeting a certain threshold for it to be considered present
+        max_value_threshold = 500
+        if sample_name == 'alkanes':
+            threshold_condition = max_value_array[0] > max_value_threshold
+            if threshold_condition:
+                metabolite_present = True
+                metabolite_retention_index = max_ri
 
     return(metabolite_present,metabolite_retention_index)
 
