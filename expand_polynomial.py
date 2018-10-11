@@ -58,8 +58,8 @@ def expand_polynomial(a,b):
 
     #shorten factored to remove negligible values
     n_factored = len(factored)
-    if n_factored > 10:
-        factored = factored.iloc[0:10]
+    if n_factored > 22:
+        factored = factored.iloc[0:22]
 
     #return the DataFrame containing the mass isotopomer distrubution of the molecule ab
     return(factored)

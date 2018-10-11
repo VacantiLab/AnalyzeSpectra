@@ -72,6 +72,9 @@ for filename in filename_holder:
     if not is_netcdf:
         files.remove(filename)
 
+#place the files in alphabetical order so they are processed and printed in order
+files = sorted(files)
+
 #place alkanes.CDF at the beginning of the list (right now it must be there)
 files.remove('alkanes.CDF')
 files = ['alkanes.CDF'] + files
@@ -208,7 +211,7 @@ for filename in files:
     file_data[sample_name]['coelution_dictionary'] = coelut_dict
     file_data[sample_name]['coelution_dicionary_values'] = coelut_dict_val
     file_data[sample_name]['peak_overlap_dictionary'] = peak_overlap_dictionary
-    
+
     i=i+1
 
 #Save the output data into a python readable file
