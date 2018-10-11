@@ -1,9 +1,18 @@
-def print_integrated_peaks(file_directory,samples,metabolite_list,file_data):
+def print_integrated_peaks(file_directory,samples,metabolite_list,file_data,corrected):
 
     import numpy as np
     import pdb
 
-    output_text_file = file_directory + 'integrated_peaks.txt'
+    #specify if the corrected or uncorrected (for natural isotopic abundances) MIDs are printed
+    if corrected:
+        mid_to_print = 'mid_c'
+        text_file_name = 'IntegratedPeaks_CorrectedNaturalAbundances.txt'
+
+    if not corrected:
+        mid_to_print = 'mid'
+        text_file_name = 'IntegratedPeaks_UncorrectedNaturalAbundances.txt'
+
+    output_text_file = file_directory + text_file_name
     file_object_text = open(output_text_file,'w')
 
     samples_string = '\t'.join(samples)
@@ -44,14 +53,14 @@ def print_integrated_peaks(file_directory,samples,metabolite_list,file_data):
     for metabolite_iter in metabolite_list:
         fragment_list = list(dict.keys(file_data[samples[0]]['metabolites'][metabolite_iter]['fragments']))
         for fragment in fragment_list:
-            mid_length = len(file_data[samples[0]]['metabolites'][metabolite_iter]['fragments'][fragment]['mid_c'])
+            mid_length = len(file_data[samples[0]]['metabolites'][metabolite_iter]['fragments'][fragment][mid_to_print])
             mid_members = range(0,mid_length)
             for M in mid_members:
                 fragment_mi_name = fragment + ' ' + 'M' + str(mid_members[M])
                 file_object_text.write(fragment_mi_name)
                 file_object_text.write('\t')
                 for sample_name in samples:
-                    mi_to_round = file_data[sample_name]['metabolites'][metabolite_iter]['fragments'][fragment]['mid_c'][M]
+                    mi_to_round = file_data[sample_name]['metabolites'][metabolite_iter]['fragments'][fragment][mid_to_print][M]
                     mi_to_print = np.round(mi_to_round,decimals=6)
                     current_mi = str(mi_to_print)
                     file_object_text.write(current_mi)

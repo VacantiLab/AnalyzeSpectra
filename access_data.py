@@ -35,6 +35,8 @@ importlib.reload(get_directory)
 import locate_overlap
 importlib.reload(locate_overlap)
 
+#specify parameters for the script (this will be specified as a function input later)
+corrected = False
 
 #retrieve file directory
 retrieve_directory_method = 'gui'
@@ -221,6 +223,6 @@ pickle.dump(file_data,file_object)
 file_object.close()
 
 #Print output to a text file_data
-print_integrated_peaks.print_integrated_peaks(file_directory,samples,metabolite_list,file_data)
+print_integrated_peaks.print_integrated_peaks(file_directory,samples,metabolite_list,file_data,corrected)
 
 print('Data processed successfully.')
