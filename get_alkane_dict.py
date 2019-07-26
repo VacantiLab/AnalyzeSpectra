@@ -7,7 +7,8 @@ def get_alkane_dict(alkane_nc,alkane_mz_maxi,sat):
     alkane_names = np.array([])
     for nc in alkane_nc:
         nc = nc.astype('int')
-        to_append = np.array_str(nc) + '_carbon_alkane'
+        #to_append = np.array_str(nc) + '_carbon_alkane'
+        to_append = nc.astype(str) + '_carbon_alkane'
         alkane_names = np.append(alkane_names,to_append )
 
     #upon EI fragmentation, alkanes have a peak at mz equal to their molecular weight and a tail peak at one above
