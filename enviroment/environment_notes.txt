@@ -1,0 +1,1 @@
+- Miniconda3 4.5.12 needs to be installed to ensure the version of numpy specified in the .yml file is actually installed in the environment. This shouldn't be the case and is likely some sort of system problem.
