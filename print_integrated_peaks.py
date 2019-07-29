@@ -65,6 +65,13 @@ def print_integrated_peaks(file_directory,samples,metabolite_list,file_data,corr
                     current_mi = str(mi_to_print)
                     file_object_text.write(current_mi)
                     file_object_text.write('\t')
+                #print the MID for the fragment as it exists in nature
+                mi_to_round = file_data[sample_name]['metabolites'][metabolite_iter]['fragments'][fragment]['natural_mid'][M]
+                mi_to_print = np.round(mi_to_round,decimals=6)
+                current_mi = str(mi_to_print)
+                file_object_text.write(current_mi)
+                file_object_text.write('\t')
+
                 file_object_text.write('\n')
             file_object_text.write('\n')
 
