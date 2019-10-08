@@ -36,7 +36,7 @@ import locate_overlap
 importlib.reload(locate_overlap)
 
 #specify parameters for the script (this will be specified as a function input later)
-corrected = False
+corrected = True
 
 #retrieve file directory
 retrieve_directory_method = 'gui'
