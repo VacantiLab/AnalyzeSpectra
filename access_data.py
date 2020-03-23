@@ -269,11 +269,11 @@ for batch in batches:
     samples = np.delete(samples,0)
     samples_all = np.append(samples_all,samples)
 
-#Save the output data into a python readable file
-output_data_file = file_directory + 'processed_data.p'
-file_object = open(output_data_file,'wb')
-pickle.dump(file_data,file_object)
-file_object.close()
+# #Save the output data into a python readable file
+# output_data_file = file_directory + 'processed_data.p'
+# file_object = open(output_data_file,'wb')
+# pickle.dump(file_data,file_object)
+# file_object.close()
 
 #Print output to a text file_data
 print_integrated_peaks.print_integrated_peaks(file_directory,samples_all,metabolite_list,file_data,corrected)
