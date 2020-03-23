@@ -48,7 +48,7 @@ import GetFileBatch
 importlib.reload(GetFileBatch)
 
 #specify parameters for the script (this will be specified as a function input later)
-corrected = False
+corrected = True
 
 #retrieve file directory
 retrieve_directory_method = 'gui'
@@ -64,11 +64,6 @@ if not library_processed:
     print('processing library...')
     metabolite_dict,metabolite_list = fragment_library.fragment_library(file_directory)
 
-    #Save the library into a python readable file
-    output_library_file = file_directory + 'library.p'
-    with open(output_library_file,'wb') as library_file_object:
-        pickle.dump(metabolite_dict,library_file_object)
-
 if library_processed:
     #load the processed library
     print('opening previously processed library...')
@@ -76,6 +71,14 @@ if library_processed:
     with open(input_library_file,'rb') as library_file_object:
         metabolite_dict = pickle.load(library_file_object)
         metabolite_list = list(dict.keys(metabolite_dict))
+    #Check for new metabolites
+    metabolite_dict,metabolite_list = fragment_library.fragment_library(file_directory,metabolite_dict)
+
+#Save the library into a python readable file
+output_library_file = file_directory + 'library.p'
+with open(output_library_file,'wb') as library_file_object:
+    pickle.dump(metabolite_dict,library_file_object)
+
 
 #Remove filenames that are not NetCDF files
 netcdf_pattern = re.compile('.cdf$|.netcdf$',re.IGNORECASE)

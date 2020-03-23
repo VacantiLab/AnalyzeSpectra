@@ -1,4 +1,4 @@
-def fragment_library(file_directory):
+def fragment_library(file_directory,metabolite_dict='none'):
 
     import importlib #allows fresh importing of modules
     import pdb
@@ -12,7 +12,36 @@ def fragment_library(file_directory):
 
     #file_name_read = '/Users/Nate/Desktop/netcdf_test/tbdms_lib.txt'
     file_name_read = file_directory + 'library.txt'
-    metabolite_dict = dict()
+
+    #determine if this is run to extend a library or create a new one
+    extend_library = False
+    if type(metabolite_dict)==dict:
+        extend_library = True
+
+    create_library = False
+    if type(metabolite_dict)!=dict:
+        create_library = True
+        metabolite_dict = dict()
+
+    #Get a list of metabolites in the library.txt file
+    if extend_library:
+        metabolite_array_txt = np.array([])
+        file_line_n = 0
+        with open(file_name_read, 'r') as read_file:
+            for line in read_file:
+                file_line_n = file_line_n + 1 #iterate the line number
+                line_split = line.split(':') #split the line into a list of strings, colons mark separations
+                #if the first word on the line is 'metabolite', gather the fragment information
+                if line_split[0]=='metabolite':
+                    metabolite_name = line_split[1].lstrip().rstrip()
+                    metabolite_array_txt = np.append(metabolite_array_txt,metabolite_name)
+
+        #Get the list of metabolites that are already in the library
+        metabolite_array_pfile = np.array(list(dict.keys(metabolite_dict)))
+
+        #Get the list of metabolites that are in the library.txt file but not in the processed library.p file
+        metabolites_to_add = np.setdiff1d(metabolite_array_txt,metabolite_array_pfile)
+
 
     #open a .txt file with the fragment information and import it
     #.txt file has format:
@@ -29,8 +58,18 @@ def fragment_library(file_directory):
         for line in read_file:
             file_line_n = file_line_n + 1 #iterate the line number
             line_split = line.split(':') #split the line into a list of strings, colons mark separations
+            line_first_word = line_split[0]
+            add_metabolite_info_criteria = False
+
+            if line_first_word =='metabolite':
+                current_metabolite = line_split[1].lstrip().rstrip() #remove white space characters from the left and right of the metabolite name
+                if create_library:
+                    add_metabolite_info_criteria = line_first_word=='metabolite'
+                if extend_library:
+                    add_metabolite_info_criteria = current_metabolite in metabolites_to_add
+
             #if the first word on the line is 'metabolite', gather the fragment information
-            if line_split[0]=='metabolite':
+            if add_metabolite_info_criteria:
                 before_blankline_border = True
                 metabolite_name = line_split[1].lstrip().rstrip() #remove white space characters from the left and right of the fragment name
                 print('    ' + metabolite_name)
@@ -78,6 +117,7 @@ def fragment_library(file_directory):
                                     if fragment_line_n == metabolite_line_n:
                                         fragment_line_item = fragment_line_split[1].lstrip().rstrip() #must be defined within the if statement because it causes an error for an empty line
                                         fragment_name = fragment_line_item
+                                        fragment_name = fragment_name.split(' ')[0]
                                         metabolite_dict[metabolite_name]['fragments'][fragment_name] = dict()
                                         metabolite_dict[metabolite_name]['fragments'][fragment_name]['areas'] = np.array([])
                                     #when you are at the formula line, record the formula and calculate the inverted correction matrix
