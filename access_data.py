@@ -1,3 +1,13 @@
+#This script expects two tab-delimited text files to be stored where the data is stored
+#    The first is files_to_batch.txt
+#        This file has two columns, the first "file_name" and the second "batch"
+#        The file_name is the name of the file including the extension
+#        The batch is a number indicating which files will be analyzed with the same alkane file
+#    The second is "batch_to_alkane.txt"
+#        This file has two columns, the first "batch" and the second "alkane_file"
+#        The "batch" is the number of the batch
+#        The "alkane_file" is the alkane file corresponding to that batch number
+
 import importlib #allows fresh importing of modules
 import pdb #python debugger
 #import plotly #for plotting, not used here?
@@ -81,6 +91,15 @@ files = sorted(files)
 
 #get the mappings of the sample file names to the propper batch and the batch names to the propper alkane file
 file_name_to_batch,batch_to_alkane,alkane_files,batches = GetFileBatch.GetFileBatch(file_directory)
+#    This file expects two tab-delimited text files to be stored where the data is stored
+#        The first is files_to_batch.txt
+#            This file has two columns, the first "file_name" and the second "batch"
+#            The file_name is the name of the file including the extension
+#            The batch is a number indicating which files will be analyzed with the same alkane file
+#        The second is "batch_to_alkane.txt"
+#            This file has two columns, the first "batch" and the second "alkane_file"
+#            The "batch" is the number of the batch
+#            The "alkane_file" is the alkane file corresponding to that batch number
 
 #remove the alkane files from the file list
 for alkane_file in alkane_files:
@@ -92,14 +111,26 @@ output_plot_directory,output_directory = create_output_directory.create_output_d
 #Initialize a dictionary to contain all of the outputs of integrating each NetCDF file in the specified directory
 file_data = {}
 
-#HERE 2020-03-19: Need to separate the file names by their batches and integrate them using the propper alkane file
+#Initialize an array to contain all sample names
+samples_all = np.array([])
 
+#Separate the file names by their batches and integrate them using the propper alkane file
 #iterate through the batches and analyze
 for batch in batches:
 
     #Get a list of the filenames in the current batch
     indices = file_name_to_batch['batch']==batch
-    files_in_batch = file_name_to_batch['batch'][indices] #does not work yet
+    files = file_name_to_batch['file_name'][indices]
+    files = np.array(files)
+
+    #Get the name of the corresponding alkane file
+    alkane_file_index = batch_to_alkane['batch']==batch
+    alkane_file = batch_to_alkane['alkane_file'][alkane_file_index]
+    alkane_file = np.array(alkane_file) #it is converted to a np array so the next line works
+    alkane_name = alkane_file[0].split('.')[0] #removes the .CDF from the end of the filename
+
+    #Add the name of the alkane file to the beginning of the list
+    files = np.insert(files,0,alkane_file)
 
     #Iterate through each NetCDF file and process the data
     i=0
@@ -151,7 +182,7 @@ for batch in batches:
         #the first sample must always be alkanes - plan to make this optional later
         #find the retention time to retention index conversion
         #    one array is retention indices and the other is corresponding retention times
-        if sample_name == 'alkanes':
+        if sample_name == alkane_name:
             #calculate the coelution dictionary with the scan acquisition times as keys
             #    coelution_dict_sat has keys of sat's and arrays of mz's whoe peaks elute at those sat's
             #    coelution_dict_val is the same except the arrays are the corresponding intensity values of the eluting peaks at the sat of the key
@@ -231,6 +262,10 @@ for batch in batches:
 
         i=i+1
 
+    #Remove the alkane file from the sample list and update the samples_all list
+    samples = np.delete(samples,0)
+    samples_all = np.append(samples_all,samples)
+
 #Save the output data into a python readable file
 output_data_file = file_directory + 'processed_data.p'
 file_object = open(output_data_file,'wb')
@@ -238,6 +273,6 @@ pickle.dump(file_data,file_object)
 file_object.close()
 
 #Print output to a text file_data
-print_integrated_peaks.print_integrated_peaks(file_directory,samples,metabolite_list,file_data,corrected)
+print_integrated_peaks.print_integrated_peaks(file_directory,samples_all,metabolite_list,file_data,corrected)
 
 print('Data processed successfully.')
