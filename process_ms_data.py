@@ -19,6 +19,7 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
     p=bkp.figure(title='ic vs. time', x_axis_label='time',y_axis_label='ic',plot_width=1000)
     ic_smooth_dict = dict()
     ic_nsmooth_dict = dict()
+    ic_dict = dict()
     peak_start_t_dict = dict()
     peak_end_t_dict = dict()
     peak_start_i_dict = dict()
@@ -86,6 +87,7 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
         base[base_too_high_indices] = y_data_smooth[base_too_high_indices]
         y_smooth_cor = y_data_smooth - base
         ic_smooth_dict[plotted_mz] = y_smooth_cor
+        ic_dict[plotted_mz] = y_data_numpy
         y_nsmooth_cor = y_data_numpy - base
         ic_nsmooth_dict[plotted_mz] = y_nsmooth_cor
 
@@ -116,4 +118,4 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
 
         j=j+1 #index of mz
 
-    return(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,peak_i_dict,peak_max_dict,p,peak_sat_dict)
+    return(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,peak_i_dict,peak_max_dict,p,peak_sat_dict,ic_dict)

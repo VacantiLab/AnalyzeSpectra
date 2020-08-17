@@ -165,7 +165,7 @@ for batch in batches:
         print('    subtracting baselines and smoothing...')
         (ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
         peak_start_i_dict,peak_end_i_dict,x_data_numpy,peak_i_dict,
-        peak_max_dict,p,peak_sat_dict) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals)
+        peak_max_dict,p,peak_sat_dict,ic_dict) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals)
              #ic_smooth_dict: a dictionary containing the smoothed and baseline corrected ion count data for each m/z value
              #peak_start_t_dict: a dictionary with all of the peak beginning times for each m/z ion count plot
              #peak_end_t_dict: a dictionary with all of the peak ending times for each m/z ion count plot
