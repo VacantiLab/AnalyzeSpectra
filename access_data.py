@@ -249,6 +249,7 @@ for batch in batches:
         file_data[sample_name]['metabolites'] = copy.deepcopy(metabolite_dict_complete)
         file_data[sample_name]['ics_smooth_bc'] = ic_smooth_dict #bc stands for baseline-corrected
         file_data[sample_name]['ics_smooth_timekeys'] = ic_smooth_dict_timekeys
+        file_data[sample_name]['ic_dict'] = ic_dict
         file_data[sample_name]['sats'] = x_data_numpy
         file_data[sample_name]['ri'] = ri_array
         file_data[sample_name]['mz_vals'] = mz_vals
