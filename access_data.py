@@ -184,6 +184,7 @@ for batch in batches:
         #add the total ion count to the dictionary
         #    note it is not smoothed because it does not really make sense to smooth total ion count data
         ic_smooth_dict['tic'] = tic
+        ic_dict['tic'] = tic
 
         #calculate peak overlap dictionary
         print('    finding coeluting peaks ...')
@@ -256,7 +257,7 @@ for batch in batches:
         file_data[sample_name]['metabolites'] = copy.deepcopy(metabolite_dict_complete)
         file_data[sample_name]['ics_smooth_bc'] = ic_smooth_dict #bc stands for baseline-corrected
         file_data[sample_name]['ics_smooth_timekeys'] = ic_smooth_dict_timekeys
-        file_data[sample_name]['ic_dict'] = ic_dict
+        file_data[sample_name]['ics'] = ic_dict
         file_data[sample_name]['sats'] = x_data_numpy
         file_data[sample_name]['ri'] = ri_array
         file_data[sample_name]['mz_vals'] = mz_vals
@@ -277,11 +278,11 @@ for batch in batches:
     samples = np.delete(samples,0)
     samples_all = np.append(samples_all,samples)
 
-# #Save the output data into a python readable file
-# output_data_file = file_directory + 'processed_data.p'
-# file_object = open(output_data_file,'wb')
-# pickle.dump(file_data,file_object)
-# file_object.close()
+#Save the output data into a python readable file
+output_data_file = file_directory + 'processed_data.p'
+file_object = open(output_data_file,'wb')
+pickle.dump(file_data,file_object)
+file_object.close()
 
 #Print output to a text file_data
 print_integrated_peaks.print_integrated_peaks(file_directory,samples_all,metabolite_list,file_data,corrected)
