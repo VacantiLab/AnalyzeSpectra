@@ -9,7 +9,7 @@
 #        The "alkane_file" is the alkane file corresponding to that batch number
 
 import importlib #allows fresh importing of modules
-import pdb #python debugger
+from pdb import set_trace #python debugger
 #import plotly #for plotting, not used here?
 from os import listdir #needed to get a list of files
 import re #for regular expressions
@@ -127,10 +127,17 @@ for batch in batches:
     files = np.array(files)
 
     #Get the name of the corresponding alkane file
-    alkane_file_index = batch_to_alkane['batch']==batch
+    #    the variable batches becomes a different data type if there is only one batch
+    #        thus there are the if statements to handle it correctly
+    if len(batches)>1:
+        alkane_file_index = batch_to_alkane['batch']==batch
+    if len(batches)==1:
+        alkane_file_index = int(batch_to_alkane['batch']==batch)
     alkane_file = batch_to_alkane['alkane_file'][alkane_file_index]
-    alkane_file = np.array(alkane_file) #it is converted to a np array so the next line works
-    alkane_name = alkane_file[0].split('.')[0] #removes the .CDF from the end of the filename
+    if len(batches)>1:
+        alkane_file = np.array(alkane_file) #it is converted to a np array so the next line works
+        alkane_name = alkane_file[0].split('.')[0] #removes the .CDF from the end of the filename
+    alkane_name = alkane_file.split('.')[0] #removes the .CDF from the end of the filename
 
     #Add the name of the alkane file to the beginning of the list
     files = np.insert(files,0,alkane_file)
