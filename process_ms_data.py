@@ -15,7 +15,7 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
 
     mz_to_plot = [174,175,176,177,178,179]
     mz_colors = ['red','green','blue','yellow','purple','orange']
-    bkp.output_file(output_plot_directory)
+    #bkp.output_file(output_plot_directory)
     p=bkp.figure(title='ic vs. time', x_axis_label='time',y_axis_label='ic',plot_width=1000)
     ic_smooth_dict = dict()
     ic_nsmooth_dict = dict()
