@@ -7,6 +7,8 @@
 #        This file has two columns, the first "batch" and the second "alkane_file"
 #        The "batch" is the number of the batch
 #        The "alkane_file" is the alkane file corresponding to that batch number
+#This script can be run without either text file described above
+#    In that case it would reference only a sinlge alkane file that must be named: alkanes.CDF
 
 import importlib #allows fresh importing of modules
 from pdb import set_trace #python debugger
@@ -132,7 +134,7 @@ for batch in batches:
     if len(batches)>1:
         alkane_file_index = batch_to_alkane['batch']==batch
     if len(batches)==1:
-        alkane_file_index = int(batch_to_alkane['batch']==batch)
+        alkane_file_index = 0
     alkane_file = batch_to_alkane['alkane_file'][alkane_file_index]
     if len(batches)>1:
         alkane_file = np.array(alkane_file) #it is converted to a np array so the next line works
