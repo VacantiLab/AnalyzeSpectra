@@ -1,0 +1,15 @@
+name: gcms10
+# These are the minimum number of packages that need to be specified
+#     Of course the dependencies of the specified packages need to be installed
+#         With the below version numbers speficied everything should be compatible for the software to work
+dependencies:
+- ipython=7.16
+- numpy=1.14
+- pandas=0.20
+- tk=8.6
+- bokeh=1.0
+- pip=20.2
+
+- pip:
+  - netcdf4==1.2.9
+  - peakutils==1.0.3
