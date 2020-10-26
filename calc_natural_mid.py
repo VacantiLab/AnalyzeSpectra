@@ -8,9 +8,8 @@ def calc_natural_mid(formula):
     import importlib #allows fresh importing of modules
     import numpy as np #this is numpy
     import pandas
-    import expand_polynomial
+    from AnalyzeSpectra import expand_polynomial
     import re
-    importlib.reload(expand_polynomial) #reload the custom function in case it was changed
 
     #define the atomic isotopic abundances, there must be an equal number for each atom
     atom_abundances = dict()

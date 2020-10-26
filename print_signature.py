@@ -5,10 +5,8 @@ import pickle
 import pdb
 from tkinter import Tk #allows for asking for a directory through a GUI
 from tkinter.filedialog import askdirectory #allows for asking for a directory through a GUI
-import find_closest
-importlib.reload(find_closest)
-import get_directory
-importlib.reload(get_directory)
+from AnalyzeSpectra import find_closest
+from AnalyzeSpectra import get_directory
 
 #the access_data.py script must be run first to produce the necessary input file
 #This function finds consecutive mz groups of 3 or more that are eluting at the specified retention index

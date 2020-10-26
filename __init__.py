@@ -1,1 +1,1 @@
-from gcms_plot_integrate.integrate import integrate
+from AnalyzeSpectra.integrate import integrate

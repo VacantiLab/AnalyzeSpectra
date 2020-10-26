@@ -6,10 +6,8 @@ def create_correction_matrix(formula,metabolite_atoms):
     import numpy as np
     import pandas
     import re
-    import calc_natural_mid
-    importlib.reload(calc_natural_mid)
-    import quantity_of_atom
-    importlib.reload(quantity_of_atom)
+    from AnalyzeSpectra import calc_natural_mid
+    from AnalyzeSpectra import quantity_of_atom
 
     #define the atom that can acquire a lable
     atom_labeled = 'C'

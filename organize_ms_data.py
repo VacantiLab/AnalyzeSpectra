@@ -5,8 +5,7 @@ def organize_ms_data(file_directory):
     from netCDF4 import Dataset #allows for opening netCDF files
     import numpy as np #this is numpy, allows for data frame and matrix handling
     import pandas #a module which allows for making data frames
-    import remove_repeats #a custom function
-    importlib.reload(remove_repeats) #reload the custom function in case it was changed
+    from AnalyzeSpectra import remove_repeats #a custom function
 
     #read the netCDF file as a  netcdf4 object
         #ic = [ion counts for scan1 mz1, ion counts for scan1 mz2, ion counts for scan1 mz3, ....ion counts for scan107 mz1, ...]

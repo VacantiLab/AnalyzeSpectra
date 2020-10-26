@@ -22,34 +22,20 @@ def integrate(corrected=True):
     import pandas #a module which allows for making data frames
     import copy
     import pickle #allows for saving of dictionary files
-    import organize_ms_data
-    importlib.reload(organize_ms_data)
-    import process_ms_data
-    importlib.reload(process_ms_data)
-    import create_output_directory
-    importlib.reload(create_output_directory)
-    import integrate_peaks
-    importlib.reload(integrate_peaks)
-    import BinData
-    importlib.reload(BinData)
-    import fragment_library
-    importlib.reload(fragment_library)
-    import print_integrated_peaks
-    importlib.reload(print_integrated_peaks)
-    import find_ri_conversion
-    importlib.reload(find_ri_conversion)
-    import get_ri_keys_dict
-    importlib.reload(get_ri_keys_dict)
-    import calc_coelut
-    importlib.reload(calc_coelut)
-    import convert_rt_ri
-    importlib.reload(convert_rt_ri)
-    import get_directory
-    importlib.reload(get_directory)
-    import locate_overlap
-    importlib.reload(locate_overlap)
-    import GetFileBatch
-    importlib.reload(GetFileBatch)
+    from AnalyzeSpectra import organize_ms_data
+    from AnalyzeSpectra import process_ms_data
+    from AnalyzeSpectra import create_output_directory
+    from AnalyzeSpectra import integrate_peaks
+    from AnalyzeSpectra import BinData
+    from AnalyzeSpectra import fragment_library
+    from AnalyzeSpectra import print_integrated_peaks
+    from AnalyzeSpectra import find_ri_conversion
+    from AnalyzeSpectra import get_ri_keys_dict
+    from AnalyzeSpectra import calc_coelut
+    from AnalyzeSpectra import convert_rt_ri
+    from AnalyzeSpectra import get_directory
+    from AnalyzeSpectra import locate_overlap
+    from AnalyzeSpectra import GetFileBatch
 
     #retrieve file directory
     retrieve_directory_method = 'gui'

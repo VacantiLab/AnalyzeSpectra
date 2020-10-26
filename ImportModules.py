@@ -11,15 +11,10 @@ def ImportModules():
     import pandas #a module which allows for making data frames
     import copy
     import scipy
-    import savitzky_golay
-    importlib.reload(savitzky_golay) #reload the custom function in case it was changed
-    import FindBorders
-    importlib.reload(FindBorders)
-    import ExtendBounds
-    importlib.reload(ExtendBounds)
-    import fragment_library #a custom function
-    importlib.reload(fragment_library) #reload the custom function in case it was changed
-    import organize_ms_data
-    importlib.reload(organize_ms_data)
+    from AnalyzeSpectra import savitzky_golay
+    from AnalyzeSpectra import FindBorders
+    from AnalyzeSpectra import ExtendBounds
+    from AnalyzeSpectra import fragment_library #a custom function
+    from AnalyzeSpectra import organize_ms_data
 
     return(pdb,os,re,importlib,plotly,importlib,peakutils,bkp,np,pandas,copy,scipy,savitzky_golay,FindBorders,ExtendBounds,fragment_library,organize_ms_data)

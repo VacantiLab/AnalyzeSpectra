@@ -9,8 +9,7 @@ def plot_event(y_values='ics_smooth_bc'):
     import copy
     from pdb import set_trace
     import re
-    import get_directory
-    importlib.reload(get_directory)
+    from AnalyzeSpectra import get_directory
 
     from bokeh.layouts import column, row, widgetbox, layout
     from bokeh.models import CustomJS, ColumnDataSource, Slider, TextInput, Select

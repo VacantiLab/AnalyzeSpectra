@@ -5,10 +5,8 @@ def fragment_library(file_directory,metabolite_dict='none'):
     import numpy as np #this is numpy, allows for data frame and matrix handling
     import pandas
     import re
-    import calc_natural_mid
-    importlib.reload(calc_natural_mid)
-    import create_correction_matrix
-    importlib.reload(create_correction_matrix)
+    from AnalyzeSpectra import calc_natural_mid
+    from AnalyzeSpectra import create_correction_matrix
 
     #file_name_read = '/Users/Nate/Desktop/netcdf_test/tbdms_lib.txt'
     file_name_read = file_directory + 'library.txt'

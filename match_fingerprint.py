@@ -2,8 +2,7 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
     import numpy as np
     import importlib
     import pdb
-    import find_closest
-    importlib.reload(find_closest)
+    from AnalyzeSpectra import find_closest
 
     #find the mz index range of the scan
     mz_scan_start = mz_vals[0]

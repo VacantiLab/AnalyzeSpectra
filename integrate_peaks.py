@@ -5,16 +5,11 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
     import pandas #a module which allows for making data frames
     import scipy #contains simpsons integration function
     import copy
-    import fragment_library #a custom function
-    importlib.reload(fragment_library) #reload the custom function in case it was changed
-    import correct_mid
-    importlib.reload(correct_mid)
-    import ri_to_rt
-    importlib.reload(ri_to_rt)
-    import quantity_of_atom
-    importlib.reload(quantity_of_atom)
-    import match_fingerprint
-    importlib.reload(match_fingerprint)
+    from AnalyzeSpectra import fragment_library #a custom function
+    from AnalyzeSpectra import correct_mid
+    from AnalyzeSpectra import ri_to_rt
+    from AnalyzeSpectra import quantity_of_atom
+    from AnalyzeSpectra import match_fingerprint
 
     #initialize a dictionary that will contain all of the quantified metabolite information
     metabolite_dict_complete = copy.deepcopy(metabolite_dict)

@@ -4,9 +4,8 @@ def find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_va
     import numpy as np
     import pdb
     import importlib
-    import match_fingerprint
-    importlib.reload(match_fingerprint)
-    import get_alkane_dict
+    from AnalyzeSpectra import match_fingerprint
+    from AnalyzeSpectra import get_alkane_dict
     importlib.reload(get_alkane_dict)
 
     sat_array = np.array(sat)

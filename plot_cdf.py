@@ -9,8 +9,7 @@ import numpy as np
 import copy
 import pdb
 import re
-import get_directory
-importlib.reload(get_directory)
+from AnalyzeSpectra import get_directory
 
 from bokeh.io import curdoc
 from bokeh.layouts import column, row, layout, widgetbox

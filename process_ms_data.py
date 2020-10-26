@@ -2,16 +2,13 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
 
     import importlib #allows fresh importing of modules
     import pdb #python debugger
-    import savitzky_golay
-    importlib.reload(savitzky_golay) #reload the custom function in case it was changed
+    from AnalyzeSpectra import savitzky_golay
     import bokeh.plotting as bkp #allows for making interactive plots with bokeh
     import numpy as np #this is numpy, allows for data frame and matrix handling
     import pandas #a module which allows for making data frames
     import peakutils #allows for peak and baseline finding
-    import FindBorders
-    importlib.reload(FindBorders)
-    import ExtendBounds
-    importlib.reload(ExtendBounds)
+    from AnalyzeSpectra import FindBorders
+    from AnalyzeSpectra import ExtendBounds
 
     mz_to_plot = [174,175,176,177,178,179]
     mz_colors = ['red','green','blue','yellow','purple','orange']

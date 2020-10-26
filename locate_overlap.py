@@ -10,8 +10,7 @@ def locate_overlap(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak
     import numpy as np
     import copy
     import pdb
-    import find_closest
-    importlib.reload(find_closest)
+    from AnalyzeSpectra import find_closest
 
     peak_height_fraction = 0.5
 
