@@ -4,10 +4,15 @@
 #     bokeh serve --show plot_cdf.py --port 99
 #     the call must be made in the terminal (not in python)
 
+# The call must be made from the directory containing this file
+# The directory containing AnalyzeSpectra must be added to the PYTHONPATH system variable
+#     use: export PYTHONPATH="${PYTHONPATH}:/path/to/AnalyzeSpectra" to add it
+
+from pdb import set_trace
+import AnalyzeSpectra
 import importlib
 import numpy as np
 import copy
-import pdb
 import re
 from AnalyzeSpectra import get_directory
 
