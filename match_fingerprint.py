@@ -1,7 +1,7 @@
 def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_vals,ic_smooth_dict,metabolite,sample_name,ri_window):
     import numpy as np
     import importlib
-    import pdb
+    from pdb import set_trace
     from AnalyzeSpectra import find_closest
 
     #find the mz index range of the scan
@@ -88,7 +88,9 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
         to_add_then_append_array = np.arange(1,mz_group_length+1)
         for i in to_add_then_append_array:
             to_append = mz_group_name + i
-            group_mz_vals_all = np.append(group_mz_vals_all,to_append)
+            # Only consider an mz value to determine peak location if intensities at that mz were recorded by the ms
+            if to_append in ic_smooth_dict.keys():
+                group_mz_vals_all = np.append(group_mz_vals_all,to_append)
 
     #initialize the values for each key of metabolite_elut_ri_dict to be an empty np array
     for mz in group_mz_list:
