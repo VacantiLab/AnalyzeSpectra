@@ -6,7 +6,7 @@
 
 # The call must be made from the directory containing this file
 # The directory containing AnalyzeSpectra must be added to the PYTHONPATH system variable
-#     use: export PYTHONPATH="${PYTHONPATH}:/path/to/AnalyzeSpectra" to add it
+#     use: export PYTHONPATH="${PYTHONPATH}:/Users/nate/git_hub_projects" to add it
 
 from pdb import set_trace
 import AnalyzeSpectra
