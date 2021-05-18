@@ -1,6 +1,10 @@
 # The call to this is:
 #     bokeh serve --show plot_event_bokeh_server.py
 #     the call must be made in the terminal (not in python)
+#     The full path to the directory containing the AnalyzeSpectra folder must be included in the system variable PYTHONPATH
+#         To add it use: export PYTHONPATH=path/to/one/above/AnalyzeSpectra:$PYTHONPATH
+#             NO SPACES in command!!!
+#             Must be done for every Terminal instance
 
 import importlib
 import numpy as np
