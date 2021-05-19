@@ -1,7 +1,7 @@
 def get_directory(retrieve_directory_method):
-    #from tkinter import Tk #allows for asking for a directory through a GUI
-    #from tkinter.filedialog import askdirectory #allows for asking for a directory through a GUI
-    #from tkinter.filedialog import askopenfilename #allows for asking for a file through a GUI
+    from tkinter import Tk #allows for asking for a directory through a GUI
+    from tkinter.filedialog import askdirectory #allows for asking for a directory through a GUI
+    from tkinter.filedialog import askopenfilename #allows for asking for a file through a GUI
 
     if retrieve_directory_method == 'gui':
         #ask for the directory where the netCDF and library.txt files are
