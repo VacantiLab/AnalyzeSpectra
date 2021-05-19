@@ -24,7 +24,7 @@ mz_plot = ['tic','blank','blank','blank']
 mz_colors = ['red','blue','green','purple']
 
 #retrieve file directory
-retrieve_directory_method = 'gui_file' #specifies you want to select the file with the gui
+retrieve_directory_method = 'manual_file' #specifies you want to select the file with the gui
 #    options are: 'manual', 'gui', 'manual_file', 'gui_file'
 file_path = get_directory.get_directory(retrieve_directory_method)
 #    returns the path to the file including the filename and extension
