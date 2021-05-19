@@ -23,6 +23,6 @@ def get_directory(retrieve_directory_method):
 
     if retrieve_directory_method == 'manual_file':
         #manually enter file directory because tkinter is giving troubles when used with pdb.set_trace()
-        file_directory = '/Users/Nate/Desktop/test_cdfs/TBDMS01_A549NTKD_DMSO.CDF'
+        file_directory = '/Users/Nate/Desktop/test_cdfs/p01_BT20_UGlctracer_NoTreatment.CDF'
 
     return(file_directory)
