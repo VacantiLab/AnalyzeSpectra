@@ -1,6 +1,6 @@
 def organize_ms_data(file_directory):
     import copy
-    import pdb #python debugger
+    from pdb import set_trace#python debugger
     import importlib #allows fresh importing of modules
     from netCDF4 import Dataset #allows for opening netCDF files
     import numpy as np #this is numpy, allows for data frame and matrix handling
@@ -16,11 +16,21 @@ def organize_ms_data(file_directory):
     ic = ncdf.variables['intensity_values'] #all of the ion count measurements for each scan. scans are concatenated into a single array
     mz = ncdf.variables['mass_values'] #all of the mz values for each of the 'intensity_values', all scans are concatenated as a single array
     si = ncdf.variables['scan_index'] #marks the python index of the starting position of each scan within the 'intensity_values'
+    si = np.array(si)
+    si = np.unique(si)
     sat = np.array(list(ncdf.variables['scan_acquisition_time'])) #the scan acquisition times corresponding to each scan (over mz values)
     tic = np.array(ncdf.variables['total_intensity']) #store the total ion count for each scan
-    n_scns = len(sat) #the number of scans
+    n_scns = len(si) #the number of scans
     n_mz = len(mz) #the total number of recorded values
     mz_np = np.array(mz) #produces numpy float32 entries
+
+    #create a data frame containing the mz values down the rows and the scan acquisition time values across the columns
+    #   Older CDF files (from Christian's lab) contain extraneous scan information that needs to be removed.
+    #   This is apparent because 'scan_index' has repeat values at the end
+    if si[n_scns-1] == n_mz:
+        n_scns = n_scns - 1
+        sat = sat[0:n_scns]
+        tic = tic[0:n_scns]
 
     #change mz values to type numpy float64 because that's what the library values are for mz and they need to agree for dictionary key  and pandas data frame row-name purposes
     mz_np2 = np.zeros(len(mz_np))
@@ -37,6 +47,7 @@ def organize_ms_data(file_directory):
     #print('removing duplicate mz scans and updating scan indices for each SAT')
     #mz,ic,si = remove_repeats.remove_repeats(mz,ic,si)
     #The above is wrong - make a function here for binning based on the ms resolution
+
 
     #create a data frame containing the mz values down the rows and the scan acquisition time values across the columns
     ic_dct = dict()
