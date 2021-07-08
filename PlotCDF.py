@@ -1,4 +1,4 @@
-AlkanesRun=False
+AlkanesRun=True
 ProcessData=False
 # This script plots the contents of a CDF file without needing to access a pre-processed picle file.
 
