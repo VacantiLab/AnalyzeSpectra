@@ -1,7 +1,9 @@
+AlkanesRun=False
+ProcessData=False
 # This script plots the contents of a CDF file without needing to access a pre-processed picle file.
 
 # The call to this is:
-#     bokeh serve --show plot_cdf.py --port 99
+#     bokeh serve --show PlotCDF.py --port 99
 #     the call must be made in the terminal (not in python)
 
 # To use without an alkane file, enter select the same file twice
@@ -20,7 +22,7 @@ import re
 from AnalyzeSpectra import get_directory
 
 from bokeh.io import curdoc
-from bokeh.layouts import column, row, layout, widgetbox
+from bokeh.layouts import column, row, layout
 from bokeh.models import ColumnDataSource, Slider, TextInput
 from bokeh.plotting import figure, output_file
 from bokeh.events import DoubleTap
@@ -82,31 +84,29 @@ sample_name = filename.split('.')[0]
 
 
 #Retrieve Alkane File Name
-print('\nSelect alkane file ...\n')
-#retrieve file directory
-retrieve_directory_method = 'gui_file' #specifies you want to select the file with the gui
-#    options are: 'manual', 'gui', 'manual_file', 'gui_file'
-alkane_path = get_directory.get_directory(retrieve_directory_method)
-#    returns the path to the file including the filename and extension
-alkane_directory = re.sub('/[^/]*$','',alkane_path)+'/'
-#    removes the filename and extension, leaving the terminating /
-#        '/[^/]*$': '/' -> match '/'; ''[^/]*'' -> any character except / any number of times; '$'' -> end of string
+if AlkanesRun:
+    print('\nSelect alkane file ...\n')
+    #retrieve file directory
+    retrieve_directory_method = 'gui_file' #specifies you want to select the file with the gui
+    #    options are: 'manual', 'gui', 'manual_file', 'gui_file'
+    alkane_path = get_directory.get_directory(retrieve_directory_method)
+    #    returns the path to the file including the filename and extension
+    alkane_directory = re.sub('/[^/]*$','',alkane_path)+'/'
+    #    removes the filename and extension, leaving the terminating /
+    #        '/[^/]*$': '/' -> match '/'; ''[^/]*'' -> any character except / any number of times; '$'' -> end of string
 
-#get the alkane file name
-regex_pattern = re.compile('/[^/]*$')
-alkanename_regex = regex_pattern.search(alkane_path)
-alkanename = alkanename_regex[0]
-alkanename = re.sub('/','',alkanename)
-alkane_name = alkanename.split('.')[0]
+    #get the alkane file name
+    regex_pattern = re.compile('/[^/]*$')
+    alkanename_regex = regex_pattern.search(alkane_path)
+    alkanename = alkanename_regex[0]
+    alkanename = re.sub('/','',alkanename)
+    alkane_name = alkanename.split('.')[0]
 
-AlkanesRun = True
-if alkane_name == sample_name:
-    AlkanesRun = False
+    sample_names_list = [alkane_name,sample_name]
+
+if not AlkanesRun:
     alkane_name = 'NotRun'
     sample_names_list = [sample_name]
-
-if AlkanesRun:
-    sample_names_list = [alkane_name,sample_name]
 
 
 #Create the folder for outputting results
@@ -303,14 +303,7 @@ def callback(event):
 plot.on_event(DoubleTap, callback)
 
 
-
-
 # Set up layouts and add to document
-text_box1 = widgetbox(mz_text[0], width=175, height=20)
-text_box2 = widgetbox(mz_text[1], width=175, height=20)
-text_box3 = widgetbox(mz_text[2], width=175, height=20)
-text_box4 = widgetbox(mz_text[3], width=175, height=20)
-
 l = layout([
   [mz_text[0],mz_text[1],mz_text[2],mz_text[3]],
   [plot],
