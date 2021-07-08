@@ -96,7 +96,14 @@ alkanename = alkanename_regex[0]
 alkanename = re.sub('/','',alkanename)
 alkane_name = alkanename.split('.')[0]
 
-sample_names_list = [alkane_name,sample_name]
+AlkanesRun = True
+if alkane_name == sample_name:
+    AlkanesRun = False
+    alkane_name = 'NotRun'
+    sample_names_list = [sample_name]
+
+if AlkanesRun:
+    sample_names_list = [alkane_name,sample_name]
 
 
 #Create the folder for outputting results
@@ -150,7 +157,10 @@ for sample_name in sample_names_list:
     #convert the retention times of the current sample to retention indices
     #    doing this for each sample allows for samples with differing quantities of scan acquisition times
     #    to be analyzed with the same alkane sample for retention index calculation
-    ri_array = convert_rt_ri.convert_rt_ri(ri_sat,ri_rec,sat)
+    if AlkanesRun:
+        ri_array = convert_rt_ri.convert_rt_ri(ri_sat,ri_rec,sat)
+    if not AlkanesRun:
+        ri_array = sat/60
 
     #find ri of each peak
     peak_ri_dict = dict()
@@ -172,10 +182,6 @@ for sample_name in sample_names_list:
 
     print('\n')
 #########################################
-
-sample_name = filename.split('.')[0]
-input_data_file = file_directory + 'processed_data.p'
-output_plot_file = file_directory + 'plot1.html'
 
 plot=figure(title='ion counts vs. time', x_axis_label='retention index',y_axis_label='ion counts',plot_width=950,plot_height=300)
 
