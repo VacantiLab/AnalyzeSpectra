@@ -4,6 +4,9 @@
 #     bokeh serve --show plot_cdf.py --port 99
 #     the call must be made in the terminal (not in python)
 
+# To use without an alkane file, enter select the same file twice
+#     Retention time in minutes will be displayed on the x-axis instead of retention index
+
 # The call must be made from the directory containing this file
 # The directory containing AnalyzeSpectra must be added to the PYTHONPATH system variable
 #     use: export PYTHONPATH="${PYTHONPATH}:/Users/nate/git_hub_projects" to add it
