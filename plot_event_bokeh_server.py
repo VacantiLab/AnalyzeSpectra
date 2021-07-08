@@ -5,6 +5,7 @@
 #         To add it use: export PYTHONPATH=path/to/one/above/AnalyzeSpectra:$PYTHONPATH
 #             NO SPACES in command!!!
 #             Must be done for every Terminal instance
+#     If running from EC2, the file must be predetermined and all importing of tkinter must be commented out
 
 import importlib
 import numpy as np
@@ -25,7 +26,7 @@ mz_colors = ['red','blue','green','purple']
 
 #retrieve file directory
 #retrieve_directory_method = 'gui_file' #specifies you want to select the file with the gui
-retrieve_directory_method = 'manual_file'
+retrieve_directory_method = 'gui_file'
 #    options are: 'manual', 'gui', 'manual_file', 'gui_file'
 file_path = get_directory.get_directory(retrieve_directory_method)
 #    returns the path to the file including the filename and extension

@@ -303,7 +303,7 @@ text_box3 = widgetbox(mz_text[2], width=175, height=20)
 text_box4 = widgetbox(mz_text[3], width=175, height=20)
 
 l = layout([
-  [text_box1,text_box2,text_box3,text_box4],
+  [mz_text[0],mz_text[1],mz_text[2],mz_text[3]],
   [plot],
   [plot2],
 ], sizing_mode='fixed')
