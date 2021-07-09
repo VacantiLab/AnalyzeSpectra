@@ -61,7 +61,6 @@ importlib.reload(GetFileBatch)
 
 mz_plot = ['tic','blank','blank','blank']
 mz_colors = ['red','blue','green','purple']
-TimeBoxValue = 'retention index'
 
 #Retrieve Data File Name
 print('\nSelect data file ...\n')
@@ -170,7 +169,11 @@ for sample_name in sample_names_list:
     print('\n')
 #########################################
 
-plot=figure(title='ion counts vs. time', x_axis_label='retention index',y_axis_label='ion counts',plot_width=950,plot_height=300)
+if AlkanesRun:
+    plot_x_label = 'time'
+if not AlkanesRun:
+    plot_x_label = 'time (minutes)'
+plot=figure(title='ion counts vs. time', x_axis_label=plot_x_label,y_axis_label='ion counts',plot_width=950,plot_height=300)
 
 
 source = {}
@@ -264,8 +267,11 @@ for j in [0,1,2,3]:
     mz_text[j] = TextInput(title=mz_colors[j], value=str(mz_plot[j]),max_width=75) #the textbox widget, the value must be a string
     mz_text[j].on_change('value',update_function_list[j])
 
-TimeBox = Select(title='Time Units', value=TimeBoxValue,max_width=130,options=['minutes','retention index'])
-TimeBox.on_change('value',UpdateTimeUnits)
+TimeBoxValue = 'minutes'
+if AlkanesRun:
+    TimeBoxValue = 'retention index'
+    TimeBox = Select(title='Time Units', value=TimeBoxValue,max_width=130,options=['minutes','retention index'])
+    TimeBox.on_change('value',UpdateTimeUnits)
 
 # intensity vs. mz at specified time################
 
@@ -293,7 +299,6 @@ plot2.vbar(x='x', bottom=0, width=0.5, top='y',color='firebrick',source=source_t
 #double-click callback
 def callback(event):
     rt_click = event.x
-    print(TimeBoxValue)
     if TimeBoxValue == 'minutes':
         subtracting_click_time = np.array(sat/60) - rt_click
     if TimeBoxValue == 'retention index':
@@ -310,7 +315,10 @@ def callback(event):
 plot.on_event(DoubleTap, callback)
 
 PlotColumn = column(plot,plot2)
-SelectionColumn = column(mz_text[0],mz_text[1],mz_text[2],mz_text[3],TimeBox)
+if AlkanesRun:
+    SelectionColumn = column(mz_text[0],mz_text[1],mz_text[2],mz_text[3],TimeBox)
+if not AlkanesRun:
+    SelectionColumn = column(mz_text[0],mz_text[1],mz_text[2],mz_text[3])
 ColumnSpacer1 = Spacer(width=20)
 
 
