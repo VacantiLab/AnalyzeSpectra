@@ -61,6 +61,7 @@ importlib.reload(GetFileBatch)
 
 mz_plot = ['tic','blank','blank','blank']
 mz_colors = ['red','blue','green','purple']
+TimeBoxValue = 'retention index'
 
 #Retrieve Data File Name
 print('\nSelect data file ...\n')
@@ -242,16 +243,17 @@ def update_mz_trace4(attrname, old, new):
 
 def UpdateTimeUnits(attrname, old, new):
     global TimeBoxValue
+    global x_data
     TimeBoxValue = new
     if new == 'minutes':
-        x = sat/60
+        x_data = sat/60
     if new == 'retention index':
-        x = ri_array
+        x_data = ri_array
 
-    source1.data['x'] = x
-    source2.data['x'] = x
-    source3.data['x'] = x
-    source4.data['x'] = x
+    source1.data['x'] = x_data
+    source2.data['x'] = x_data
+    source3.data['x'] = x_data
+    source4.data['x'] = x_data
 
 
 source_list = [source1,source2,source3,source4]
@@ -262,7 +264,6 @@ for j in [0,1,2,3]:
     mz_text[j] = TextInput(title=mz_colors[j], value=str(mz_plot[j]),max_width=75) #the textbox widget, the value must be a string
     mz_text[j].on_change('value',update_function_list[j])
 
-TimeBoxValue = 'retention index'
 TimeBox = Select(title='Time Units', value=TimeBoxValue,max_width=130,options=['minutes','retention index'])
 TimeBox.on_change('value',UpdateTimeUnits)
 
