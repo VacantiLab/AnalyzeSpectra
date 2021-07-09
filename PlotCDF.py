@@ -1,5 +1,3 @@
-AlkanesRun=True
-ProcessData=False
 # This script plots the contents of a CDF file without needing to access a pre-processed picle file.
 
 # The call to this is:
@@ -22,8 +20,8 @@ import re
 from AnalyzeSpectra import get_directory
 
 from bokeh.io import curdoc
-from bokeh.layouts import column, row, layout
-from bokeh.models import ColumnDataSource, Slider, TextInput
+from bokeh.layouts import column, row, layout, Spacer
+from bokeh.models import ColumnDataSource, Slider, TextInput, Select
 from bokeh.plotting import figure, output_file
 from bokeh.events import DoubleTap
 
@@ -82,26 +80,16 @@ filename = filename_regex[0]
 filename = re.sub('/','',filename)
 sample_name = filename.split('.')[0]
 
+#Get a list of all of the files in the specified directory
+files = listdir(file_directory)
+AlkanesRun = False
+if 'alkanes.CDF' in files:
+    AlkanesRun=True
+
 
 #Retrieve Alkane File Name
 if AlkanesRun:
-    print('\nSelect alkane file ...\n')
-    #retrieve file directory
-    retrieve_directory_method = 'gui_file' #specifies you want to select the file with the gui
-    #    options are: 'manual', 'gui', 'manual_file', 'gui_file'
-    alkane_path = get_directory.get_directory(retrieve_directory_method)
-    #    returns the path to the file including the filename and extension
-    alkane_directory = re.sub('/[^/]*$','',alkane_path)+'/'
-    #    removes the filename and extension, leaving the terminating /
-    #        '/[^/]*$': '/' -> match '/'; ''[^/]*'' -> any character except / any number of times; '$'' -> end of string
-
-    #get the alkane file name
-    regex_pattern = re.compile('/[^/]*$')
-    alkanename_regex = regex_pattern.search(alkane_path)
-    alkanename = alkanename_regex[0]
-    alkanename = re.sub('/','',alkanename)
-    alkane_name = alkanename.split('.')[0]
-
+    alkane_name = 'alkanes'
     sample_names_list = [alkane_name,sample_name]
 
 if not AlkanesRun:
@@ -129,25 +117,20 @@ for sample_name in sample_names_list:
     #reassign the mz values due to the binning
     mz_vals = np.sort(np.array(list(ic_df.index.values)))
 
-    #Process ms data
-    print(sample_name + ':' + ' subtracting baselines and smoothing...')
-    (ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
-    peak_start_i_dict,peak_end_i_dict,x_data_numpy,peak_i_dict,
-    peak_max_dict,p,peak_sat_dict,ic_dict) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals)
-         #ic_smooth_dict: a dictionary containing the smoothed and baseline corrected ion count data for each m/z value
-         #peak_start_t_dict: a dictionary with all of the peak beginning times for each m/z ion count plot
-         #peak_end_t_dict: a dictionary with all of the peak ending times for each m/z ion count plot
-         #peak_start_i_dict: a dictionary with all of the peak beginning indices for each m/z ion count plot
-         #peak_end_i_dict: a dictionary with all of the peak ending indices for each m/z ion count plot
-         #x_data_numpy: scan acquisition time values
-         #p: the plot (bokeh) object
-
-    #add the total ion count to the dictionary
-    #    note it is not smoothed because it does not really make sense to smooth total ion count data
-    ic_smooth_dict['tic'] = tic
-    ic_dict['tic'] = tic
-
     if sample_name == alkane_name:
+        #Process ms data
+        print(sample_name + ':' + ' subtracting baselines and smoothing...')
+        (ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
+        peak_start_i_dict,peak_end_i_dict,x_data_numpy,peak_i_dict,
+        peak_max_dict,p,peak_sat_dict,ic_dict) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals)
+             #ic_smooth_dict: a dictionary containing the smoothed and baseline corrected ion count data for each m/z value
+             #peak_start_t_dict: a dictionary with all of the peak beginning times for each m/z ion count plot
+             #peak_end_t_dict: a dictionary with all of the peak ending times for each m/z ion count plot
+             #peak_start_i_dict: a dictionary with all of the peak beginning indices for each m/z ion count plot
+             #peak_end_i_dict: a dictionary with all of the peak ending indices for each m/z ion count plot
+             #x_data_numpy: scan acquisition time values
+             #p: the plot (bokeh) object
+
         #calculate peak overlap dictionary
         print(sample_name + ':' + ' finding coeluting peaks ...')
         peak_overlap_dictionary = locate_overlap.locate_overlap(ic_smooth_dict,peak_start_i_dict,peak_end_i_dict,mz_vals,peak_max_dict)
@@ -157,6 +140,18 @@ for sample_name in sample_names_list:
         coelut_dict_sat,coelut_dict_val_sat = calc_coelut.calc_coelut(peak_sat_dict,mz_vals,sat,ic_smooth_dict,peak_overlap_dictionary)
         ri_sat,ri_rec = find_ri_conversion.find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_val_sat,sample_name)
 
+    if sample_name != alkane_name:
+        print(sample_name + ':' + ' placing data in a dictionary...')
+        ic_dict = ic_df.transpose().to_dict(orient='list')
+        ic_smooth_dict = ic_dict
+
+
+    #add the total ion count to the dictionary
+    #    note it is not smoothed because it does not really make sense to smooth total ion count data
+    ic_smooth_dict['tic'] = tic
+    ic_dict['tic'] = tic
+
+
     #convert the retention times of the current sample to retention indices
     #    doing this for each sample allows for samples with differing quantities of scan acquisition times
     #    to be analyzed with the same alkane sample for retention index calculation
@@ -164,18 +159,6 @@ for sample_name in sample_names_list:
         ri_array = convert_rt_ri.convert_rt_ri(ri_sat,ri_rec,sat)
     if not AlkanesRun:
         ri_array = sat/60
-
-    #find ri of each peak
-    peak_ri_dict = dict()
-    peak_start_ri_dict = dict()
-    peak_end_ri_dict = dict()
-    for mz_val in mz_vals:
-        peak_loc_ind = peak_i_dict[mz_val]
-        peak_start_ind = peak_start_i_dict[mz_val]
-        peak_end_ind = peak_end_i_dict[mz_val]
-        peak_ri_dict[mz_val] = ri_array[peak_loc_ind]
-        peak_start_ri_dict[mz_val] = ri_array[peak_start_ind]
-        peak_end_ri_dict[mz_val] = ri_array[peak_end_ind]
 
     #invert the ic_smooth_dict so that retention indices are the keys and a vector of intensities for each mz are the items
     ic_smooth_dict_timekeys = get_ri_keys_dict.get_ri_keys_dict(ic_smooth_dict,ri_array,mz_vals)
@@ -257,14 +240,31 @@ def update_mz_trace4(attrname, old, new):
     y = source_dict[mz]
     source4.data = dict(x=x_data, y=y)
 
+def UpdateTimeUnits(attrname, old, new):
+    global TimeBoxValue
+    TimeBoxValue = new
+    if new == 'minutes':
+        x = sat/60
+    if new == 'retention index':
+        x = ri_array
+
+    source1.data['x'] = x
+    source2.data['x'] = x
+    source3.data['x'] = x
+    source4.data['x'] = x
+
+
 source_list = [source1,source2,source3,source4]
 update_function_list = [update_mz_trace1,update_mz_trace2,update_mz_trace3,update_mz_trace4]
 
 for j in [0,1,2,3]:
     plot.line('x','y',source=source_list[j],color=mz_colors[j]) #update the plot object for the current mz
-    mz_text[j] = TextInput(title=mz_colors[j], value=str(mz_plot[j])) #the textbox widget, the value must be a string
+    mz_text[j] = TextInput(title=mz_colors[j], value=str(mz_plot[j]),max_width=75) #the textbox widget, the value must be a string
     mz_text[j].on_change('value',update_function_list[j])
-    #mz_text[j] = Select(title=mz_colors[j], value=str(mz_plot[j]), options=list(source_dict.keys()))
+
+TimeBoxValue = 'retention index'
+TimeBox = Select(title='Time Units', value=TimeBoxValue,max_width=130,options=['minutes','retention index'])
+TimeBox.on_change('value',UpdateTimeUnits)
 
 # intensity vs. mz at specified time################
 
@@ -292,9 +292,15 @@ plot2.vbar(x='x', bottom=0, width=0.5, top='y',color='firebrick',source=source_t
 #double-click callback
 def callback(event):
     rt_click = event.x
-    subtracting_click_time = np.array(source_dict_timekeys_keys) - rt_click
+    print(TimeBoxValue)
+    if TimeBoxValue == 'minutes':
+        subtracting_click_time = np.array(sat/60) - rt_click
+    if TimeBoxValue == 'retention index':
+        subtracting_click_time = np.array(source_dict_timekeys_keys) - rt_click
+
     rt_index = np.argmin(abs(subtracting_click_time))
     rt = source_dict_timekeys_keys[rt_index]
+
     # x_index = 'x'+'%.3f'%(rt)
     # y_index = 'y'+'%.3f'%(rt)
     x = mz_vals
@@ -302,12 +308,14 @@ def callback(event):
     source_timekeys.data = dict(x=x, y=y)
 plot.on_event(DoubleTap, callback)
 
+PlotColumn = column(plot,plot2)
+SelectionColumn = column(mz_text[0],mz_text[1],mz_text[2],mz_text[3],TimeBox)
+ColumnSpacer1 = Spacer(width=20)
+
 
 # Set up layouts and add to document
 l = layout([
-  [mz_text[0],mz_text[1],mz_text[2],mz_text[3]],
-  [plot],
-  [plot2],
+  [PlotColumn,ColumnSpacer1,SelectionColumn],
 ], sizing_mode='fixed')
 
 curdoc().add_root(l)
