@@ -329,3 +329,4 @@ l = layout([
 ], sizing_mode='fixed')
 
 curdoc().add_root(l)
+curdoc().title = sample_name
