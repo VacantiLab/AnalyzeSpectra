@@ -21,7 +21,7 @@ from AnalyzeSpectra import get_directory
 
 from bokeh.io import curdoc
 from bokeh.layouts import column, row, layout, Spacer
-from bokeh.models import ColumnDataSource, Slider, TextInput, Select
+from bokeh.models import ColumnDataSource, Slider, TextInput, Select, HoverTool
 from bokeh.plotting import figure, output_file
 from bokeh.events import DoubleTap
 
@@ -266,6 +266,7 @@ for j in [0,1,2,3]:
     plot.line('x','y',source=source_list[j],color=mz_colors[j]) #update the plot object for the current mz
     mz_text[j] = TextInput(title=mz_colors[j], value=str(mz_plot[j]),max_width=75) #the textbox widget, the value must be a string
     mz_text[j].on_change('value',update_function_list[j])
+    plot.add_tools(HoverTool(tooltips=[("x","@x"),("y", "@y")])) # show value when hovering over point
 
 TimeBoxValue = 'minutes'
 if AlkanesRun:
