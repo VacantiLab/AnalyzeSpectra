@@ -1,5 +1,8 @@
 # This script plots the contents of a CDF file without needing to access a pre-processed picle file.
 
+# This is now run with (in port 99):
+#     bash PlotCDF.sh 99
+
 # The call to this is:
 #     bokeh serve --show PlotCDF.py --port 99
 #     the call must be made in the terminal (not in python)
