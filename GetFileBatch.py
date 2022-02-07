@@ -1,4 +1,4 @@
-def GetFileBatch(file_directory):
+def GetFileBatch(file_directory,use_alkanes):
     # opens the batch_to_alkane.txt in the data location directory
 
     import pandas as pd
@@ -35,7 +35,8 @@ def GetFileBatch(file_directory):
         files = sorted(files)
 
         #remove the alkane files from the file list
-        files.remove('alkanes.CDF')
+        if use_alkanes:
+            files.remove('alkanes.CDF')
 
         #Make file to batch data frame
         file_name_to_batch_dic = {'file_name':files,'batch':['A']*len(files)}

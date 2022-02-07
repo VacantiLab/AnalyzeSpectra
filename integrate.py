@@ -1,4 +1,4 @@
-def integrate(corrected=True):
+def integrate(corrected=True, use_alkanes=True):
 
     #This script expects two tab-delimited text files to be stored where the data is stored
     #    The first is files_to_batch.txt
@@ -80,7 +80,7 @@ def integrate(corrected=True):
     files = sorted(files)
 
     #get the mappings of the sample file names to the propper batch and the batch names to the propper alkane file
-    file_name_to_batch,batch_to_alkane,alkane_files,batches = GetFileBatch.GetFileBatch(file_directory)
+    file_name_to_batch,batch_to_alkane,alkane_files,batches = GetFileBatch.GetFileBatch(file_directory,use_alkanes)
     #    This file expects two tab-delimited text files to be stored where the data is stored
     #        The first is files_to_batch.txt
     #            This file has two columns, the first "file_name" and the second "batch"
@@ -113,21 +113,22 @@ def integrate(corrected=True):
         files = file_name_to_batch['file_name'][indices]
         files = np.array(files)
 
-        #Get the name of the corresponding alkane file
-        #    the variable batches becomes a different data type if there is only one batch
-        #        thus there are the if statements to handle it correctly
-        if len(batches)>1:
-            alkane_file_index = batch_to_alkane['batch']==batch
-        if len(batches)==1:
-            alkane_file_index = 0
-        alkane_file = batch_to_alkane['alkane_file'][alkane_file_index]
-        if len(batches)>1:
-            alkane_file = np.array(alkane_file) #it is converted to a np array so the next line works
-            alkane_name = alkane_file[0].split('.')[0] #removes the .CDF from the end of the filename
-        alkane_name = alkane_file.split('.')[0] #removes the .CDF from the end of the filename
+        if use_alkanes:
+            #Get the name of the corresponding alkane file
+            #    the variable batches becomes a different data type if there is only one batch
+            #        thus there are the if statements to handle it correctly
+            if len(batches)>1:
+                alkane_file_index = batch_to_alkane['batch']==batch
+            if len(batches)==1:
+                alkane_file_index = 0
+            alkane_file = batch_to_alkane['alkane_file'][alkane_file_index]
+            if len(batches)>1:
+                alkane_file = np.array(alkane_file) #it is converted to a np array so the next line works
+                alkane_name = alkane_file[0].split('.')[0] #removes the .CDF from the end of the filename
+            alkane_name = alkane_file.split('.')[0] #removes the .CDF from the end of the filename
 
-        #Add the name of the alkane file to the beginning of the list
-        files = np.insert(files,0,alkane_file)
+            #Add the name of the alkane file to the beginning of the list
+            files = np.insert(files,0,alkane_file)
 
         #Iterate through each NetCDF file and process the data
         i=0
@@ -180,7 +181,10 @@ def integrate(corrected=True):
             #the first sample must always be alkanes - plan to make this optional later
             #find the retention time to retention index conversion
             #    one array is retention indices and the other is corresponding retention times
-            if sample_name == alkane_name:
+            #If there is no alkanes file, this loop should always be accessed
+            if use_alkanes == False:
+                alkane_name = sample_name
+            if (sample_name == alkane_name):
                 #calculate the coelution dictionary with the scan acquisition times as keys
                 #    coelution_dict_sat has keys of sat's and arrays of mz's whoe peaks elute at those sat's
                 #    coelution_dict_val is the same except the arrays are the corresponding intensity values of the eluting peaks at the sat of the key
