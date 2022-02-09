@@ -92,8 +92,9 @@ def integrate(corrected=True, use_alkanes=True):
     #            The "alkane_file" is the alkane file corresponding to that batch number
 
     #remove the alkane files from the file list
-    for alkane_file in alkane_files:
-        files.remove(alkane_file)
+    if use_alkanes:
+        for alkane_file in alkane_files:
+            files.remove(alkane_file)
 
     #Create the folder for outputting results
     output_plot_directory,output_directory = create_output_directory.create_output_directory()
@@ -182,19 +183,22 @@ def integrate(corrected=True, use_alkanes=True):
             #find the retention time to retention index conversion
             #    one array is retention indices and the other is corresponding retention times
             #If there is no alkanes file, this loop should always be accessed
-            if use_alkanes == False:
-                alkane_name = sample_name
-            if (sample_name == alkane_name):
-                #calculate the coelution dictionary with the scan acquisition times as keys
-                #    coelution_dict_sat has keys of sat's and arrays of mz's whoe peaks elute at those sat's
-                #    coelution_dict_val is the same except the arrays are the corresponding intensity values of the eluting peaks at the sat of the key
-                coelut_dict_sat,coelut_dict_val_sat = calc_coelut.calc_coelut(peak_sat_dict,mz_vals,sat,ic_smooth_dict,peak_overlap_dictionary)
-                ri_sat,ri_rec = find_ri_conversion.find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_val_sat,sample_name)
+            if use_alkanes:
+                if (sample_name == alkane_name):
+                    #calculate the coelution dictionary with the scan acquisition times as keys
+                    #    coelution_dict_sat has keys of sat's and arrays of mz's whoe peaks elute at those sat's
+                    #    coelution_dict_val is the same except the arrays are the corresponding intensity values of the eluting peaks at the sat of the key
+                    coelut_dict_sat,coelut_dict_val_sat = calc_coelut.calc_coelut(peak_sat_dict,mz_vals,sat,ic_smooth_dict,peak_overlap_dictionary)
+                    ri_sat,ri_rec = find_ri_conversion.find_ri_conversion(ic_smooth_dict,mz_vals,sat,coelut_dict_sat,coelut_dict_val_sat,sample_name)
 
             #convert the retention times of the current sample to retention indices
             #    doing this for each sample allows for samples with differing quantities of scan acquisition times
             #    to be analyzed with the same alkane sample for retention index calculation
-            ri_array = convert_rt_ri.convert_rt_ri(ri_sat,ri_rec,sat)
+            if use_alkanes:
+                ri_array = convert_rt_ri.convert_rt_ri(ri_sat,ri_rec,sat)
+
+            if not use_alkanes:
+                ri_array = sat
 
             #find ri of each peak
             peak_ri_dict = dict()

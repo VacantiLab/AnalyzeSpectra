@@ -19,6 +19,12 @@ def organize_ms_data(file_directory):
     si = np.array(si)
     si = np.unique(si)
     sat = np.array(list(ncdf.variables['scan_acquisition_time'])) #the scan acquisition times corresponding to each scan (over mz values)
+    sat_unique_values, sat_unique_indices = np.unique(sat, return_index=True)
+        # somehow their can be two entries for the same scan acquistion time
+        #     My guess is that the times are actually different, but rounding buy the machine makes them the same
+        #     A probelm I ran into is that there would be more scan times than data sets for scan times, by a handful
+    sat = sat_unique_values
+    si = si[sat_unique_indices]
     tic = np.array(ncdf.variables['total_intensity']) #store the total ion count for each scan
     n_scns = len(si) #the number of scans
     n_mz = len(mz) #the total number of recorded values
@@ -48,7 +54,6 @@ def organize_ms_data(file_directory):
     #mz,ic,si = remove_repeats.remove_repeats(mz,ic,si)
     #The above is wrong - make a function here for binning based on the ms resolution
 
-
     #create a data frame containing the mz values down the rows and the scan acquisition time values across the columns
     ic_dct = dict()
     scan_indices = range(0,n_scns) #the scan indices range from 0 to 1 less thabn the # of scans because indexing starts at 0, so the 5th item has an index of 4
@@ -58,8 +63,22 @@ def organize_ms_data(file_directory):
             scan_end_index = si[i+1]
         if i == (n_scns-1): #if you at the last scan index
             scan_end_index = n_mz #this is not out of range because when specifiying a range to splice a list, the final value is not included
-        #make a dictionary of pandas serieses where each dictionary entry is labeled as the sat, contains the pandas series which is indexed by the mz values
-        ic_dct[sat[i]] = pandas.Series(ic[scan_start_index:scan_end_index],index=mz_np[scan_start_index:scan_end_index])
+
+        # make a dictionary of pandas serieses
+        #   each dictionary entry is labeled as the sat,
+        #   contains the pandas series which is indexed by the mz values
+        ics = ic[scan_start_index:scan_end_index]
+        index_mzs = mz_np[scan_start_index:scan_end_index]
+
+        # The mz values in a series can sometimes be duplicated - maybe due to instrument rounding
+        #   remove the duplicate mzs and corresponding ic entries
+        index_mzs_unique_values, index_mzs_unique_indices = np.unique(index_mzs, return_index=True)
+        index_mzs = index_mzs_unique_values
+        ics = ics[index_mzs_unique_indices]
+
+        # Assemble the dictionary
+        ic_dct[sat[i]] = pandas.Series(ics,index=index_mzs)
+
 
     #create the data frame with mz values down the rows and SATs across the columns from the dictionary of pandas serieses
     ic_df = pandas.DataFrame(ic_dct)
