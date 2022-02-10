@@ -14,7 +14,6 @@ def integrate(corrected=True, use_alkanes=True, low_sensitivity=False):
     # This function can also be run without an alakne file
     #    In that case the library file should have retention times in seconds instead of retention indices
     #    The input use_alkanes should be input as False
-    # Note that in process_ms_data.py, the variable thres sets a threshold relative height in an array for it to be called a peak
 
     # The input low_sensitivity changes the threshold variable passed to peak_utils in the process_ms_data.py file
     #    This is related to the minimum ion counts a peak must be to be considered a peak
