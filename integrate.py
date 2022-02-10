@@ -16,6 +16,9 @@ def integrate(corrected=True, use_alkanes=True, low_sensitivity=False):
     #    The input use_alkanes should be input as False
     # Note that in process_ms_data.py, the variable thres sets a threshold relative height in an array for it to be called a peak
 
+    # The input low_sensitivity changes the threshold variable passed to peak_utils in the process_ms_data.py file
+    #    This is related to the minimum ion counts a peak must be to be considered a peak
+
     # I believe the corrected input may not be necessary because both corrected an uncorrected are spit out
     #     This could be changed to specify the atom whose natural abundance is corrected for
 
