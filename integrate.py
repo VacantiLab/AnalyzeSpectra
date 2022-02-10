@@ -270,7 +270,9 @@ def integrate(corrected=True, use_alkanes=True):
             i=i+1
 
         #Remove the alkane file from the sample list and update the samples_all list
-        samples = np.delete(samples,0)
+        if use_alkanes:
+            samples = np.delete(samples,0)
+
         samples_all = np.append(samples_all,samples)
 
     #Save the output data into a python readable file

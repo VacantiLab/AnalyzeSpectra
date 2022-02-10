@@ -26,6 +26,7 @@ def organize_ms_data(file_directory):
     sat = sat_unique_values
     si = si[sat_unique_indices]
     tic = np.array(ncdf.variables['total_intensity']) #store the total ion count for each scan
+    tic = tic[sat_unique_indices]
     n_scns = len(si) #the number of scans
     n_mz = len(mz) #the total number of recorded values
     mz_np = np.array(mz) #produces numpy float32 entries
