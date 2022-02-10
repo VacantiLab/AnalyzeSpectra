@@ -176,8 +176,6 @@ def match_fingerprint(ri_array,coelut_dict,coelut_dict_val,metabolite_dict,mz_va
                 if co_eluting_mz_val_array[next_alkane_i] > max_value_threshold:
                     metabolite_present = False
 
-    if metabolite == 'citrate_4tbdms':
-        set_trace()
     return(metabolite_present,metabolite_retention_index)
 
 #Supporting Functions

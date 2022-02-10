@@ -47,9 +47,14 @@ def process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals):
         y_data_smooth[smooth_neg_indices] = y_data_numpy[smooth_neg_indices]
 
         #find the indices of peaks
-        thres = 500/np.amax(y_data_smooth)
-        if thres > 1:
-            thres = 1
+
+        # This can result in thres near or at 1 which would exclude all peaks when max intensity is less than 500
+        #thres = 500/np.amax(y_data_smooth)
+        #if thres > 1:
+        #    thres = 1
+
+        # I believe threshold (thres) is realtive to the maximum value in the array being searched
+        thres = 0.1
         indexes = peakutils.indexes(y_data_smooth, thres=thres, min_dist=10)
         #thres is the threshhold and is somehow relative (possible values are between 0 and 1)
         #min dist is the minimum distance between peaks, I guess this is in terms of number of measurements since only one axis is provided
