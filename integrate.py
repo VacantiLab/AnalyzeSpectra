@@ -1,6 +1,6 @@
-def integrate(corrected=True, use_alkanes=True):
+def integrate(corrected=True, use_alkanes=True, low_sensitivity=False):
 
-    #This script expects two tab-delimited text files to be stored where the data is stored
+    # This script expects two tab-delimited text files to be stored where the data is stored
     #    The first is files_to_batch.txt
     #        This file has two columns, the first "file_name" and the second "batch"
     #        The file_name is the name of the file including the extension
@@ -9,8 +9,15 @@ def integrate(corrected=True, use_alkanes=True):
     #        This file has two columns, the first "batch" and the second "alkane_file"
     #        The "batch" is the number of the batch
     #        The "alkane_file" is the alkane file corresponding to that batch number
-    #This script can be run without either text file described above
+    # This script can be run without either text file described above
     #    In that case it would reference only a sinlge alkane file that must be named: alkanes.CDF
+    # This function can also be run without an alakne file
+    #    In that case the library file should have retention times in seconds instead of retention indices
+    #    The input use_alkanes should be input as False
+    # Note that in process_ms_data.py, the variable thres sets a threshold relative height in an array for it to be called a peak
+
+    # I believe the corrected input may not be necessary because both corrected an uncorrected are spit out
+    #     This could be changed to specify the atom whose natural abundance is corrected for
 
     import importlib #allows fresh importing of modules
     from pdb import set_trace #python debugger
@@ -161,7 +168,7 @@ def integrate(corrected=True, use_alkanes=True):
             print('    subtracting baselines and smoothing...')
             (ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,
             peak_start_i_dict,peak_end_i_dict,x_data_numpy,peak_i_dict,
-            peak_max_dict,p,peak_sat_dict,ic_dict) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals)
+            peak_max_dict,p,peak_sat_dict,ic_dict) = process_ms_data.process_ms_data(sat,ic_df,output_plot_directory,n_scns,mz_vals,low_sensitivity)
                  #ic_smooth_dict: a dictionary containing the smoothed and baseline corrected ion count data for each m/z value
                  #peak_start_t_dict: a dictionary with all of the peak beginning times for each m/z ion count plot
                  #peak_end_t_dict: a dictionary with all of the peak ending times for each m/z ion count plot
