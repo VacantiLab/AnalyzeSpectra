@@ -66,4 +66,4 @@ def create_correction_matrix(formula,metabolite_atoms):
     #find the right inverse (pseudo-inverse in numpy jargon) of the correction matrix
     CM_i = np.linalg.pinv(CM)
 
-    return(CM_i)
+    return(CM)

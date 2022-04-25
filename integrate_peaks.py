@@ -1,12 +1,12 @@
 def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_i_dict,peak_end_i_dict,x_data_numpy,metabolite_dict,metabolite_list,ri_array,mz_vals,coelut_dict,coelut_dict_val,sample_name):
     import importlib #allows fresh importing of modules
-    import pdb #python debugger
+    from pdb import set_trace #python debugger
     import numpy as np #this is numpy, allows for data frame and matrix handling
     import pandas #a module which allows for making data frames
     import scipy #contains simpsons integration function
     import copy
     from AnalyzeSpectra import fragment_library #a custom function
-    from AnalyzeSpectra import correct_mid
+    from AnalyzeSpectra import PolyMID
     from AnalyzeSpectra import ri_to_rt
     from AnalyzeSpectra import quantity_of_atom
     from AnalyzeSpectra import match_fingerprint
@@ -67,10 +67,18 @@ def integrate_peaks(ic_smooth_dict,peak_start_t_dict,peak_end_t_dict,peak_start_
                 #correct the mids, will work if the MID is all zeros
                 #    in order to print, all fragments must have a corrected mid
                 #    these corrected MIDs must be the same length for a fragment across all samples (are formula dependent so they will be)
-                mid_to_correct = metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['mid']
-                formula_of_mid_to_correct = metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['formula']
-                CM_i = metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['CM_i']
-                metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['mid_c'] = correct_mid.correct_mid(mid_to_correct,formula_of_mid_to_correct,CM_i)
+
+                fragment = PolyMID.Fragment(FragmentName = frag_iter, \
+                                            FragmentFormula = metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['formula'], \
+                                            CanAcquireLabel = metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['metabolite_atoms'], \
+                                            MIDm = metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['mid'], \
+                                            LabeledElement = 'C', \
+                                            TracerEnrichment = 1, \
+                                            LabelEnrichment = 1, \
+                                            HighRes = 'none', \
+                                            CM = metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['CM'])
+                fragment = PolyMID.Correct(fragment)
+                metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['mid_c'] = fragment.MIDc
 
             #if there are no peaks found, the metabolite is not present and all mid entries are 0
             if metabolite_dict_complete[metabolite_iter]['fragments'][frag_iter]['tot_area'] == 0:

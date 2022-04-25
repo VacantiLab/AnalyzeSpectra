@@ -7,6 +7,7 @@ def fragment_library(file_directory,metabolite_dict='none'):
     import re
     from AnalyzeSpectra import calc_natural_mid
     from AnalyzeSpectra import create_correction_matrix
+    from AnalyzeSpectra import PolyMID
 
     #file_name_read = '/Users/Nate/Desktop/netcdf_test/tbdms_lib.txt'
     file_name_read = file_directory + 'library.txt'
@@ -128,7 +129,22 @@ def fragment_library(file_directory,metabolite_dict='none'):
                                         fragment_line_item = fragment_line_split[1].lstrip().rstrip()
                                         metabolite_atoms = fragment_line_item
                                         metabolite_dict[metabolite_name]['fragments'][fragment_name]['metabolite_atoms'] = metabolite_atoms
-                                        metabolite_dict[metabolite_name]['fragments'][fragment_name]['CM_i'] = create_correction_matrix.create_correction_matrix(frag_formula,metabolite_atoms)
+                                        fragment = PolyMID.Fragment(FragmentName = 'DoesNotMatter',
+                                                                    FragmentFormula = frag_formula,
+                                                                    CanAcquireLabel = metabolite_atoms,
+                                                                    MIDm = np.array([]),
+                                                                    LabeledElement = 'C',
+                                                                    TracerEnrichment = 1,
+                                                                    LabelEnrichment = 1,
+                                                                    HighRes = np.array([]),
+                                                                    MIDc=None,
+                                                                    PeakArea=None,
+                                                                    CM=None,
+                                                                    Full_NC=False)
+                                        fragment.create_correction_matrix()
+                                        metabolite_dict[metabolite_name]['fragments'][fragment_name]['CM'] = fragment.CM
+                                        #metabolite_dict[metabolite_name]['fragments'][fragment_name]['CM'] = create_correction_matrix.create_correction_matrix(frag_formula,metabolite_atoms)
+
                                     #when at the appropriate line, record the mz's that will be integrated
                                     if fragment_line_n == metabolite_line_n + 3:
                                         fragment_line_item = fragment_line_split[1].lstrip().rstrip()
